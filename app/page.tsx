@@ -2,870 +2,926 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const BUDGET = 1200;
-const PRICE_MIN = 820;
-const PRICE_MAX = 1140;
+type Objective = "win" | "expected" | "balanced";
+type Tab = "cockpit" | "rules" | "evidence" | "report";
+type GateStatus = "pass" | "warn" | "fail";
+type Method = "综合评分法" | "最低评标价法";
 
-const WEIGHTS = [
-  { key: "tech", label: "技术方案", short: "技术", value: 40, color: "#246b50" },
-  { key: "price", label: "投标报价", short: "报价", value: 30, color: "#b7d65b" },
-  { key: "service", label: "履约服务", short: "履约", value: 18, color: "#e8a849" },
-  { key: "business", label: "商务响应", short: "商务", value: 12, color: "#d3cec3" },
-] as const;
+type Dimension = {
+  id: string;
+  label: string;
+  points: number;
+  color: string;
+};
 
-type Agent = {
-  id: "A" | "B" | "C" | "D";
-  company: string;
-  role: string;
-  quote: number;
-  quoteRange: string;
-  tech: number;
-  service: number;
-  business: number;
-  total?: number;
-  probability?: number;
+type GateDefinition = {
+  label: string;
+  evidence: string;
+};
+
+type EvidenceRow = {
+  item: string;
+  dimension: string;
+  points?: number;
+  evidence: string;
+  location: string;
+  basePct: number;
+  gap?: string;
+};
+
+type CompetitorSeed = {
+  id: "B" | "C" | "D";
+  name: string;
   strategy: string;
-  tone: string;
+  quoteRatio: number;
+  pressure: number;
+  nonPricePct: Record<string, number>;
+  qualificationIssue?: string;
+  complianceIssue?: string;
+  lowPriceEvidence: boolean;
+  accent: string;
 };
 
-type Scenario = {
-  competitorPriceFactor?: number;
-  ourTechDelta?: number;
+type ProjectTemplate = {
+  id: string;
+  name: string;
+  shortName: string;
+  code: string;
+  category: string;
+  method: Method;
+  budget: number;
+  maxPrice: number;
+  defaultBid: number;
+  defaultCost: number;
+  defaultMargin: number;
+  lowPriceReviewRate: number;
+  priceWeight: number;
+  dimensions: Dimension[];
+  qualifications: GateDefinition[];
+  compliance: GateDefinition[];
+  evidenceRows: EvidenceRow[];
+  competitors: CompetitorSeed[];
+  priceRule: string;
+  decisionNote: string;
 };
 
-const COMPETITORS: Agent[] = [
+type AgentResult = {
+  id: "A" | "B" | "C" | "D";
+  name: string;
+  strategy: string;
+  quote: number;
+  qualification: GateStatus;
+  qualificationDetail: string;
+  compliance: GateStatus;
+  complianceDetail: string;
+  abnormalLow: boolean;
+  abnormalDetail: string;
+  valid: boolean;
+  priceScore: number;
+  nonPriceScore: number;
+  totalScore: number;
+  rank: number | null;
+  winProbability: number;
+  accent: string;
+};
+
+type Evaluation = {
+  agents: AgentResult[];
+  basePrice: number | null;
+  validCount: number;
+};
+
+const PROJECTS: ProjectTemplate[] = [
   {
-    id: "B",
-    company: "北辰数字",
-    role: "价格进攻型",
-    quote: 895,
-    quoteRange: "¥867–923万",
-    tech: 82,
-    service: 78,
-    business: 84,
-    strategy: "低价抢分",
-    tone: "amber",
+    id: "it-service",
+    name: "政企云平台运维与安全服务项目",
+    shortName: "IT 运维服务",
+    code: "ZC-2026-IT-042",
+    category: "服务采购",
+    method: "综合评分法",
+    budget: 1200,
+    maxPrice: 1180,
+    defaultBid: 930,
+    defaultCost: 760,
+    defaultMargin: 18,
+    lowPriceReviewRate: 0.65,
+    priceWeight: 20,
+    dimensions: [
+      { id: "technical", label: "技术", points: 45, color: "#315c4d" },
+      { id: "business", label: "商务", points: 20, color: "#3568a8" },
+      { id: "service", label: "服务", points: 15, color: "#d28c3c" },
+    ],
+    qualifications: [
+      { label: "依法设立并具备独立承担民事责任能力", evidence: "营业执照、法定代表人身份证明" },
+      { label: "财务、纳税和社会保障记录符合要求", evidence: "审计报告、近期开票及社保缴纳凭证" },
+      { label: "近三年无重大违法记录", evidence: "书面声明及信用查询记录" },
+      { label: "具备履约所必需的专业能力", evidence: "人员、工具平台与服务能力说明" },
+    ],
+    compliance: [
+      { label: "投标总价不超过最高限价 1,180 万元", evidence: "开标一览表、分项报价表" },
+      { label: "投标有效期不少于 90 日", evidence: "投标函" },
+      { label: "SLA 可用性不低于 99.9%", evidence: "技术偏离表、服务承诺" },
+      { label: "120 日内完成迁移，全部 ★ 条款无负偏离", evidence: "实施计划、逐条响应表" },
+    ],
+    evidenceRows: [
+      { item: "核心功能与参数", dimension: "technical", points: 20, evidence: "逐条偏离表、演示截图、检测材料", location: "技术册 §3.1–3.6", basePct: 0.93 },
+      { item: "总体架构与集成", dimension: "technical", points: 10, evidence: "架构图、接口清单、兼容性说明", location: "技术册 §4", basePct: 0.86, gap: "补充灾备切换时序" },
+      { item: "实施迁移方案", dimension: "technical", points: 8, evidence: "WBS、里程碑、回退方案", location: "实施册 §2", basePct: 0.84, gap: "量化割接窗口" },
+      { item: "安全与测试", dimension: "technical", points: 7, evidence: "等保映射、测试与验收方案", location: "技术册 §6", basePct: 0.88 },
+      { item: "类似项目业绩", dimension: "business", points: 8, evidence: "合同关键页、验收证明、联系人", location: "商务册 §5", basePct: 0.76, gap: "2 份验收证明待归档" },
+      { item: "项目团队配置", dimension: "business", points: 12, evidence: "简历、证书、社保证明、分工表", location: "商务册 §6", basePct: 0.82 },
+      { item: "SLA 与驻场保障", dimension: "service", points: 8, evidence: "SLA 表、排班与升级机制", location: "服务册 §2", basePct: 0.94 },
+      { item: "培训与应急响应", dimension: "service", points: 7, evidence: "课程、演练、应急预案", location: "服务册 §3–4", basePct: 0.87, gap: "补充季度演练样例" },
+    ],
+    competitors: [
+      { id: "B", name: "锐价科技", strategy: "低价进攻", quoteRatio: 0.63, pressure: 0.0012, nonPricePct: { technical: 0.72, business: 0.63, service: 0.68 }, lowPriceEvidence: true, accent: "#c76b4f" },
+      { id: "C", name: "深维数科", strategy: "技术溢价", quoteRatio: 0.93, pressure: 0.0003, nonPricePct: { technical: 0.88, business: 0.82, service: 0.86 }, lowPriceEvidence: true, accent: "#3568a8" },
+      { id: "D", name: "安联智服", strategy: "均衡跟随", quoteRatio: 0.81, pressure: 0.0007, nonPricePct: { technical: 0.82, business: 0.76, service: 0.79 }, complianceIssue: "★ 数据跨域兼容条款负偏离", lowPriceEvidence: false, accent: "#8a735a" },
+    ],
+    priceRule: "满足招标文件要求且评标价最低者为评标基准价；价格得分 = 评标基准价 ÷ 本投标评标价 × 20。",
+    decisionNote: "资格与符合性均为通过制，不计分；只有有效投标进入详细评审。",
   },
   {
-    id: "C",
-    company: "云启智能",
-    role: "技术领先型",
-    quote: 1018,
-    quoteRange: "¥984–1,052万",
-    tech: 94,
-    service: 91,
-    business: 90,
-    strategy: "技术溢价",
-    tone: "blue",
+    id: "equipment",
+    name: "数据中心通用服务器设备采购项目",
+    shortName: "通用设备采购",
+    code: "HW-2026-017",
+    category: "货物采购",
+    method: "最低评标价法",
+    budget: 800,
+    maxPrice: 780,
+    defaultBid: 650,
+    defaultCost: 560,
+    defaultMargin: 12,
+    lowPriceReviewRate: 0.6,
+    priceWeight: 100,
+    dimensions: [],
+    qualifications: [
+      { label: "具备独立承担民事责任能力", evidence: "营业执照、授权材料" },
+      { label: "财务、税收、社保与信用记录符合要求", evidence: "审计、纳税社保及信用记录" },
+      { label: "制造商或合法渠道授权", evidence: "针对本项目的原厂授权函" },
+    ],
+    compliance: [
+      { label: "评标价不超过最高限价 780 万元", evidence: "报价表、政策扣除说明" },
+      { label: "CPU、内存、存储等 ★ 参数无负偏离", evidence: "技术规格响应表、检测报告" },
+      { label: "交货期不超过 45 日", evidence: "供货计划与承诺函" },
+      { label: "原厂质保不少于 3 年", evidence: "制造商售后服务承诺" },
+    ],
+    evidenceRows: [
+      { item: "核心硬件参数", dimension: "gate", evidence: "逐条规格响应表、产品彩页、检测报告", location: "响应册 §2", basePct: 1 },
+      { item: "原厂授权与供货", dimension: "gate", evidence: "项目授权函、供货承诺", location: "商务册 §4", basePct: 1, gap: "授权函有效期待复核" },
+      { item: "交付与安装", dimension: "gate", evidence: "到货计划、机房上架方案", location: "实施册 §1", basePct: 1 },
+      { item: "质保与售后", dimension: "gate", evidence: "原厂服务承诺、备件清单", location: "服务册 §2", basePct: 1 },
+    ],
+    competitors: [
+      { id: "B", name: "竞速硬件", strategy: "渠道底价", quoteRatio: 0.75, pressure: 0.001, nonPricePct: {}, lowPriceEvidence: true, accent: "#c76b4f" },
+      { id: "C", name: "原厂集成", strategy: "原厂服务", quoteRatio: 0.91, pressure: 0.0003, nonPricePct: {}, lowPriceEvidence: true, accent: "#3568a8" },
+      { id: "D", name: "联采供应", strategy: "均衡报价", quoteRatio: 0.82, pressure: 0.0006, nonPricePct: {}, qualificationIssue: "原厂授权函缺少项目名称", lowPriceEvidence: true, accent: "#8a735a" },
+    ],
+    priceRule: "不设置主观加分。通过资格和符合性审查后，按经修正、扣除后的评标价由低到高排序。",
+    decisionNote: "技术与资质在本模板中是准入条件，不因证书数量多而任意加分。",
   },
   {
-    id: "D",
-    company: "经纬系统",
-    role: "均衡跟随型",
-    quote: 958,
-    quoteRange: "¥928–988万",
-    tech: 86,
-    service: 85,
-    business: 83,
-    strategy: "均衡跟随",
-    tone: "slate",
+    id: "construction",
+    name: "园区智能化系统改造工程施工项目",
+    shortName: "智能化工程",
+    code: "GC-2026-108",
+    category: "工程招标",
+    method: "综合评分法",
+    budget: 5000,
+    maxPrice: 4800,
+    defaultBid: 4490,
+    defaultCost: 3950,
+    defaultMargin: 10,
+    lowPriceReviewRate: 0.65,
+    priceWeight: 50,
+    dimensions: [
+      { id: "technical", label: "施工组织", points: 30, color: "#315c4d" },
+      { id: "team", label: "项目团队", points: 10, color: "#3568a8" },
+      { id: "performance", label: "企业业绩", points: 10, color: "#d28c3c" },
+    ],
+    qualifications: [
+      { label: "具有项目要求的电子与智能化工程资质", evidence: "资质证书及有效期核验" },
+      { label: "具备有效安全生产许可证", evidence: "安全生产许可证" },
+      { label: "项目经理资格及在岗状态符合要求", evidence: "注册证书、安考证、社保与无在建承诺" },
+      { label: "信用、财务及类似履约能力符合要求", evidence: "信用记录、财务与业绩证明" },
+    ],
+    compliance: [
+      { label: "投标总价不超过最高限价 4,800 万元", evidence: "投标函、工程量清单" },
+      { label: "工期不超过 240 日历天", evidence: "施工进度网络计划" },
+      { label: "质量与安全目标响应招标要求", evidence: "质量、安全承诺与专项方案" },
+      { label: "工程量清单完整且无不可竞争费违规调整", evidence: "已标价工程量清单" },
+    ],
+    evidenceRows: [
+      { item: "施工总体部署", dimension: "technical", points: 10, evidence: "总平面、关键路径、资源计划", location: "施工组织 §2", basePct: 0.86 },
+      { item: "关键工序与系统联调", dimension: "technical", points: 10, evidence: "专项施工、联调与验收方案", location: "施工组织 §3", basePct: 0.91 },
+      { item: "质量安全与进度", dimension: "technical", points: 10, evidence: "质量安全体系、进度纠偏机制", location: "施工组织 §4–6", basePct: 0.85, gap: "雨季施工量化措施不足" },
+      { item: "项目经理与核心班组", dimension: "team", points: 10, evidence: "证书、履历、社保、分工", location: "商务册 §5", basePct: 0.82 },
+      { item: "同类工程业绩", dimension: "performance", points: 10, evidence: "合同、竣工验收、获奖证明", location: "商务册 §6", basePct: 0.78, gap: "1 个项目金额证明不清" },
+    ],
+    competitors: [
+      { id: "B", name: "城建智能", strategy: "价格抢位", quoteRatio: 0.82, pressure: 0.0007, nonPricePct: { technical: 0.75, team: 0.69, performance: 0.72 }, lowPriceEvidence: true, accent: "#c76b4f" },
+      { id: "C", name: "科筑工程", strategy: "方案领先", quoteRatio: 0.95, pressure: 0.0002, nonPricePct: { technical: 0.91, team: 0.88, performance: 0.86 }, lowPriceEvidence: true, accent: "#3568a8" },
+      { id: "D", name: "智联建设", strategy: "经验均衡", quoteRatio: 0.88, pressure: 0.0005, nonPricePct: { technical: 0.84, team: 0.81, performance: 0.9 }, qualificationIssue: "项目经理存在在建项目冲突", lowPriceEvidence: true, accent: "#8a735a" },
+    ],
+    priceRule: "本演示按最低有效评标价为基准：价格得分 = 基准价 ÷ 投标评标价 × 50；实际工程项目须以招标文件载明公式为准。",
+    decisionNote: "工程资质、安全许可和项目经理条件先审查；评分权重仅代表当前模拟项目。",
   },
 ];
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, value));
+const OBJECTIVES: Record<Objective, { label: string; helper: string }> = {
+  win: { label: "中标概率", helper: "在利润底线内优先提高胜出概率" },
+  expected: { label: "期望利润", helper: "中标概率 × 单项目利润" },
+  balanced: { label: "稳健收益", helper: "兼顾期望利润、胜率与异常低价风险" },
+};
 
-const formatMoney = (value: number) =>
-  new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }).format(value);
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const roundTo = (value: number, digits = 1) => Number(value.toFixed(digits));
+const money = (value: number) => `¥${Math.round(value).toLocaleString("zh-CN")}万`;
 
-function getProfitMargin(price: number, cost: number) {
-  return ((price - cost) / price) * 100;
+function scoreForA(project: ProjectTemplate, readiness: number) {
+  const factor = readiness / 88;
+  const grouped: Record<string, number> = {};
+  for (const row of project.evidenceRows) {
+    if (!row.points || row.dimension === "gate") continue;
+    grouped[row.dimension] = (grouped[row.dimension] ?? 0) + row.points * clamp(row.basePct * factor, 0, 0.98);
+  }
+  return grouped;
 }
 
-function getProfitFloor(cost: number, minProfit: number) {
-  return cost / (1 - minProfit / 100);
+function competitorQuote(project: ProjectTemplate, seed: CompetitorSeed, pressure: number, run: number) {
+  const pressureDelta = (pressure - 50) * seed.pressure;
+  const jitter = Math.sin((run + 1) * (seed.id.charCodeAt(0) + 11)) * 0.006;
+  return Math.round(project.maxPrice * clamp(seed.quoteRatio - pressureDelta + jitter, 0.46, 0.99));
 }
 
-function scoreAgents(price: number, scenario: Scenario = {}) {
-  const competitorPriceFactor = scenario.competitorPriceFactor ?? 1;
-  const ourTechDelta = scenario.ourTechDelta ?? 0;
-  const agents: Agent[] = [
-    {
-      id: "A",
-      company: "我方 · 标策科技",
-      role: "利润约束型",
-      quote: price,
-      quoteRange: `当前 ¥${formatMoney(price)}万`,
-      tech: 93 + ourTechDelta,
-      service: 91,
-      business: 89,
-      strategy: "推荐策略",
-      tone: "green",
-    },
-    ...COMPETITORS.map((agent) => ({
-      ...agent,
-      quote: agent.quote * competitorPriceFactor,
-    })),
-  ];
-
-  const basePrice = Math.min(...agents.map((agent) => agent.quote));
-  const totals = agents.map((agent) => {
-    const priceScore = clamp((basePrice / agent.quote) * 100, 0, 100);
-    const total =
-      agent.tech * 0.4 +
-      priceScore * 0.3 +
-      agent.service * 0.18 +
-      agent.business * 0.12;
-    return { ...agent, total };
-  });
-
-  const maxScore = Math.max(...totals.map((agent) => agent.total));
-  const exponentials = totals.map((agent) =>
-    Math.exp((agent.total - maxScore) / 2)
-  );
-  const probabilityTotal = exponentials.reduce((sum, value) => sum + value, 0);
-
-  return totals
-    .map((agent, index) => ({
-      ...agent,
-      probability: (exponentials[index] / probabilityTotal) * 100,
-    }))
-    .sort((a, b) => (b.probability ?? 0) - (a.probability ?? 0));
-}
-
-function getOurMetrics(price: number, scenario: Scenario = {}) {
-  return scoreAgents(price, scenario).find((agent) => agent.id === "A")!;
-}
-
-function getRecommendedPrice(cost: number, minProfit: number) {
-  const floor = getProfitFloor(cost, minProfit);
-  const start = clamp(Math.ceil(floor / 2) * 2, PRICE_MIN, PRICE_MAX);
-  let bestPrice = start;
-  let bestProbability = -1;
-
-  for (let candidate = start; candidate <= PRICE_MAX; candidate += 2) {
-    const probability = getOurMetrics(candidate).probability ?? 0;
-    if (probability > bestProbability) {
-      bestProbability = probability;
-      bestPrice = candidate;
-    }
+function evaluateScenario(args: {
+  project: ProjectTemplate;
+  ourBid: number;
+  readiness: number;
+  qualificationReady: boolean;
+  complianceReady: boolean;
+  lowPriceEvidence: boolean;
+  marketPressure: number;
+  run: number;
+}): Evaluation {
+  const { project, ourBid, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run } = args;
+  const lowLine = project.maxPrice * project.lowPriceReviewRate;
+  const aAbnormal = ourBid < lowLine;
+  const aQualification: GateStatus = qualificationReady ? "pass" : "fail";
+  let aCompliance: GateStatus = "pass";
+  let aComplianceDetail = "最高限价、有效期及 ★ 条款均响应";
+  if (ourBid > project.maxPrice) {
+    aCompliance = "fail";
+    aComplianceDetail = "投标报价超过最高限价";
+  } else if (!complianceReady) {
+    aCompliance = "fail";
+    aComplianceDetail = "存在未响应的实质性 / ★ 条款";
+  } else if (aAbnormal && !lowPriceEvidence) {
+    aCompliance = "fail";
+    aComplianceDetail = "触发异常低价审查且成本说明材料不足";
+  } else if (aAbnormal) {
+    aCompliance = "warn";
+    aComplianceDetail = "触发项目预警线；模拟为说明材料可支撑，待评委审查";
   }
 
-  return bestPrice;
+  const aGrouped = scoreForA(project, readiness);
+  const raw: Array<Omit<AgentResult, "priceScore" | "totalScore" | "rank" | "winProbability">> = [
+    {
+      id: "A",
+      name: "我方公司",
+      strategy: "约束内优化",
+      quote: Math.round(ourBid),
+      qualification: aQualification,
+      qualificationDetail: qualificationReady ? "资格证明文件齐全" : "关键资格证明材料未齐备",
+      compliance: aCompliance,
+      complianceDetail: aComplianceDetail,
+      abnormalLow: aAbnormal,
+      abnormalDetail: aAbnormal ? `低于项目设置的 ${Math.round(project.lowPriceReviewRate * 100)}% 重点审查线` : "未触发项目异常低价预警线",
+      valid: aQualification !== "fail" && aCompliance !== "fail",
+      nonPriceScore: Object.values(aGrouped).reduce((sum, value) => sum + value, 0),
+      accent: "#315c4d",
+    },
+    ...project.competitors.map((seed) => {
+      const quote = competitorQuote(project, seed, marketPressure, run);
+      const abnormalLow = quote < lowLine;
+      const qualification: GateStatus = seed.qualificationIssue ? "fail" : "pass";
+      let compliance: GateStatus = seed.complianceIssue ? "fail" : "pass";
+      let complianceDetail = seed.complianceIssue ?? "实质性条款响应完整";
+      if (abnormalLow && !seed.lowPriceEvidence && compliance !== "fail") {
+        compliance = "fail";
+        complianceDetail = "异常低价说明材料不足";
+      } else if (abnormalLow && compliance !== "fail") {
+        compliance = "warn";
+        complianceDetail = "异常低价说明进入评委审查，模拟为可支撑";
+      }
+      const nonPriceScore = project.dimensions.reduce(
+        (sum, dimension) => sum + dimension.points * (seed.nonPricePct[dimension.id] ?? 0),
+        0,
+      );
+      return {
+        id: seed.id,
+        name: seed.name,
+        strategy: seed.strategy,
+        quote,
+        qualification,
+        qualificationDetail: seed.qualificationIssue ?? "资格证明文件通过",
+        compliance,
+        complianceDetail,
+        abnormalLow,
+        abnormalDetail: abnormalLow ? `低于项目设置的 ${Math.round(project.lowPriceReviewRate * 100)}% 重点审查线` : "未触发项目异常低价预警线",
+        valid: qualification !== "fail" && compliance !== "fail",
+        nonPriceScore,
+        accent: seed.accent,
+      };
+    }),
+  ];
+
+  const valid = raw.filter((agent) => agent.valid);
+  const basePrice = valid.length ? Math.min(...valid.map((agent) => agent.quote)) : null;
+  const scored: AgentResult[] = raw.map((agent) => {
+    const priceScore = agent.valid && basePrice
+      ? project.method === "综合评分法"
+        ? (basePrice / agent.quote) * project.priceWeight
+        : (basePrice / agent.quote) * 100
+      : 0;
+    const totalScore = agent.valid
+      ? project.method === "综合评分法"
+        ? priceScore + agent.nonPriceScore
+        : priceScore
+      : 0;
+    return { ...agent, priceScore, totalScore, rank: null, winProbability: 0 };
+  });
+
+  const ranked = scored
+    .filter((agent) => agent.valid)
+    .sort((a, b) => project.method === "最低评标价法" ? a.quote - b.quote : b.totalScore - a.totalScore);
+  ranked.forEach((agent, index) => {
+    const target = scored.find((item) => item.id === agent.id);
+    if (target) target.rank = index + 1;
+  });
+
+  if (ranked.length) {
+    const temperature = project.method === "最低评标价法" ? 2.4 : 4.2;
+    const maxUtility = Math.max(...ranked.map((agent) => agent.totalScore));
+    const weights = ranked.map((agent) => Math.exp((agent.totalScore - maxUtility) / temperature));
+    const sum = weights.reduce((total, value) => total + value, 0);
+    ranked.forEach((agent, index) => {
+      const target = scored.find((item) => item.id === agent.id);
+      if (target) target.winProbability = (weights[index] / sum) * 100;
+    });
+  }
+
+  return { agents: scored, basePrice, validCount: valid.length };
 }
 
-function percentDelta(value: number) {
-  const prefix = value > 0 ? "+" : "";
-  return `${prefix}${value.toFixed(1)}pp`;
+function statusLabel(status: GateStatus) {
+  if (status === "pass") return "通过";
+  if (status === "warn") return "待审查";
+  return "不通过";
 }
 
-function ProbabilityChart({
-  currentPrice,
-  recommendedPrice,
-  cost,
-  minProfit,
-  onPriceChange,
+function MetricRing({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="metric-ring" style={{ "--value": `${clamp(value, 0, 100) * 3.6}deg` } as React.CSSProperties}>
+      <div><strong>{roundTo(value, 0)}%</strong><span>{label}</span></div>
+    </div>
+  );
+}
+
+function ScenarioChart({
+  points,
+  recommended,
+  current,
 }: {
-  currentPrice: number;
-  recommendedPrice: number;
-  cost: number;
-  minProfit: number;
-  onPriceChange: (price: number) => void;
+  points: Array<{ quote: number; probability: number; expectedProfit: number }>;
+  recommended: number | null;
+  current: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
+    if (!canvas || !points.length) return;
+    const container = canvas.parentElement;
+    if (!container) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
-    canvas.width = rect.width * ratio;
-    canvas.height = rect.height * ratio;
-    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    const draw = () => {
+      const width = container.clientWidth;
+      const height = 300;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
 
-    const width = rect.width;
-    const height = rect.height;
-    const padding = { top: 18, right: 18, bottom: 34, left: 42 };
-    const plotWidth = width - padding.left - padding.right;
-    const plotHeight = height - padding.top - padding.bottom;
-    const x = (price: number) =>
-      padding.left + ((price - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * plotWidth;
-    const y = (probability: number) =>
-      padding.top + ((100 - probability) / 100) * plotHeight;
+      const pad = { left: 48, right: 46, top: 22, bottom: 38 };
+      const plotW = width - pad.left - pad.right;
+      const plotH = height - pad.top - pad.bottom;
+      const minQuote = points[0].quote;
+      const maxQuote = points[points.length - 1].quote;
+      const maxExpected = Math.max(1, ...points.map((point) => point.expectedProfit));
+      const x = (quote: number) => pad.left + ((quote - minQuote) / (maxQuote - minQuote || 1)) * plotW;
+      const yP = (probability: number) => pad.top + plotH - (probability / 100) * plotH;
+      const yE = (expected: number) => pad.top + plotH - (expected / maxExpected) * plotH;
 
-    context.clearRect(0, 0, width, height);
-    context.font = '11px "Microsoft YaHei", sans-serif';
-    context.textBaseline = "middle";
+      ctx.strokeStyle = "rgba(29, 43, 38, .10)";
+      ctx.lineWidth = 1;
+      ctx.font = "11px ui-sans-serif, system-ui";
+      ctx.fillStyle = "#7a827d";
+      for (let i = 0; i <= 4; i += 1) {
+        const yy = pad.top + (plotH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, yy);
+        ctx.lineTo(width - pad.right, yy);
+        ctx.stroke();
+        ctx.fillText(`${100 - i * 25}%`, 7, yy + 4);
+      }
 
-    const floor = clamp(getProfitFloor(cost, minProfit), PRICE_MIN, PRICE_MAX);
-    context.fillStyle = "rgba(216, 103, 75, 0.08)";
-    context.fillRect(x(PRICE_MIN), padding.top, x(floor) - x(PRICE_MIN), plotHeight);
-
-    [0, 25, 50, 75, 100].forEach((tick) => {
-      context.beginPath();
-      context.strokeStyle = tick === 0 ? "rgba(255,255,255,.18)" : "rgba(255,255,255,.08)";
-      context.lineWidth = 1;
-      context.moveTo(padding.left, y(tick));
-      context.lineTo(width - padding.right, y(tick));
-      context.stroke();
-      context.fillStyle = "rgba(232, 236, 226, .48)";
-      context.textAlign = "right";
-      context.fillText(`${tick}%`, padding.left - 9, y(tick));
-    });
-
-    [820, 900, 980, 1060, 1140].forEach((tick) => {
-      context.fillStyle = "rgba(232, 236, 226, .48)";
-      context.textAlign = "center";
-      context.fillText(`${tick}`, x(tick), height - 12);
-    });
-
-    const points: Array<{ price: number; probability: number }> = [];
-    for (let chartPrice = PRICE_MIN; chartPrice <= PRICE_MAX; chartPrice += 4) {
-      points.push({
-        price: chartPrice,
-        probability: getOurMetrics(chartPrice).probability ?? 0,
+      const fill = ctx.createLinearGradient(0, pad.top, 0, pad.top + plotH);
+      fill.addColorStop(0, "rgba(49, 92, 77, .20)");
+      fill.addColorStop(1, "rgba(49, 92, 77, 0)");
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const xx = x(point.quote);
+        const yy = yP(point.probability);
+        if (index === 0) ctx.moveTo(xx, yy);
+        else ctx.lineTo(xx, yy);
       });
-    }
+      ctx.lineTo(x(points[points.length - 1].quote), pad.top + plotH);
+      ctx.lineTo(x(points[0].quote), pad.top + plotH);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
 
-    const area = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-    area.addColorStop(0, "rgba(183, 214, 91, .28)");
-    area.addColorStop(1, "rgba(183, 214, 91, 0)");
-    context.beginPath();
-    points.forEach((point, index) => {
-      const px = x(point.price);
-      const py = y(point.probability);
-      if (index === 0) context.moveTo(px, py);
-      else context.lineTo(px, py);
-    });
-    context.lineTo(x(PRICE_MAX), y(0));
-    context.lineTo(x(PRICE_MIN), y(0));
-    context.closePath();
-    context.fillStyle = area;
-    context.fill();
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const xx = x(point.quote);
+        const yy = yP(point.probability);
+        if (index === 0) ctx.moveTo(xx, yy);
+        else ctx.lineTo(xx, yy);
+      });
+      ctx.strokeStyle = "#315c4d";
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
 
-    context.beginPath();
-    points.forEach((point, index) => {
-      const px = x(point.price);
-      const py = y(point.probability);
-      if (index === 0) context.moveTo(px, py);
-      else context.lineTo(px, py);
-    });
-    context.strokeStyle = "#b7d65b";
-    context.lineWidth = 2.5;
-    context.lineJoin = "round";
-    context.lineCap = "round";
-    context.stroke();
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const xx = x(point.quote);
+        const yy = yE(point.expectedProfit);
+        if (index === 0) ctx.moveTo(xx, yy);
+        else ctx.lineTo(xx, yy);
+      });
+      ctx.strokeStyle = "#3568a8";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
 
-    context.setLineDash([5, 5]);
-    context.beginPath();
-    context.strokeStyle = "rgba(232, 168, 73, .8)";
-    context.moveTo(x(floor), padding.top);
-    context.lineTo(x(floor), height - padding.bottom);
-    context.stroke();
-    context.setLineDash([]);
-    context.fillStyle = "#e8a849";
-    context.textAlign = floor > 1060 ? "right" : "left";
-    context.fillText(
-      "利润红线",
-      x(floor) + (floor > 1060 ? -7 : 7),
-      padding.top + 9
-    );
+      const drawMarker = (quote: number, color: string, text: string, offset: number) => {
+        const xx = clamp(x(quote), pad.left, width - pad.right);
+        ctx.beginPath();
+        ctx.moveTo(xx, pad.top);
+        ctx.lineTo(xx, pad.top + plotH);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = color;
+        ctx.font = "600 11px ui-sans-serif, system-ui";
+        ctx.fillText(text, clamp(xx + offset, pad.left, width - 104), 14);
+      };
+      drawMarker(current, "#8a735a", "当前报价", -74);
+      if (recommended !== null) drawMarker(recommended, "#c76b4f", "建议报价", 6);
 
-    const recommendedProbability = getOurMetrics(recommendedPrice).probability ?? 0;
-    context.beginPath();
-    context.fillStyle = "#b7d65b";
-    context.arc(x(recommendedPrice), y(recommendedProbability), 5.5, 0, Math.PI * 2);
-    context.fill();
-    context.beginPath();
-    context.strokeStyle = "rgba(183, 214, 91, .4)";
-    context.lineWidth = 5;
-    context.arc(x(recommendedPrice), y(recommendedProbability), 9, 0, Math.PI * 2);
-    context.stroke();
+      ctx.fillStyle = "#7a827d";
+      ctx.font = "11px ui-sans-serif, system-ui";
+      ctx.fillText(`${Math.round(minQuote)}万`, pad.left, height - 12);
+      const maxLabel = `${Math.round(maxQuote)}万`;
+      ctx.fillText(maxLabel, width - pad.right - ctx.measureText(maxLabel).width, height - 12);
+      ctx.fillText(`期望利润峰值 ${Math.round(maxExpected)}万`, width - 142, pad.top + plotH + 25);
+    };
 
-    const currentProbability = getOurMetrics(currentPrice).probability ?? 0;
-    if (currentPrice !== recommendedPrice) {
-      context.beginPath();
-      context.strokeStyle = "rgba(255,255,255,.48)";
-      context.setLineDash([3, 4]);
-      context.moveTo(x(currentPrice), padding.top);
-      context.lineTo(x(currentPrice), height - padding.bottom);
-      context.stroke();
-      context.setLineDash([]);
-      context.beginPath();
-      context.fillStyle = "#f4f2ed";
-      context.arc(x(currentPrice), y(currentProbability), 4, 0, Math.PI * 2);
-      context.fill();
-    }
-  }, [currentPrice, recommendedPrice, cost, minProfit]);
+    draw();
+    const observer = new ResizeObserver(draw);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [points, recommended, current]);
 
-  const handlePointer = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const paddingLeft = 42;
-    const paddingRight = 18;
-    const raw =
-      PRICE_MIN +
-      ((event.clientX - rect.left - paddingLeft) /
-        (rect.width - paddingLeft - paddingRight)) *
-        (PRICE_MAX - PRICE_MIN);
-    onPriceChange(clamp(Math.round(raw / 2) * 2, PRICE_MIN, PRICE_MAX));
-  };
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="probability-canvas"
-      role="img"
-      aria-label="报价与中标概率关系曲线，橙色虚线表示最低利润率对应的报价红线"
-      onPointerDown={handlePointer}
-    />
-  );
+  return <canvas ref={canvasRef} role="img" aria-label="报价、中标概率与期望利润关系图" />;
 }
 
 export default function Home() {
-  const [cost, setCost] = useState(760);
-  const [minProfit, setMinProfit] = useState(18);
-  const recommendedPrice = useMemo(
-    () => getRecommendedPrice(cost, minProfit),
-    [cost, minProfit]
+  const [projectId, setProjectId] = useState(PROJECTS[0].id);
+  const project = PROJECTS.find((item) => item.id === projectId) ?? PROJECTS[0];
+  const [ourBid, setOurBid] = useState(project.defaultBid);
+  const [cost, setCost] = useState(project.defaultCost);
+  const [minMargin, setMinMargin] = useState(project.defaultMargin);
+  const [readiness, setReadiness] = useState(88);
+  const [marketPressure, setMarketPressure] = useState(50);
+  const [objective, setObjective] = useState<Objective>("balanced");
+  const [qualificationReady, setQualificationReady] = useState(true);
+  const [complianceReady, setComplianceReady] = useState(true);
+  const [lowPriceEvidence, setLowPriceEvidence] = useState(true);
+  const [tab, setTab] = useState<Tab>("cockpit");
+  const [run, setRun] = useState(0);
+  const [showMethod, setShowMethod] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const evaluateAt = (quote: number) => evaluateScenario({
+    project,
+    ourBid: quote,
+    readiness,
+    qualificationReady,
+    complianceReady,
+    lowPriceEvidence,
+    marketPressure,
+    run,
+  });
+
+  const evaluation = useMemo(
+    () => evaluateScenario({ project, ourBid, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run }),
+    [project, ourBid, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run],
   );
-  const [price, setPrice] = useState(928);
-  const [isRunning, setIsRunning] = useState(false);
-  const [runCount, setRunCount] = useState(1);
-  const [showModel, setShowModel] = useState(false);
 
-  const rankedAgents = useMemo(() => scoreAgents(price), [price, runCount]);
-  const ourAgent = rankedAgents.find((agent) => agent.id === "A")!;
-  const recommendedMetrics = useMemo(
-    () => getOurMetrics(recommendedPrice),
-    [recommendedPrice]
-  );
-  const profit = price - cost;
-  const profitMargin = getProfitMargin(price, cost);
-  const isProfitable = profitMargin >= minProfit;
-  const priceDifference = price - recommendedPrice;
-  const baseProbability = ourAgent.probability ?? 0;
-  const competitorCutProbability =
-    getOurMetrics(price, { competitorPriceFactor: 0.97 }).probability ?? 0;
-  const techDropProbability =
-    getOurMetrics(price, { ourTechDelta: -4 }).probability ?? 0;
-  const costUpRecommended = getRecommendedPrice(cost * 1.05, minProfit);
+  const ourResult = evaluation.agents.find((agent) => agent.id === "A")!;
+  const currentProfit = ourBid - cost;
+  const currentMargin = ourBid > 0 ? (currentProfit / ourBid) * 100 : -100;
+  const profitPass = currentProfit >= 0 && currentMargin >= minMargin;
+  const minimumFeasibleBid = minMargin >= 100 ? Infinity : cost / (1 - minMargin / 100);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setShowModel(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  const optimization = useMemo(() => {
+    if (!qualificationReady || !complianceReady || minimumFeasibleBid > project.maxPrice) return null;
+    const start = Math.max(minimumFeasibleBid, project.maxPrice * 0.5);
+    const step = Math.max(1, project.maxPrice / 180);
+    let best: { quote: number; probability: number; expectedProfit: number; score: number; abnormal: boolean } | null = null;
+    for (let quote = start; quote <= project.maxPrice + 0.01; quote += step) {
+      const scenario = evaluateScenario({ project, ourBid: quote, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run });
+      const ours = scenario.agents.find((agent) => agent.id === "A")!;
+      if (!ours.valid) continue;
+      const expectedProfit = (ours.winProbability / 100) * (quote - cost);
+      const riskPenalty = ours.abnormalLow ? Math.max(12, (quote - cost) * 0.18) : 0;
+      const score = objective === "win"
+        ? ours.winProbability - (ours.abnormalLow ? 6 : 0)
+        : objective === "expected"
+          ? expectedProfit
+          : expectedProfit * (0.72 + 0.28 * (ours.winProbability / 100)) - riskPenalty;
+      if (!best || score > best.score) {
+        best = { quote: Math.round(quote), probability: ours.winProbability, expectedProfit, score, abnormal: ours.abnormalLow };
+      }
+    }
+    return best;
+  }, [project, cost, minMargin, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run, objective, minimumFeasibleBid]);
 
-  const runSimulation = () => {
-    if (isRunning) return;
-    setIsRunning(true);
-    window.setTimeout(() => {
-      setRunCount((value) => value + 1);
-      setIsRunning(false);
-    }, 1100);
-  };
-
-  const exportPlan = () => {
-    const report = {
-      project: "智慧园区数字化运维服务项目",
-      dataNotice: "前端演示模拟数据",
-      recommendedBidWan: recommendedPrice,
-      currentBidWan: price,
-      predictedWinRate: Number(baseProbability.toFixed(1)),
-      estimatedProfitWan: profit,
-      estimatedProfitMargin: Number(profitMargin.toFixed(1)),
-      minimumProfitMargin: minProfit,
-      weights: Object.fromEntries(WEIGHTS.map((weight) => [weight.label, weight.value])),
-      agentRanking: rankedAgents.map((agent, index) => ({
-        rank: index + 1,
-        agent: agent.id,
-        company: agent.company,
-        bidWan: Math.round(agent.quote),
-        totalScore: Number((agent.total ?? 0).toFixed(2)),
-        winRate: Number((agent.probability ?? 0).toFixed(1)),
-      })),
-    };
-    const blob = new Blob([JSON.stringify(report, null, 2)], {
-      type: "application/json;charset=utf-8",
+  const chartPoints = useMemo(() => {
+    const start = Math.max(project.maxPrice * 0.5, Math.min(minimumFeasibleBid, project.maxPrice));
+    const count = 52;
+    return Array.from({ length: count }, (_, index) => {
+      const quote = start + ((project.maxPrice - start) * index) / (count - 1);
+      const scenario = evaluateScenario({ project, ourBid: quote, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run });
+      const ours = scenario.agents.find((agent) => agent.id === "A")!;
+      return {
+        quote,
+        probability: ours.valid ? ours.winProbability : 0,
+        expectedProfit: ours.valid ? Math.max(0, (ours.winProbability / 100) * (quote - cost)) : 0,
+      };
     });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "标策AI-投标决策演示方案.json";
-    anchor.click();
-    URL.revokeObjectURL(url);
+  }, [project, cost, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run, minimumFeasibleBid]);
+
+  const rankedAgents = [...evaluation.agents].sort((a, b) => {
+    if (a.rank === null && b.rank === null) return a.id.localeCompare(b.id);
+    if (a.rank === null) return 1;
+    if (b.rank === null) return -1;
+    return a.rank - b.rank;
+  });
+
+  const bidDecision = !qualificationReady || !complianceReady
+    ? { code: "NO BID", label: "暂不投标", tone: "danger", reason: "关键门槛尚未闭环" }
+    : minimumFeasibleBid > project.maxPrice
+      ? { code: "NO BID", label: "不建议投标", tone: "danger", reason: "利润底价高于最高限价" }
+      : (optimization?.probability ?? 0) < 20
+        ? { code: "REVIEW", label: "谨慎参与", tone: "warning", reason: "利润约束下竞争力偏低" }
+        : { code: "GO", label: "建议参与", tone: "success", reason: "门槛可满足且存在可行报价区间" };
+
+  const gapCount = project.evidenceRows.filter((row) => row.gap).length;
+  const evidenceScore = project.evidenceRows.length
+    ? Math.round(project.evidenceRows.reduce((sum, row) => sum + row.basePct, 0) / project.evidenceRows.length * (readiness / 88) * 100)
+    : 100;
+
+  const onProjectChange = (id: string) => {
+    const next = PROJECTS.find((item) => item.id === id) ?? PROJECTS[0];
+    setProjectId(next.id);
+    setOurBid(next.defaultBid);
+    setCost(next.defaultCost);
+    setMinMargin(next.defaultMargin);
+    setReadiness(88);
+    setMarketPressure(50);
+    setQualificationReady(true);
+    setComplianceReady(true);
+    setLowPriceEvidence(true);
+    setRun(0);
   };
+
+  const report = {
+    generatedAt: new Date().toISOString(),
+    notice: "模拟决策，不构成中标保证；实际结论以招标文件和评标委员会依法评审为准。",
+    project: { name: project.name, code: project.code, method: project.method, maxPrice: project.maxPrice },
+    assumptions: { cost, minMargin, readiness, marketPressure, objective: OBJECTIVES[objective].label },
+    bidDecision,
+    current: { bid: ourBid, margin: roundTo(currentMargin), winProbability: roundTo(ourResult.winProbability), valid: ourResult.valid },
+    recommendation: optimization ? { bid: optimization.quote, winProbability: roundTo(optimization.probability), expectedProfit: roundTo(optimization.expectedProfit) } : null,
+    agents: evaluation.agents.map(({ id, name, strategy, quote, valid, rank, totalScore, winProbability }) => ({ id, name, strategy, quote, valid, rank, totalScore: roundTo(totalScore), winProbability: roundTo(winProbability) })),
+  };
+
+  const exportReport = () => {
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json;charset=utf-8" });
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = `${project.code}-投标策略模拟报告.json`;
+    anchor.click();
+    URL.revokeObjectURL(href);
+  };
+
+  const copySummary = async () => {
+    const summary = `${project.name}\n决策：${bidDecision.label}\n当前报价：${money(ourBid)}，模拟胜率 ${roundTo(ourResult.winProbability)}%\n建议报价：${optimization ? money(optimization.quote) : "无可行解"}\n说明：模拟结果不构成中标保证。`;
+    await navigator.clipboard.writeText(summary);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
+
+  const tabs: Array<{ id: Tab; label: string; count?: number }> = [
+    { id: "cockpit", label: "决策驾驶舱" },
+    { id: "rules", label: "规则与门槛", count: project.qualifications.length + project.compliance.length },
+    { id: "evidence", label: "评分证据", count: gapCount },
+    { id: "report", label: "决策报告" },
+  ];
 
   return (
-    <main className="app-shell">
+    <main>
       <header className="topbar">
-        <div className="brand-block">
-          <div className="brand-mark" aria-hidden="true">策</div>
-          <div>
-            <div className="brand-name">标策 AI</div>
-            <div className="brand-en">BID DECISION LAB</div>
-          </div>
+        <a className="brand" href="#top" aria-label="标策 AI 首页">
+          <span className="brand-mark">标</span>
+          <span><strong>标策 AI</strong><small>BID STRATEGY LAB</small></span>
+        </a>
+        <div className="top-context">
+          <span className="live-dot" /> 规则引擎已锁定
+          <span className="top-divider" />
+          <span>{project.code}</span>
         </div>
-
-        <nav className="topnav" aria-label="页面导航">
-          <a className="active" href="#decision">决策沙盘</a>
-          <a href="#agents">智能体竞演</a>
-          <a href="#rules">评分规则</a>
-        </nav>
-
-        <div className="topbar-actions">
-          <span className="demo-badge"><i /> 模拟数据</span>
-          <button className="ghost-button" onClick={() => setShowModel(true)}>
-            模型说明
-          </button>
-          <button className="dark-button" onClick={exportPlan}>
-            导出方案 <span aria-hidden="true">↗</span>
-          </button>
+        <div className="header-actions">
+          <button className="button ghost" type="button" onClick={() => setShowMethod(true)}>方法与边界</button>
+          <button className="button dark" type="button" onClick={exportReport}>导出模拟报告</button>
         </div>
       </header>
 
-      <section className="workspace" id="decision">
-        <div className="page-heading">
-          <div>
-            <div className="eyebrow"><span>项目 01</span> · 服务类综合评分</div>
-            <h1>多智能体投标决策台</h1>
-            <p>在利润红线之上，寻找更有机会胜出的报价。</p>
+      <div id="top" className="page-shell">
+        <section className="hero-grid">
+          <div className="hero-copy">
+            <div className="eyebrow"><span>项目专属评标</span><span>多智能体竞演</span><span>利润约束</span></div>
+            <h1>先过门，再竞分；<br />先守利，再优化报价。</h1>
+            <p>智能体生成投标策略，确定性规则引擎执行资格、符合性与评分公式。系统寻找的是当前招标文件和公司约束下的更优解，而不是“保证中标”。</p>
+            <div className="hero-note"><span>!</span><p><strong>核心原则</strong>　评分项、权重与公式来自当前项目；资格条件和实质性要求是通过制，不能混入通用加分表。</p></div>
           </div>
-          <div className="project-meta">
-            <div className="project-title-row">
-              <span className="project-label">当前项目</span>
-              <span className="status-dot">推演就绪</span>
-            </div>
-            <strong>智慧园区数字化运维服务项目</strong>
-            <span>项目预算 ¥1,200万 · 4 家模拟投标人</span>
-          </div>
-        </div>
 
-        <div className="kpi-grid">
-          <article className="kpi-card primary-kpi">
-            <div className="kpi-label">推荐报价 <span>01</span></div>
-            <div className="kpi-value"><small>¥</small>{formatMoney(recommendedPrice)}<em>万</em></div>
-            <div className="kpi-foot">
-              <span className="positive">最优可行解</span>
-              <span>预算占比 {((recommendedPrice / BUDGET) * 100).toFixed(1)}%</span>
+          <aside className="project-card paper-card">
+            <div className="card-kicker">当前模拟招标文件</div>
+            <label className="project-select-label" htmlFor="project-select">项目模板</label>
+            <select id="project-select" value={projectId} onChange={(event) => onProjectChange(event.target.value)}>
+              {PROJECTS.map((item) => <option value={item.id} key={item.id}>{item.shortName} · {item.method}</option>)}
+            </select>
+            <h2>{project.name}</h2>
+            <div className="project-meta-grid">
+              <div><span>采购类别</span><strong>{project.category}</strong></div>
+              <div><span>评审方法</span><strong>{project.method}</strong></div>
+              <div><span>项目预算</span><strong>{money(project.budget)}</strong></div>
+              <div><span>最高限价</span><strong>{money(project.maxPrice)}</strong></div>
             </div>
-          </article>
-          <article className="kpi-card">
-            <div className="kpi-label">预计中标概率 <span>02</span></div>
-            <div className="kpi-value">{(recommendedMetrics.probability ?? 0).toFixed(1)}<em>%</em></div>
-            <div className="kpi-foot">
-              <span className="positive">优势区间</span>
-              <span>对手均值 +{((recommendedMetrics.total ?? 0) - 88.6).toFixed(1)} 分</span>
-            </div>
-          </article>
-          <article className="kpi-card">
-            <div className="kpi-label">预计项目利润 <span>03</span></div>
-            <div className="kpi-value"><small>¥</small>{formatMoney(recommendedPrice - cost)}<em>万</em></div>
-            <div className="kpi-foot">
-              <span className="positive">满足要求</span>
-              <span>利润率 {getProfitMargin(recommendedPrice, cost).toFixed(1)}%</span>
-            </div>
-          </article>
-          <article className="kpi-card confidence-kpi">
-            <div className="kpi-label">模型置信度 <span>04</span></div>
-            <div className="kpi-value">82<em>%</em></div>
-            <div className="confidence-line"><i style={{ width: "82%" }} /></div>
-            <div className="kpi-foot">
-              <span>基于 10,000 次模拟竞演</span>
-            </div>
-          </article>
-        </div>
-
-        <div className="decision-grid">
-          <aside className="control-panel panel">
-            <div className="panel-heading compact">
-              <div>
-                <span className="section-index">01 / 决策变量</span>
-                <h2>报价约束</h2>
-              </div>
-              <span className="live-dot">实时</span>
-            </div>
-
-            <div className="field-group quote-field">
-              <label htmlFor="price-input">我方投标金额</label>
-              <div className="money-input">
-                <span>¥</span>
-                <input
-                  id="price-input"
-                  type="number"
-                  min={PRICE_MIN}
-                  max={PRICE_MAX}
-                  value={price}
-                  onChange={(event) =>
-                    setPrice(clamp(Number(event.target.value) || PRICE_MIN, PRICE_MIN, PRICE_MAX))
-                  }
-                />
-                <small>万元</small>
-              </div>
-              <input
-                className="range-input"
-                type="range"
-                min={PRICE_MIN}
-                max={PRICE_MAX}
-                step="2"
-                value={price}
-                aria-label="我方投标金额"
-                onChange={(event) => setPrice(Number(event.target.value))}
-                style={{
-                  "--range-progress": `${((price - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100}%`,
-                } as React.CSSProperties}
-              />
-              <div className="range-labels"><span>¥820万</span><span>¥1,140万</span></div>
-            </div>
-
-            <div className="split-fields">
-              <div className="field-group">
-                <label htmlFor="cost-input">预计总成本</label>
-                <div className="small-input">
-                  <span>¥</span>
-                  <input
-                    id="cost-input"
-                    type="number"
-                    min="600"
-                    max="920"
-                    value={cost}
-                    onChange={(event) => setCost(clamp(Number(event.target.value) || 600, 600, 920))}
-                  />
-                  <small>万</small>
-                </div>
-              </div>
-              <div className="field-group">
-                <label htmlFor="profit-input">最低利润率</label>
-                <div className="small-input">
-                  <input
-                    id="profit-input"
-                    type="number"
-                    min="8"
-                    max="30"
-                    value={minProfit}
-                    onChange={(event) => setMinProfit(clamp(Number(event.target.value) || 8, 8, 30))}
-                  />
-                  <small>%</small>
-                </div>
-              </div>
-            </div>
-
-            <div className={`constraint-card ${isProfitable ? "safe" : "warning"}`}>
-              <div>
-                <span>{isProfitable ? "利润约束已满足" : "当前方案低于红线"}</span>
-                <strong>{profitMargin.toFixed(1)}%</strong>
-              </div>
-              <p>
-                {isProfitable
-                  ? `预计利润 ¥${formatMoney(profit)}万，较最低要求高 ${(profitMargin - minProfit).toFixed(1)}pp。`
-                  : `至少需报价 ¥${formatMoney(Math.ceil(getProfitFloor(cost, minProfit)))}万。`}
-              </p>
-            </div>
-
-            <div className="weight-summary">
-              <div className="weight-title"><span>评分权重</span><small>合计 100%</small></div>
-              <div className="mini-weight-bar">
-                {WEIGHTS.map((weight) => (
-                  <i
-                    key={weight.key}
-                    style={{ width: `${weight.value}%`, backgroundColor: weight.color }}
-                    title={`${weight.label} ${weight.value}%`}
-                  />
-                ))}
-              </div>
-              <div className="mini-weight-labels">
-                {WEIGHTS.map((weight) => (
-                  <span key={weight.key}><i style={{ background: weight.color }} />{weight.short} {weight.value}</span>
-                ))}
-              </div>
-            </div>
-
-            <button
-              className="recommend-button"
-              onClick={() => setPrice(recommendedPrice)}
-              disabled={price === recommendedPrice}
-            >
-              <span>应用推荐报价</span>
-              <strong>¥{formatMoney(recommendedPrice)}万</strong>
-            </button>
+            <div className="document-lock"><span>01</span><div><strong>规则版本已锁定</strong><small>模拟解析时间 2026-08-09 09:30</small></div><b>✓</b></div>
           </aside>
-
-          <section className="chart-panel panel">
-            <div className="panel-heading">
-              <div>
-                <span className="section-index">02 / 报价前沿</span>
-                <h2>胜率与利润可行域</h2>
-              </div>
-              <div className="chart-legend">
-                <span><i className="legend-line green" />中标概率</span>
-                <span><i className="legend-line amber" />利润红线</span>
-              </div>
-            </div>
-
-            <div className="chart-summary">
-              <div>
-                <span>当前方案</span>
-                <strong>¥{formatMoney(price)}万</strong>
-              </div>
-              <div>
-                <span>预计胜率</span>
-                <strong>{baseProbability.toFixed(1)}%</strong>
-              </div>
-              <div>
-                <span>综合得分</span>
-                <strong>{(ourAgent.total ?? 0).toFixed(1)}</strong>
-              </div>
-              <div className={isProfitable ? "feasible" : "unfeasible"}>
-                <span>可行性</span>
-                <strong>{isProfitable ? "满足约束" : "不可行"}</strong>
-              </div>
-            </div>
-
-            <div className="chart-wrap">
-              <ProbabilityChart
-                currentPrice={price}
-                recommendedPrice={recommendedPrice}
-                cost={cost}
-                minProfit={minProfit}
-                onPriceChange={setPrice}
-              />
-              <div className="chart-note">
-                <span>推荐点</span>
-                <strong>¥{formatMoney(recommendedPrice)}万</strong>
-                <small>{(recommendedMetrics.probability ?? 0).toFixed(1)}% 胜率</small>
-              </div>
-            </div>
-
-            <div className="insight-strip">
-              <span className="insight-icon" aria-hidden="true">↳</span>
-              <p>
-                <strong>决策洞察：</strong>
-                {priceDifference === 0
-                  ? "当前已处于利润约束下的胜率峰值；继续降价将触碰公司利润红线。"
-                  : priceDifference > 0
-                    ? `当前报价比推荐值高 ¥${formatMoney(priceDifference)}万，预计少获得 ${Math.max(0, (recommendedMetrics.probability ?? 0) - baseProbability).toFixed(1)}pp 胜率。`
-                    : "当前报价更具价格优势，但未必满足公司设定的最低利润要求。"}
-              </p>
-            </div>
-          </section>
-
-          <aside className="agents-panel panel" id="agents">
-            <div className="panel-heading compact">
-              <div>
-                <span className="section-index">03 / 智能体竞演</span>
-                <h2>四方投标沙盘</h2>
-              </div>
-              <span className="agent-status">4 / 4 在线</span>
-            </div>
-
-            <div className={`agent-stack ${isRunning ? "running" : ""}`}>
-              {rankedAgents.map((agent, index) => (
-                <article className={`agent-card ${agent.id === "A" ? "ours" : ""}`} key={agent.id}>
-                  <div className={`agent-avatar ${agent.tone}`}>{agent.id}</div>
-                  <div className="agent-info">
-                    <div className="agent-title">
-                      <strong>{agent.company}</strong>
-                      {agent.id === "A" && <span>我方</span>}
-                    </div>
-                    <p>{agent.role} · {agent.strategy}</p>
-                    <div className="agent-score-line">
-                      <span>报价 <b>¥{formatMoney(Math.round(agent.quote))}万</b></span>
-                      <span>总分 <b>{(agent.total ?? 0).toFixed(1)}</b></span>
-                    </div>
-                  </div>
-                  <div className="agent-probability">
-                    <small>#{index + 1}</small>
-                    <strong>{(agent.probability ?? 0).toFixed(1)}%</strong>
-                    <span>胜出倾向</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <div className="agent-consensus">
-              <div className="consensus-head">
-                <span className="pulse-icon"><i /><i /><i /></span>
-                <strong>{isRunning ? "智能体正在交叉评审…" : "本轮竞演共识"}</strong>
-              </div>
-              <p>
-                {isRunning
-                  ? "正在重算报价分、技术优势与利润可行域。"
-                  : `A 在 ¥${formatMoney(recommendedPrice)}万附近保持技术优势，同时守住 ${minProfit}% 利润红线。`}
-              </p>
-            </div>
-
-            <button className="run-button" onClick={runSimulation} disabled={isRunning}>
-              <span className="run-symbol" aria-hidden="true">{isRunning ? "···" : "▶"}</span>
-              {isRunning ? "正在推演 10,000 次" : "重新运行竞演"}
-            </button>
-            <div className="run-meta">第 {runCount} 轮 · 模拟数据已脱敏 · 约 1.1 秒</div>
-          </aside>
-        </div>
-
-        <section className="lower-grid" id="rules">
-          <article className="rules-panel panel">
-            <div className="panel-heading">
-              <div>
-                <span className="section-index">04 / 评分模型</span>
-                <h2>服务类项目综合评分示例</h2>
-              </div>
-              <button className="text-button" onClick={() => setShowModel(true)}>查看依据 ↗</button>
-            </div>
-
-            <div className="weight-bar" aria-label="评分权重分布">
-              {WEIGHTS.map((weight) => (
-                <div
-                  key={weight.key}
-                  style={{ width: `${weight.value}%`, backgroundColor: weight.color }}
-                >
-                  <strong>{weight.value}%</strong>
-                  <span>{weight.label}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="criteria-grid">
-              <div>
-                <span className="criteria-number">01</span>
-                <strong>技术方案 · 40分</strong>
-                <p>方案完整性 16 · 团队能力 9 · 实施计划 9 · 创新与安全 6</p>
-              </div>
-              <div>
-                <span className="criteria-number">02</span>
-                <strong>投标报价 · 30分</strong>
-                <p>低价优先法：基准价 ÷ 投标报价 × 30；异常低价单独预警</p>
-              </div>
-              <div>
-                <span className="criteria-number">03</span>
-                <strong>履约服务 · 18分</strong>
-                <p>SLA与响应 7 · 售后保障 6 · 培训及交付 5</p>
-              </div>
-              <div>
-                <span className="criteria-number">04</span>
-                <strong>商务响应 · 12分</strong>
-                <p>同类履约经验 5 · 合同条款响应 4 · 资源保障 3</p>
-              </div>
-            </div>
-
-            <div className="gate-row">
-              <span className="gate-title">准入门槛（不计分）</span>
-              <span>✓ 资格审查</span>
-              <span>✓ 实质性响应</span>
-              <span>✓ 不超最高限价</span>
-              <span>✓ 异常低价可解释</span>
-            </div>
-          </article>
-
-          <article className="stress-panel panel">
-            <div className="panel-heading">
-              <div>
-                <span className="section-index">05 / 风险压力测试</span>
-                <h2>如果外部条件变化</h2>
-              </div>
-              <span className="scenario-badge">3 个情景</span>
-            </div>
-
-            <div className="stress-list">
-              <div className="stress-item">
-                <span className="stress-icon down">↓</span>
-                <div>
-                  <strong>对手整体降价 3%</strong>
-                  <p>价格竞争加剧</p>
-                </div>
-                <div className="stress-result negative">
-                  <strong>{competitorCutProbability.toFixed(1)}%</strong>
-                  <span>{percentDelta(competitorCutProbability - baseProbability)}</span>
-                </div>
-              </div>
-              <div className="stress-item">
-                <span className="stress-icon tech">T</span>
-                <div>
-                  <strong>我方技术评分 -4分</strong>
-                  <p>方案优势收窄</p>
-                </div>
-                <div className="stress-result negative">
-                  <strong>{techDropProbability.toFixed(1)}%</strong>
-                  <span>{percentDelta(techDropProbability - baseProbability)}</span>
-                </div>
-              </div>
-              <div className="stress-item">
-                <span className="stress-icon cost">¥</span>
-                <div>
-                  <strong>项目成本上浮 5%</strong>
-                  <p>利润红线右移</p>
-                </div>
-                <div className="stress-result neutral">
-                  <strong>¥{formatMoney(costUpRecommended)}万</strong>
-                  <span>新建议价</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="risk-tip">
-              <span aria-hidden="true">!</span>
-              <p><strong>关键风险：</strong>云启智能的技术评分最接近我方，若其报价低于 ¥980万，建议强化实施计划与 SLA 证据。</p>
-            </div>
-          </article>
         </section>
 
-        <footer className="page-footer">
-          <p>本页面仅用于前端方案评审，所有公司、报价及概率均为模拟数据，不构成实际投标或法律意见。</p>
-          <span>模型版本 DEMO 0.1 · 规则更新时间 2026.08.06</span>
+        <section className="workflow paper-card" aria-label="评标流程">
+          {[
+            ["01", "文件解析", "识别规则"],
+            ["02", "Bid / No-Bid", "内部决策"],
+            ["03", "资格审查", "通过制"],
+            ["04", "符合性审查", "通过制"],
+            ["05", "详细评审", "项目公式"],
+            ["06", "报价优化", "利润约束"],
+            ["07", "候选与报告", "解释输出"],
+          ].map(([num, title, text], index) => (
+            <div className={`workflow-step ${index < 6 ? "active" : ""}`} key={num}>
+              <span>{num}</span><div><strong>{title}</strong><small>{text}</small></div>{index < 6 && <i>→</i>}
+            </div>
+          ))}
+        </section>
+
+        <nav className="tabbar" aria-label="工作台视图">
+          {tabs.map((item) => (
+            <button className={tab === item.id ? "active" : ""} type="button" key={item.id} onClick={() => setTab(item.id)}>
+              {item.label}{item.count !== undefined && <span>{item.count}</span>}
+            </button>
+          ))}
+        </nav>
+
+        {tab === "cockpit" && (
+          <div className="cockpit-layout">
+            <aside className="control-panel paper-card">
+              <div className="section-heading compact"><div><span>SCENARIO INPUT</span><h2>模拟前提</h2></div><button type="button" className="text-button" onClick={() => setRun((value) => value + 1)}>刷新竞手 ↻</button></div>
+
+              <label className="field-label" htmlFor="our-bid"><span>我方投标总价</span><strong>{money(ourBid)}</strong></label>
+              <input id="our-bid" className="range green" type="range" min={Math.round(project.maxPrice * 0.5)} max={Math.round(project.maxPrice * 1.04)} step={1} value={ourBid} onChange={(event) => setOurBid(Number(event.target.value))} />
+              <div className="range-ends"><span>{money(project.maxPrice * 0.5)}</span><span>限价 {money(project.maxPrice)}</span></div>
+              <div className="input-row">
+                <label>报价（万元）<input type="number" value={ourBid} onChange={(event) => setOurBid(Number(event.target.value))} /></label>
+                <label>履约成本（万元）<input type="number" value={cost} min={0} onChange={(event) => setCost(Number(event.target.value))} /></label>
+              </div>
+
+              <label className="field-label spaced" htmlFor="margin"><span>最低毛利率</span><strong>{minMargin}%</strong></label>
+              <input id="margin" className="range blue" type="range" min={0} max={35} value={minMargin} onChange={(event) => setMinMargin(Number(event.target.value))} />
+              <div className="constraint-readout">
+                <span>公司利润底价</span><strong>{Number.isFinite(minimumFeasibleBid) ? money(minimumFeasibleBid) : "无可行解"}</strong>
+              </div>
+
+              <div className="field-label spaced"><span>优化目标</span></div>
+              <div className="segmented three">
+                {(Object.keys(OBJECTIVES) as Objective[]).map((item) => <button type="button" className={objective === item ? "active" : ""} key={item} onClick={() => setObjective(item)}>{OBJECTIVES[item].label}</button>)}
+              </div>
+              <p className="field-helper">{OBJECTIVES[objective].helper}</p>
+
+              <label className="field-label spaced" htmlFor="readiness"><span>证据成熟度</span><strong>{readiness}%</strong></label>
+              <input id="readiness" className="range amber" type="range" min={55} max={100} value={readiness} onChange={(event) => setReadiness(Number(event.target.value))} />
+              <label className="field-label spaced" htmlFor="pressure"><span>市场竞争强度</span><strong>{marketPressure}</strong></label>
+              <input id="pressure" className="range rust" type="range" min={0} max={100} value={marketPressure} onChange={(event) => setMarketPressure(Number(event.target.value))} />
+
+              <div className="toggle-stack">
+                <label><input type="checkbox" checked={qualificationReady} onChange={(event) => setQualificationReady(event.target.checked)} /><span /><div><strong>资格材料齐全</strong><small>缺失将直接出局</small></div></label>
+                <label><input type="checkbox" checked={complianceReady} onChange={(event) => setComplianceReady(event.target.checked)} /><span /><div><strong>★ 条款全部响应</strong><small>实质性偏离直接出局</small></div></label>
+                <label><input type="checkbox" checked={lowPriceEvidence} onChange={(event) => setLowPriceEvidence(event.target.checked)} /><span /><div><strong>异常低价可说明</strong><small>成本、效率与供应链证据</small></div></label>
+              </div>
+            </aside>
+
+            <div className="cockpit-main">
+              <section className="decision-strip">
+                <div className={`bid-decision ${bidDecision.tone}`}><span>{bidDecision.code}</span><strong>{bidDecision.label}</strong><small>{bidDecision.reason}</small></div>
+                <div className="decision-metric"><span>建议报价</span><strong>{optimization ? money(optimization.quote) : "—"}</strong><small>{OBJECTIVES[objective].label}最优 · 模拟</small></div>
+                <div className="decision-metric"><span>模拟胜出概率</span><strong>{optimization ? `${roundTo(optimization.probability)}%` : "—"}</strong><small>对手策略变化将改变结果</small></div>
+                <div className="decision-metric"><span>预计毛利</span><strong>{optimization ? money(optimization.quote - cost) : "—"}</strong><small>{optimization ? `${roundTo((optimization.quote - cost) / optimization.quote * 100)}% 毛利率` : "无可行报价"}</small></div>
+                <button className="run-button" type="button" onClick={() => setRun((value) => value + 1)}><span>运行竞演</span><strong>RUN {String(run + 1).padStart(2, "0")} ↗</strong></button>
+              </section>
+
+              <section className="arena-section paper-card">
+                <div className="section-heading"><div><span>MULTI-AGENT ARENA</span><h2>多智能体评标沙盘</h2><p>策略智能体提交响应；规则裁判先淘汰无效投标，再对有效投标排序。</p></div><div className="valid-summary"><strong>{evaluation.validCount}</strong><span>/ 4 有效投标</span></div></div>
+                <div className="agent-grid">
+                  {rankedAgents.map((agent) => (
+                    <article className={`agent-card ${agent.id === "A" ? "ours" : ""} ${!agent.valid ? "eliminated" : ""}`} key={agent.id} style={{ "--agent": agent.accent } as React.CSSProperties}>
+                      <div className="agent-top"><span className="agent-id">{agent.id}</span><div><strong>{agent.name}</strong><small>{agent.strategy}</small></div><b>{agent.valid ? (agent.rank === 1 ? "领先" : `第 ${agent.rank} 名`) : "已淘汰"}</b></div>
+                      <div className="agent-quote"><span>投标报价</span><strong>{money(agent.quote)}</strong></div>
+                      <div className="agent-score-row">
+                        <div><span>{project.method === "综合评分法" ? "模拟总分" : "评标价指数"}</span><strong>{agent.valid ? roundTo(agent.totalScore) : "—"}</strong></div>
+                        <MetricRing value={agent.winProbability} label="胜出概率" />
+                      </div>
+                      <div className="gate-chips">
+                        <span className={agent.qualification}>资格 {statusLabel(agent.qualification)}</span>
+                        <span className={agent.compliance}>符合性 {statusLabel(agent.compliance)}</span>
+                      </div>
+                      <p className="agent-reason">{!agent.valid ? (agent.qualification === "fail" ? agent.qualificationDetail : agent.complianceDetail) : agent.abnormalLow ? agent.abnormalDetail : project.method === "综合评分法" ? `价格 ${roundTo(agent.priceScore)} + 非价格 ${roundTo(agent.nonPriceScore)}` : "通过门槛后按评标价竞争"}</p>
+                    </article>
+                  ))}
+                </div>
+                <div className="referee-line"><span>规则裁判</span><p><strong>固定顺序：</strong>资格审查 → 符合性审查 → 异常低价说明审查 → {project.method === "综合评分法" ? "价格与非价格项计分" : "有效评标价排序"}。智能体不能绕过门槛。</p></div>
+              </section>
+
+              <section className="chart-card paper-card">
+                <div className="section-heading"><div><span>PRICE FRONTIER</span><h2>报价—胜率—收益前沿</h2><p>可行区间从公司利润底价开始；曲线根据当前对手画像和项目公式重算。</p></div><div className={`profit-badge ${profitPass ? "pass" : "fail"}`}><span>当前利润约束</span><strong>{profitPass ? "满足" : "不满足"}</strong></div></div>
+                <div className="chart-wrap"><ScenarioChart points={chartPoints} recommended={optimization?.quote ?? null} current={ourBid} /></div>
+                <div className="chart-legend"><span><i className="solid" />模拟胜出概率（左轴）</span><span><i className="dashed" />期望利润（归一化）</span><span className="chart-note">当前报价毛利率 {roundTo(currentMargin)}%</span></div>
+              </section>
+            </div>
+          </div>
+        )}
+
+        {tab === "rules" && (
+          <div className="rules-view">
+            <section className="rules-lead paper-card">
+              <div><span className="card-kicker">RULE SOURCE</span><h2>当前项目规则画像</h2><p>以下内容来自“模拟招标文件”，切换项目后门槛、权重和公式会随之改变。</p></div>
+              <div className="rule-facts"><div><span>方法</span><strong>{project.method}</strong></div><div><span>价格权重</span><strong>{project.method === "综合评分法" ? `${project.priceWeight} 分` : "不计分"}</strong></div><div><span>最高限价</span><strong>{money(project.maxPrice)}</strong></div><div><span>异常低价预警</span><strong>&lt; 限价 {Math.round(project.lowPriceReviewRate * 100)}%</strong></div></div>
+            </section>
+
+            <div className="gate-columns">
+              <section className="gate-panel paper-card">
+                <div className="gate-panel-head"><span>GATE 01</span><h2>资格审查</h2><b>通过制 · 不计分</b></div>
+                {project.qualifications.map((item, index) => <div className="rule-row" key={item.label}><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{item.label}</strong><small>{item.evidence}</small></div><b>必须</b></div>)}
+              </section>
+              <section className="gate-panel paper-card">
+                <div className="gate-panel-head"><span>GATE 02</span><h2>符合性审查</h2><b>实质响应 · 不计分</b></div>
+                {project.compliance.map((item, index) => <div className="rule-row" key={item.label}><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{item.label}</strong><small>{item.evidence}</small></div><b>必须</b></div>)}
+              </section>
+            </div>
+
+            <section className="scoring-panel paper-card">
+              <div className="section-heading"><div><span>DETAILED REVIEW</span><h2>{project.method === "综合评分法" ? "项目专属评分结构" : "有效最低评标价排序"}</h2><p>{project.decisionNote}</p></div><span className="method-stamp">{project.method}</span></div>
+              {project.method === "综合评分法" ? (
+                <>
+                  <div className="weight-stack" aria-label="评分权重">
+                    <div style={{ width: `${project.priceWeight}%`, background: "#1f2d28" }}><span>价格 {project.priceWeight}</span></div>
+                    {project.dimensions.map((dimension) => <div key={dimension.id} style={{ width: `${dimension.points}%`, background: dimension.color }}><span>{dimension.label} {dimension.points}</span></div>)}
+                  </div>
+                  <div className="dimension-grid">
+                    <article><span className="dim-index">P</span><div><strong>价格 · {project.priceWeight} 分</strong><p>严格使用招标文件给定公式，不由模型自行设权。</p></div></article>
+                    {project.dimensions.map((dimension, index) => <article key={dimension.id}><span className="dim-index">{index + 1}</span><div><strong>{dimension.label} · {dimension.points} 分</strong><p>{project.evidenceRows.filter((row) => row.dimension === dimension.id).map((row) => row.item).join("、")}</p></div></article>)}
+                  </div>
+                </>
+              ) : (
+                <div className="lowest-flow"><div><span>01</span><strong>资格通过</strong><small>不通过即淘汰</small></div><i>→</i><div><span>02</span><strong>实质响应</strong><small>参数与条款无重大偏离</small></div><i>→</i><div><span>03</span><strong>价格修正 / 扣除</strong><small>按招标文件和政策执行</small></div><i>→</i><div><span>04</span><strong>最低评标价</strong><small>由低到高排序</small></div></div>
+              )}
+              <div className="formula-box"><span>PRICE RULE</span><strong>{project.priceRule}</strong><p>本公式仅用于当前模拟项目。实际项目如采用平均价、区间法或其他合法公式，必须重新解析并锁定版本。</p></div>
+            </section>
+
+            <section className="gate-matrix paper-card">
+              <div className="section-heading"><div><span>ELIGIBILITY MATRIX</span><h2>四方门槛审查矩阵</h2></div></div>
+              <div className="table-scroll"><table><thead><tr><th>投标智能体</th><th>资格审查</th><th>符合性审查</th><th>异常低价</th><th>是否进入评审</th></tr></thead><tbody>
+                {evaluation.agents.map((agent) => <tr key={agent.id}><td><span className="mini-agent" style={{ background: agent.accent }}>{agent.id}</span><strong>{agent.name}</strong></td><td><span className={`status-text ${agent.qualification}`}>{statusLabel(agent.qualification)}</span><small>{agent.qualificationDetail}</small></td><td><span className={`status-text ${agent.compliance}`}>{statusLabel(agent.compliance)}</span><small>{agent.complianceDetail}</small></td><td><span className={`status-text ${agent.abnormalLow ? "warn" : "pass"}`}>{agent.abnormalLow ? "触发" : "未触发"}</span><small>{agent.abnormalDetail}</small></td><td><b className={agent.valid ? "yes" : "no"}>{agent.valid ? "进入" : "淘汰"}</b></td></tr>)}
+              </tbody></table></div>
+            </section>
+          </div>
+        )}
+
+        {tab === "evidence" && (
+          <div className="evidence-view">
+            <section className="evidence-summary paper-card">
+              <div><span className="card-kicker">BID EVIDENCE GRAPH</span><h2>从评分项反推投标证据</h2><p>{project.method === "综合评分法" ? "预测分数必须能落到招标文件条款、响应材料和页码；没有证据的能力不计入乐观分。" : "最低评标价项目仍需把每个门槛映射到证据；通过参数响应后，价格才有比较意义。"}</p></div>
+              <MetricRing value={clamp(evidenceScore, 0, 100)} label="证据成熟度" />
+              <div className="evidence-stat"><span>待补缺口</span><strong>{gapCount}</strong><small>建议在封标前闭环</small></div>
+            </section>
+
+            <section className="evidence-table paper-card">
+              <div className="table-scroll"><table><thead><tr><th>评审 / 响应项</th><th>{project.method === "综合评分法" ? "分值" : "属性"}</th><th>可验证证据</th><th>投标文件定位</th><th>{project.method === "综合评分法" ? "模拟得分" : "响应状态"}</th><th>缺口</th></tr></thead><tbody>
+                {project.evidenceRows.map((row) => {
+                  const predicted = row.points ? row.points * clamp(row.basePct * (readiness / 88), 0, 0.98) : 0;
+                  return <tr key={row.item}><td><strong>{row.item}</strong><small>{row.dimension === "gate" ? "门槛响应" : project.dimensions.find((dim) => dim.id === row.dimension)?.label}</small></td><td><b>{row.points ? `${row.points} 分` : "必须"}</b></td><td>{row.evidence}</td><td><span className="location-tag">{row.location}</span></td><td>{row.points ? <strong className="score-value">{roundTo(predicted)} / {row.points}</strong> : <span className="status-text pass">已映射</span>}</td><td>{row.gap ? <span className="gap-tag">{row.gap}</span> : <span className="clear-tag">已闭环</span>}</td></tr>;
+                })}
+              </tbody></table></div>
+            </section>
+
+            <div className="improvement-grid">
+              <section className="paper-card action-card"><span>01 · 先补门槛</span><h3>不能用高分弥补废标风险</h3><p>优先校验授权、签章、有效期、最高限价和 ★ 条款。任何一项实质性不响应，详细评分优势都失去意义。</p><button type="button" onClick={() => setTab("rules")}>查看门槛清单 →</button></section>
+              <section className="paper-card action-card"><span>02 · 再补证据</span><h3>技术与资质不是天然加分</h3><p>只有招标文件列为评分因素、且能提供规定证明材料时，技术能力、证书、业绩和团队才产生分值。</p><button type="button" onClick={() => setReadiness(Math.min(100, readiness + 5))}>模拟成熟度 +5 →</button></section>
+              <section className="paper-card action-card"><span>03 · 最后定价</span><h3>报价与响应方案联动优化</h3><p>每次调整报价，都重新执行门槛审查、价格公式、对手排序和利润校验，避免只看最低价。</p><button type="button" onClick={() => setTab("cockpit")}>返回报价模拟 →</button></section>
+            </div>
+          </div>
+        )}
+
+        {tab === "report" && (
+          <div className="report-view">
+            <section className="report-paper paper-card">
+              <div className="report-head"><div><span>DECISION MEMO / {project.code}</span><h2>投标策略模拟决策单</h2><p>{project.name}</p></div><div className={`report-verdict ${bidDecision.tone}`}><span>{bidDecision.code}</span><strong>{bidDecision.label}</strong></div></div>
+              <div className="report-callout"><span>建议</span><p>{optimization ? <>在“{OBJECTIVES[objective].label}”目标和最低毛利率 {minMargin}% 约束下，建议重点论证 <strong>{money(optimization.quote)}</strong> 附近报价；对应模拟胜出概率 <strong>{roundTo(optimization.probability)}%</strong>、中标后预计毛利 <strong>{money(optimization.quote - cost)}</strong>。</> : <>当前不存在同时满足资格 / 符合性、最高限价和公司利润底线的报价，请先修复门槛或重新评估是否参与。</>}</p></div>
+              <div className="report-grid">
+                <div><span>评审方法</span><strong>{project.method}</strong><small>以当前项目规则为准</small></div>
+                <div><span>当前报价</span><strong>{money(ourBid)}</strong><small>模拟胜率 {roundTo(ourResult.winProbability)}%</small></div>
+                <div><span>公司利润底价</span><strong>{Number.isFinite(minimumFeasibleBid) ? money(minimumFeasibleBid) : "无可行解"}</strong><small>最低毛利率 {minMargin}%</small></div>
+                <div><span>有效竞争者</span><strong>{evaluation.validCount} / 4</strong><small>淘汰后才参与排名</small></div>
+              </div>
+              <div className="report-section"><div className="report-section-title"><span>01</span><h3>主要判断依据</h3></div><ul><li>资格审查：我方{qualificationReady ? "材料齐备，模拟通过" : "存在缺失，模拟不通过"}。</li><li>符合性审查：我方{complianceReady ? "已响应全部实质性条款" : "存在实质性偏离"}，当前报价{ourBid <= project.maxPrice ? "未超过" : "已超过"}最高限价。</li><li>评审公式：{project.priceRule}</li><li>竞争态势：{evaluation.agents.filter((agent) => !agent.valid).map((agent) => `${agent.name}因${agent.qualification === "fail" ? agent.qualificationDetail : agent.complianceDetail}被淘汰`).join("；") || "当前四家均进入详细评审"}。</li></ul></div>
+              <div className="report-section"><div className="report-section-title"><span>02</span><h3>封标前动作</h3></div><div className="task-list">{project.evidenceRows.filter((row) => row.gap).map((row, index) => <div key={row.item}><span>{index + 1}</span><p><strong>{row.item}</strong>{row.gap}</p><b>待办</b></div>)}{gapCount === 0 && <p>当前模拟证据清单无未闭环项。</p>}</div></div>
+              <div className="report-section"><div className="report-section-title"><span>03</span><h3>风险与边界</h3></div><p className="risk-copy">竞争对手报价、评委主观评分、澄清结果与政策性价格扣除均存在不确定性。本报告使用模拟数据，仅用于内部方案比较；不构成法律意见、投标承诺或中标保证。最终必须由项目团队按正式招标文件逐条复核。</p></div>
+              <div className="report-actions"><button className="button dark" type="button" onClick={exportReport}>下载 JSON 报告</button><button className="button ghost" type="button" onClick={copySummary}>{copied ? "已复制 ✓" : "复制决策摘要"}</button><button className="text-button" type="button" onClick={() => setShowMethod(true)}>查看模型边界</button></div>
+            </section>
+          </div>
+        )}
+
+        <footer>
+          <div><strong>标策 AI · 多智能体投标决策 Demo</strong><span>模拟数据 / 非真实采购项目</span></div>
+          <p>提高可解释决策质量，不承诺中标。实际流程、资格、技术、资质和评分要求以每个项目正式招标文件为准。</p>
         </footer>
-      </section>
+      </div>
 
-      {showModel && (
-        <div className="modal-backdrop" role="presentation" onMouseDown={() => setShowModel(false)}>
-          <section
-            className="model-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="model-title"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <button className="modal-close" onClick={() => setShowModel(false)} aria-label="关闭">×</button>
-            <span className="section-index">MODEL NOTE / DEMO 0.1</span>
-            <h2 id="model-title">模型口径与评分依据</h2>
-            <p className="modal-lead">这是一套用于验证页面和决策流程的可解释模拟模型，不是通用法定评分模板。</p>
-
-            <div className="modal-section">
-              <h3>本 Demo 如何计算</h3>
-              <ol>
-                <li><span>1</span><p><strong>先过准入门槛</strong>：资格、实质性响应、最高限价和异常低价风险单独判断，不混入得分。</p></li>
-                <li><span>2</span><p><strong>再算综合得分</strong>：技术 40% + 报价 30% + 履约服务 18% + 商务响应 12%。</p></li>
-                <li><span>3</span><p><strong>最后做情景推演</strong>：A 为我方，B/C/D 为竞争对手；根据得分差异映射为模拟胜率。</p></li>
-              </ol>
+      {showMethod && (
+        <div className="modal-backdrop" role="presentation" onMouseDown={() => setShowMethod(false)}>
+          <section className="method-modal" role="dialog" aria-modal="true" aria-labelledby="method-title" onMouseDown={(event) => event.stopPropagation()}>
+            <button className="modal-close" type="button" aria-label="关闭" onClick={() => setShowMethod(false)}>×</button>
+            <span className="card-kicker">MODEL & COMPLIANCE</span>
+            <h2 id="method-title">这不是“万能评分表”</h2>
+            <p className="modal-lead">系统把招标文件视为唯一项目规则源。智能体可以模拟策略、响应质量和竞争行为，但不能修改门槛、权重或公式。</p>
+            <div className="method-list">
+              <div><span>01</span><p><strong>硬门槛先执行</strong>资格和实质性要求采用通过 / 不通过，不拿额外证书抵消缺失项。</p></div>
+              <div><span>02</span><p><strong>详细评分项目化</strong>只有招标文件明确列出的技术、商务、服务因素及证明材料才计分。</p></div>
+              <div><span>03</span><p><strong>异常低价不是自动废标</strong>触发审查后需解释成本合理性；是否接受由评标委员会依法判断。</p></div>
+              <div><span>04</span><p><strong>优化含公司约束</strong>利润底价是企业内部约束，不属于评委评分项；系统只在可行区间搜索。</p></div>
             </div>
-
-            <div className="formula-card">
-              <span>报价得分（示例）</span>
-              <strong>最低有效报价 ÷ 本方报价 × 30</strong>
-              <small>推荐价 = 满足最低利润率约束的可行报价中，模拟胜率最高者</small>
-            </div>
-
-            <div className="modal-section sources">
-              <h3>权威规则参考</h3>
-              <a href="https://tfs.mof.gov.cn/caizhengbuling/201707/t20170718_2652603.htm" target="_blank" rel="noreferrer">
-                <span>财政部令第87号</span>
-                <p>综合评分因素应与质量相关并细化量化；服务项目价格权重不得低于 10%，价格分采用低价优先法。</p>
-              </a>
-              <a href="https://fgw.beijing.gov.cn/fgwzwgk/2024zcwj/flfggz/gz/bmgz/202004/t20200416_3727865.htm" target="_blank" rel="noreferrer">
-                <span>评标委员会和评标方法暂行规定</span>
-                <p>综合评估法应按招标文件明确的量化因素和权重，对技术与商务部分加权比较。</p>
-              </a>
-              <a href="https://www.mof.gov.cn/gkml/caizhengwengao/2017wg/wg201702/201706/t20170602_2614096.htm" target="_blank" rel="noreferrer">
-                <span>财政部履约验收管理指导意见</span>
-                <p>采购需求、服务实施与履约验收应完整、明确并形成闭环。</p>
-              </a>
-            </div>
-
-            <div className="modal-warning">
-              正式版本需按具体招标文件、行业规则、公司成本口径和历史中标数据重新训练与校准。
+            <div className="legal-note"><strong>Demo 边界</strong><p>概率来自当前模拟对手画像和确定性评分映射，不代表真实投标结果。法规、政策与项目条款可能变化，正式使用前应由采购、法务和项目负责人复核。</p></div>
+            <div className="official-links">
+              <span>权威规则入口</span>
+              <a href="https://www.mof.gov.cn/gp/xxgkml/tfs/201707/t20170718_2652766.htm" target="_blank" rel="noreferrer">财政部令第 87 号 ↗</a>
+              <a href="https://m.mof.gov.cn/zcfb/202601/t20260121_3982332.htm" target="_blank" rel="noreferrer">政府采购异常低价审查规则 ↗</a>
+              <a href="https://www.ndrc.gov.cn/xwdt/tzgg/202602/t20260210_1403681_ext.html" target="_blank" rel="noreferrer">招标投标制度规则 ↗</a>
             </div>
           </section>
         </div>
