@@ -3,9 +3,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type Objective = "win" | "expected" | "balanced";
-type Tab = "cockpit" | "rules" | "evidence" | "report";
+type Tab = "documents" | "cockpit" | "rules" | "evidence" | "report";
 type GateStatus = "pass" | "warn" | "fail";
 type Method = "综合评分法" | "最低评标价法";
+type ParseState = "idle" | "parsing" | "done";
+type MatchStatus = "matched" | "partial" | "missing";
+type RequirementKind = "资格门槛" | "实质性要求" | "技术评分" | "商务评分" | "服务评分";
+
+type UploadedDocument = {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+};
+
+type DocumentMatch = {
+  id: string;
+  kind: RequirementKind;
+  requirement: string;
+  mandatory: boolean;
+  tenderSource: string;
+  requiredEvidence: string;
+  companySource: string;
+  status: MatchStatus;
+  confidence: number;
+};
 
 type Dimension = {
   id: string;
@@ -229,6 +251,72 @@ const PROJECTS: ProjectTemplate[] = [
   },
 ];
 
+const DOCUMENT_MATCH_LIBRARY: Record<string, DocumentMatch[]> = {
+  "it-service": [
+    { id: "it-q1", kind: "资格门槛", requirement: "依法设立并具备独立承担民事责任能力", mandatory: true, tenderSource: "招标文件 P18 §3.1", requiredEvidence: "营业执照、法定代表人身份证明", companySource: "营业执照与基础资质.pdf · P1", status: "matched", confidence: 98 },
+    { id: "it-q2", kind: "资格门槛", requirement: "财务、纳税和社会保障记录符合要求", mandatory: true, tenderSource: "招标文件 P19 §3.2", requiredEvidence: "审计报告、纳税及社保凭证", companySource: "财务与社保材料.pdf · P3–16", status: "matched", confidence: 95 },
+    { id: "it-q3", kind: "资格门槛", requirement: "近三年无重大违法记录", mandatory: true, tenderSource: "招标文件 P19 §3.3", requiredEvidence: "无重大违法记录书面声明", companySource: "未找到对应声明", status: "missing", confidence: 99 },
+    { id: "it-c1", kind: "实质性要求", requirement: "投标有效期不少于 90 日", mandatory: true, tenderSource: "招标文件 P24 ★2.1", requiredEvidence: "投标函明确承诺有效期", companySource: "投标函模板.docx · §2", status: "matched", confidence: 96 },
+    { id: "it-c2", kind: "实质性要求", requirement: "SLA 可用性不低于 99.9%", mandatory: true, tenderSource: "采购需求 P41 ★4.2", requiredEvidence: "服务承诺、监控与赔付机制", companySource: "技术方案-v12.docx · P88", status: "matched", confidence: 93 },
+    { id: "it-c3", kind: "实质性要求", requirement: "120 日内迁移且跨域兼容无负偏离", mandatory: true, tenderSource: "采购需求 P43 ★4.6", requiredEvidence: "实施计划、兼容性测试证明", companySource: "技术方案-v12.docx · P46（缺兼容性测试附件）", status: "partial", confidence: 91 },
+    { id: "it-t1", kind: "技术评分", requirement: "总体架构、接口集成与灾备切换方案", mandatory: false, tenderSource: "评分办法 P67 · 技术 10 分", requiredEvidence: "架构图、接口清单、灾备时序", companySource: "技术方案-v12.docx · P20–38", status: "partial", confidence: 88 },
+    { id: "it-b1", kind: "商务评分", requirement: "提供 3 个同类运维项目业绩及验收证明", mandatory: false, tenderSource: "评分办法 P69 · 商务 8 分", requiredEvidence: "合同关键页、验收证明", companySource: "近三年运维业绩汇编.pdf · 2/3 份验收完整", status: "partial", confidence: 94 },
+    { id: "it-s1", kind: "服务评分", requirement: "驻场排班、培训与季度应急演练", mandatory: false, tenderSource: "评分办法 P70 · 服务 15 分", requiredEvidence: "排班表、课程、演练记录", companySource: "技术方案-v12.docx · P91–108", status: "matched", confidence: 90 },
+  ],
+  equipment: [
+    { id: "eq-q1", kind: "资格门槛", requirement: "具备独立承担民事责任能力", mandatory: true, tenderSource: "招标文件 P14 §2.1", requiredEvidence: "营业执照、授权材料", companySource: "营业执照与基础资质.pdf · P1", status: "matched", confidence: 98 },
+    { id: "eq-q2", kind: "资格门槛", requirement: "制造商或合法渠道针对本项目授权", mandatory: true, tenderSource: "招标文件 P16 §2.4", requiredEvidence: "原厂项目授权函", companySource: "原厂授权函-草稿.pdf（项目编号缺失）", status: "partial", confidence: 97 },
+    { id: "eq-c1", kind: "实质性要求", requirement: "CPU、内存、存储等 ★ 参数无负偏离", mandatory: true, tenderSource: "技术参数 P31–36", requiredEvidence: "规格响应表、产品彩页、检测材料", companySource: "服务器规格响应表.xlsx · 42/42 项", status: "matched", confidence: 95 },
+    { id: "eq-c2", kind: "实质性要求", requirement: "交货期不超过 45 日", mandatory: true, tenderSource: "采购需求 P38 ★5.1", requiredEvidence: "供货计划与承诺", companySource: "供货与安装方案.docx · P4", status: "matched", confidence: 94 },
+    { id: "eq-c3", kind: "实质性要求", requirement: "原厂质保不少于 3 年", mandatory: true, tenderSource: "采购需求 P39 ★5.4", requiredEvidence: "制造商售后服务承诺", companySource: "未找到盖章版售后承诺", status: "missing", confidence: 99 },
+  ],
+  construction: [
+    { id: "gc-q1", kind: "资格门槛", requirement: "电子与智能化工程专业承包资质符合要求", mandatory: true, tenderSource: "资格条件 P12 §2.2", requiredEvidence: "有效资质证书", companySource: "施工资质及安全许可.pdf · P1–4", status: "matched", confidence: 98 },
+    { id: "gc-q2", kind: "资格门槛", requirement: "具备有效安全生产许可证", mandatory: true, tenderSource: "资格条件 P12 §2.3", requiredEvidence: "安全生产许可证", companySource: "施工资质及安全许可.pdf · P5", status: "matched", confidence: 98 },
+    { id: "gc-q3", kind: "资格门槛", requirement: "项目经理资格、社保及无在建状态符合要求", mandatory: true, tenderSource: "资格条件 P13 §2.5", requiredEvidence: "注册证、安考证、社保、无在建承诺", companySource: "项目团队材料.pdf（缺无在建承诺）", status: "partial", confidence: 96 },
+    { id: "gc-c1", kind: "实质性要求", requirement: "工期不超过 240 日历天", mandatory: true, tenderSource: "投标须知 P21 ★1.7", requiredEvidence: "工期承诺、网络进度计划", companySource: "施工组织设计-v8.docx · P12", status: "matched", confidence: 94 },
+    { id: "gc-c2", kind: "实质性要求", requirement: "工程量清单完整且不可竞争费未违规调整", mandatory: true, tenderSource: "清单说明 P6 ★3", requiredEvidence: "已标价工程量清单", companySource: "工程量清单-投标版.xlsx · 复核待完成", status: "partial", confidence: 87 },
+    { id: "gc-t1", kind: "技术评分", requirement: "关键工序、系统联调、雨季施工措施", mandatory: false, tenderSource: "评分办法 P48 · 施工组织 30 分", requiredEvidence: "专项施工、联调与季节措施", companySource: "施工组织设计-v8.docx · P28–66", status: "partial", confidence: 89 },
+    { id: "gc-b1", kind: "商务评分", requirement: "同类智能化工程合同及竣工验收证明", mandatory: false, tenderSource: "评分办法 P51 · 业绩 10 分", requiredEvidence: "合同、竣工验收、金额证明", companySource: "工程业绩汇编.pdf · 3 个项目", status: "matched", confidence: 93 },
+  ],
+};
+
+const DEMO_DOCUMENTS: Record<string, { tender: UploadedDocument[]; company: UploadedDocument[] }> = {
+  "it-service": {
+    tender: [
+      { id: "demo-it-t1", name: "政企云平台运维服务项目-招标文件.pdf", size: 6840000, type: "application/pdf" },
+      { id: "demo-it-t2", name: "采购需求及评分办法.docx", size: 1280000, type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+    ],
+    company: [
+      { id: "demo-it-c1", name: "营业执照与基础资质.pdf", size: 2380000, type: "application/pdf" },
+      { id: "demo-it-c2", name: "财务与社保材料.pdf", size: 4120000, type: "application/pdf" },
+      { id: "demo-it-c3", name: "近三年运维业绩汇编.pdf", size: 8950000, type: "application/pdf" },
+      { id: "demo-it-c4", name: "技术方案-v12.docx", size: 15700000, type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+    ],
+  },
+  equipment: {
+    tender: [{ id: "demo-eq-t1", name: "数据中心服务器采购-招标文件.pdf", size: 5280000, type: "application/pdf" }],
+    company: [
+      { id: "demo-eq-c1", name: "营业执照与基础资质.pdf", size: 2380000, type: "application/pdf" },
+      { id: "demo-eq-c2", name: "原厂授权函-草稿.pdf", size: 880000, type: "application/pdf" },
+      { id: "demo-eq-c3", name: "服务器规格响应表.xlsx", size: 640000, type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+      { id: "demo-eq-c4", name: "供货与安装方案.docx", size: 3250000, type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+    ],
+  },
+  construction: {
+    tender: [
+      { id: "demo-gc-t1", name: "园区智能化改造工程-招标文件.pdf", size: 12400000, type: "application/pdf" },
+      { id: "demo-gc-t2", name: "工程量清单及评分办法.xlsx", size: 3680000, type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+    ],
+    company: [
+      { id: "demo-gc-c1", name: "施工资质及安全许可.pdf", size: 4720000, type: "application/pdf" },
+      { id: "demo-gc-c2", name: "项目团队材料.pdf", size: 7850000, type: "application/pdf" },
+      { id: "demo-gc-c3", name: "施工组织设计-v8.docx", size: 18600000, type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+      { id: "demo-gc-c4", name: "工程业绩汇编.pdf", size: 10800000, type: "application/pdf" },
+    ],
+  },
+};
+
 const OBJECTIVES: Record<Objective, { label: string; helper: string }> = {
   win: { label: "中标概率", helper: "在利润底线内优先提高胜出概率" },
   expected: { label: "期望利润", helper: "中标概率 × 单项目利润" },
@@ -238,6 +326,17 @@ const OBJECTIVES: Record<Objective, { label: string; helper: string }> = {
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const roundTo = (value: number, digits = 1) => Number(value.toFixed(digits));
 const money = (value: number) => `¥${Math.round(value).toLocaleString("zh-CN")}万`;
+const fileSize = (bytes: number) => bytes >= 1024 * 1024
+  ? `${roundTo(bytes / 1024 / 1024)} MB`
+  : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+const fileKind = (name: string) => name.split(".").pop()?.toUpperCase().slice(0, 4) || "FILE";
+const matchWeight = (status: MatchStatus) => status === "matched" ? 1 : status === "partial" ? 0.5 : 0;
+
+function matchStatusLabel(status: MatchStatus) {
+  if (status === "matched") return "已满足";
+  if (status === "partial") return "部分满足";
+  return "缺失";
+}
 
 function scoreForA(project: ProjectTemplate, readiness: number) {
   const factor = readiness / 88;
@@ -528,21 +627,22 @@ export default function Home() {
   const [qualificationReady, setQualificationReady] = useState(true);
   const [complianceReady, setComplianceReady] = useState(true);
   const [lowPriceEvidence, setLowPriceEvidence] = useState(true);
-  const [tab, setTab] = useState<Tab>("cockpit");
+  const [tab, setTab] = useState<Tab>("documents");
   const [run, setRun] = useState(0);
   const [showMethod, setShowMethod] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [tenderFiles, setTenderFiles] = useState<UploadedDocument[]>([]);
+  const [companyFiles, setCompanyFiles] = useState<UploadedDocument[]>([]);
+  const [parseState, setParseState] = useState<ParseState>("idle");
+  const [parseProgress, setParseProgress] = useState(0);
+  const [parseStage, setParseStage] = useState("等待上传招标文件");
+  const [dragZone, setDragZone] = useState<"tender" | "company" | null>(null);
+  const [gapsClosed, setGapsClosed] = useState(false);
+  const analysisTimers = useRef<number[]>([]);
 
-  const evaluateAt = (quote: number) => evaluateScenario({
-    project,
-    ourBid: quote,
-    readiness,
-    qualificationReady,
-    complianceReady,
-    lowPriceEvidence,
-    marketPressure,
-    run,
-  });
+  useEffect(() => () => {
+    analysisTimers.current.forEach((timer) => window.clearTimeout(timer));
+  }, []);
 
   const evaluation = useMemo(
     () => evaluateScenario({ project, ourBid, readiness, qualificationReady, complianceReady, lowPriceEvidence, marketPressure, run }),
@@ -600,6 +700,36 @@ export default function Home() {
     return a.rank - b.rank;
   });
 
+  const documentMatches = useMemo(() => {
+    const rows = DOCUMENT_MATCH_LIBRARY[project.id] ?? [];
+    if (!companyFiles.length) {
+      return rows.map((row) => ({ ...row, companySource: "尚未上传公司证明材料", status: "missing" as MatchStatus, confidence: 100 }));
+    }
+    if (gapsClosed) {
+      return rows.map((row) => row.status === "matched" ? row : {
+        ...row,
+        status: "matched" as MatchStatus,
+        companySource: `${row.companySource.replace(/（.*?）/g, "")} · 已补充复核材料`,
+        confidence: Math.max(row.confidence, 94),
+      });
+    }
+    return rows;
+  }, [project.id, companyFiles.length, gapsClosed]);
+
+  const hardGateMatches = documentMatches.filter((row) => row.mandatory);
+  const hardGateGaps = hardGateMatches.filter((row) => row.status !== "matched");
+  const qualificationMatches = documentMatches.filter((row) => row.kind === "资格门槛");
+  const complianceMatches = documentMatches.filter((row) => row.kind === "实质性要求");
+  const scoringMatches = documentMatches.filter((row) => !row.mandatory);
+  const coverageOf = (rows: DocumentMatch[]) => rows.length
+    ? Math.round(rows.reduce((sum, row) => sum + matchWeight(row.status), 0) / rows.length * 100)
+    : 100;
+  const qualificationCoverage = coverageOf(qualificationMatches);
+  const complianceCoverage = coverageOf(complianceMatches);
+  const scoringCoverage = coverageOf(scoringMatches);
+  const overallDocumentCoverage = coverageOf(documentMatches);
+  const analysisGatePass = hardGateGaps.length === 0 && companyFiles.length > 0;
+
   const bidDecision = !qualificationReady || !complianceReady
     ? { code: "NO BID", label: "暂不投标", tone: "danger", reason: "关键门槛尚未闭环" }
     : minimumFeasibleBid > project.maxPrice
@@ -613,6 +743,91 @@ export default function Home() {
     ? Math.round(project.evidenceRows.reduce((sum, row) => sum + row.basePct, 0) / project.evidenceRows.length * (readiness / 88) * 100)
     : 100;
 
+  const clearAnalysisTimers = () => {
+    analysisTimers.current.forEach((timer) => window.clearTimeout(timer));
+    analysisTimers.current = [];
+  };
+
+  const resetDocumentAnalysis = () => {
+    clearAnalysisTimers();
+    setParseState("idle");
+    setParseProgress(0);
+    setParseStage(tenderFiles.length ? "文件已就绪，等待开始解析" : "等待上传招标文件");
+    setGapsClosed(false);
+  };
+
+  const addDocuments = (target: "tender" | "company", files: FileList | File[]) => {
+    const incoming = Array.from(files).map((file, index) => ({
+      id: `${target}-${file.name}-${file.lastModified}-${index}`,
+      name: file.name,
+      size: file.size,
+      type: file.type || "application/octet-stream",
+    }));
+    const update = (current: UploadedDocument[]) => {
+      const existing = new Set(current.map((file) => `${file.name}-${file.size}`));
+      return [...current, ...incoming.filter((file) => !existing.has(`${file.name}-${file.size}`))];
+    };
+    if (target === "tender") setTenderFiles(update);
+    else setCompanyFiles(update);
+    clearAnalysisTimers();
+    setParseState("idle");
+    setParseProgress(0);
+    setParseStage("文件已就绪，等待开始解析");
+    setGapsClosed(false);
+  };
+
+  const removeDocument = (target: "tender" | "company", id: string) => {
+    if (target === "tender") setTenderFiles((files) => files.filter((file) => file.id !== id));
+    else setCompanyFiles((files) => files.filter((file) => file.id !== id));
+    resetDocumentAnalysis();
+  };
+
+  const loadDemoDocuments = () => {
+    const demo = DEMO_DOCUMENTS[project.id];
+    setTenderFiles(demo?.tender ?? []);
+    setCompanyFiles(demo?.company ?? []);
+    clearAnalysisTimers();
+    setParseState("idle");
+    setParseProgress(0);
+    setParseStage("演示材料已就绪，点击开始解析");
+    setGapsClosed(false);
+  };
+
+  const runDocumentAnalysis = () => {
+    if (!tenderFiles.length || parseState === "parsing") return;
+    clearAnalysisTimers();
+    setParseState("parsing");
+    setParseProgress(6);
+    setParseStage("文件安全检查与版面识别");
+    const stages = [
+      { delay: 450, progress: 24, label: "招标规则智能体：定位资格条件与废标条款" },
+      { delay: 950, progress: 47, label: "评分智能体：抽取权重、公式与证明要求" },
+      { delay: 1450, progress: 69, label: "企业证据智能体：索引资质、业绩与技术材料" },
+      { delay: 1950, progress: 88, label: "一致性裁判：执行逐条双向匹配与冲突检查" },
+      { delay: 2450, progress: 100, label: "解析完成：已生成可追溯规则与缺口清单", done: true },
+    ];
+    analysisTimers.current = stages.map((stage) => window.setTimeout(() => {
+      setParseProgress(stage.progress);
+      setParseStage(stage.label);
+      if (stage.done) setParseState("done");
+    }, stage.delay));
+  };
+
+  const applyAnalysisToSimulation = () => {
+    const qualificationPass = qualificationMatches.every((row) => row.status === "matched");
+    const compliancePass = complianceMatches.every((row) => row.status === "matched");
+    setQualificationReady(qualificationPass);
+    setComplianceReady(compliancePass);
+    setReadiness(scoringMatches.length ? clamp(Math.round(58 + scoringCoverage * 0.42), 55, 100) : 88);
+    setTab("cockpit");
+    window.requestAnimationFrame(() => document.getElementById("workspace-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
+  const openDocumentWorkspace = () => {
+    setTab("documents");
+    window.requestAnimationFrame(() => document.getElementById("workspace-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
   const onProjectChange = (id: string) => {
     const next = PROJECTS.find((item) => item.id === id) ?? PROJECTS[0];
     setProjectId(next.id);
@@ -625,6 +840,13 @@ export default function Home() {
     setComplianceReady(true);
     setLowPriceEvidence(true);
     setRun(0);
+    setTenderFiles([]);
+    setCompanyFiles([]);
+    clearAnalysisTimers();
+    setParseState("idle");
+    setParseProgress(0);
+    setParseStage("等待上传招标文件");
+    setGapsClosed(false);
   };
 
   const report = {
@@ -635,6 +857,13 @@ export default function Home() {
     bidDecision,
     current: { bid: ourBid, margin: roundTo(currentMargin), winProbability: roundTo(ourResult.winProbability), valid: ourResult.valid },
     recommendation: optimization ? { bid: optimization.quote, winProbability: roundTo(optimization.probability), expectedProfit: roundTo(optimization.expectedProfit) } : null,
+    documentAnalysis: {
+      state: parseState,
+      tenderFiles: tenderFiles.map((file) => file.name),
+      companyFiles: companyFiles.map((file) => file.name),
+      coverage: overallDocumentCoverage,
+      hardGateGaps: hardGateGaps.map((row) => row.requirement),
+    },
     agents: evaluation.agents.map(({ id, name, strategy, quote, valid, rank, totalScore, winProbability }) => ({ id, name, strategy, quote, valid, rank, totalScore: roundTo(totalScore), winProbability: roundTo(winProbability) })),
   };
 
@@ -656,6 +885,7 @@ export default function Home() {
   };
 
   const tabs: Array<{ id: Tab; label: string; count?: number }> = [
+    { id: "documents", label: "文档上传与解析", count: tenderFiles.length + companyFiles.length },
     { id: "cockpit", label: "决策驾驶舱" },
     { id: "rules", label: "规则与门槛", count: project.qualifications.length + project.compliance.length },
     { id: "evidence", label: "评分证据", count: gapCount },
@@ -702,7 +932,8 @@ export default function Home() {
               <div><span>项目预算</span><strong>{money(project.budget)}</strong></div>
               <div><span>最高限价</span><strong>{money(project.maxPrice)}</strong></div>
             </div>
-            <div className="document-lock"><span>01</span><div><strong>规则版本已锁定</strong><small>模拟解析时间 2026-08-09 09:30</small></div><b>✓</b></div>
+            <div className={`document-lock ${parseState}`}><span>01</span><div><strong>{parseState === "done" ? "规则版本已解析并锁定" : parseState === "parsing" ? "文档解析进行中" : "等待上传项目文件"}</strong><small>{parseState === "done" ? `${tenderFiles.length} 份招标文件 · ${companyFiles.length} 份企业材料` : "支持 PDF、Word、Excel 与扫描件"}</small></div><b>{parseState === "done" ? "✓" : "→"}</b></div>
+            <button className="project-upload-cta" type="button" onClick={openDocumentWorkspace}><span>上传并解析招标文件</span><strong>进入文档工作台 →</strong></button>
           </aside>
         </section>
 
@@ -722,13 +953,119 @@ export default function Home() {
           ))}
         </section>
 
-        <nav className="tabbar" aria-label="工作台视图">
+        <nav id="workspace-tabs" className="tabbar" aria-label="工作台视图">
           {tabs.map((item) => (
             <button className={tab === item.id ? "active" : ""} type="button" key={item.id} onClick={() => setTab(item.id)}>
               {item.label}{item.count !== undefined && <span>{item.count}</span>}
             </button>
           ))}
         </nav>
+
+        {tab === "documents" && (
+          <div className="documents-view">
+            <section className="document-workbench-head paper-card">
+              <div>
+                <span className="card-kicker">DOCUMENT INTELLIGENCE</span>
+                <h2>先读懂招标文件，再判断公司能不能投</h2>
+                <p>上传招标公告、采购需求、评分办法和附件，抽取项目专属规则；再上传公司已有资质、业绩与技术方案，逐条核验是否满足。</p>
+              </div>
+              <div className="demo-boundary">
+                <span>DEMO 处理边界</span>
+                <p>当前版本只登记文件名称和大小，不上传或读取真实正文；下方结果由模拟数据生成。正式版需接入加密文件存储、OCR / 版面解析、大模型抽取和人工复核。</p>
+              </div>
+            </section>
+
+            <div className="upload-grid">
+              <section className="upload-card paper-card tender-upload">
+                <div className="upload-card-head"><div><span>INPUT A</span><h3>招标方文件</h3><p>用于识别资格门槛、★ 条款、评分项、权重与报价公式</p></div><b>{tenderFiles.length} 份</b></div>
+                <div
+                  className={`dropzone ${dragZone === "tender" ? "dragging" : ""}`}
+                  onDragEnter={(event) => { event.preventDefault(); setDragZone("tender"); }}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDragLeave={() => setDragZone(null)}
+                  onDrop={(event) => { event.preventDefault(); setDragZone(null); addDocuments("tender", event.dataTransfer.files); }}
+                >
+                  <input id="tender-file-input" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" onChange={(event) => { if (event.target.files) addDocuments("tender", event.target.files); event.currentTarget.value = ""; }} />
+                  <label htmlFor="tender-file-input"><span className="upload-symbol">招</span><strong>拖入招标文件，或点击选择</strong><small>建议同时上传主文件、采购需求、评分办法及更正公告</small><b>选择文件</b></label>
+                </div>
+                <div className="file-list">
+                  {tenderFiles.map((file) => <div className="file-item" key={file.id}><span>{fileKind(file.name)}</span><div><strong>{file.name}</strong><small>{fileSize(file.size)} · 待安全扫描</small></div><button type="button" aria-label={`移除 ${file.name}`} onClick={() => removeDocument("tender", file.id)}>×</button></div>)}
+                  {!tenderFiles.length && <div className="empty-file-list">尚未添加招标文件</div>}
+                </div>
+              </section>
+
+              <section className="upload-card paper-card company-upload">
+                <div className="upload-card-head"><div><span>INPUT B</span><h3>本公司材料库</h3><p>用于匹配营业执照、资质证书、业绩、人员与技术响应证据</p></div><b>{companyFiles.length} 份</b></div>
+                <div
+                  className={`dropzone ${dragZone === "company" ? "dragging" : ""}`}
+                  onDragEnter={(event) => { event.preventDefault(); setDragZone("company"); }}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDragLeave={() => setDragZone(null)}
+                  onDrop={(event) => { event.preventDefault(); setDragZone(null); addDocuments("company", event.dataTransfer.files); }}
+                >
+                  <input id="company-file-input" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" onChange={(event) => { if (event.target.files) addDocuments("company", event.target.files); event.currentTarget.value = ""; }} />
+                  <label htmlFor="company-file-input"><span className="upload-symbol">企</span><strong>拖入公司材料，或点击选择</strong><small>支持批量添加；正式版将形成可复用的企业证据库</small><b>选择文件</b></label>
+                </div>
+                <div className="file-list">
+                  {companyFiles.map((file) => <div className="file-item" key={file.id}><span>{fileKind(file.name)}</span><div><strong>{file.name}</strong><small>{fileSize(file.size)} · 待建立索引</small></div><button type="button" aria-label={`移除 ${file.name}`} onClick={() => removeDocument("company", file.id)}>×</button></div>)}
+                  {!companyFiles.length && <div className="empty-file-list">未上传时可先解析招标规则，但无法判断我方是否满足</div>}
+                </div>
+              </section>
+            </div>
+
+            <section className="analysis-runner paper-card">
+              <div className="analysis-runner-top">
+                <div><span>ANALYSIS PIPELINE</span><h2>多智能体文档解析流水线</h2><p>{parseStage}</p></div>
+                <div className="analysis-actions"><button className="button ghost" type="button" onClick={loadDemoDocuments} disabled={parseState === "parsing"}>载入演示材料</button><button className="button dark" type="button" onClick={runDocumentAnalysis} disabled={!tenderFiles.length || parseState === "parsing"}>{parseState === "parsing" ? "解析中…" : parseState === "done" ? "重新解析" : "开始解析与匹配"}</button></div>
+              </div>
+              <div className="parse-progress"><span style={{ width: `${parseProgress}%` }} /><b>{parseProgress}%</b></div>
+              <div className="parser-agents">
+                {[
+                  ["01", "规则智能体", "方法 / 限价", 15],
+                  ["02", "资格智能体", "准入 / 废标", 35],
+                  ["03", "评分智能体", "权重 / 公式", 55],
+                  ["04", "企业证据智能体", "资质 / 技术", 75],
+                  ["05", "一致性裁判", "匹配 / 冲突", 95],
+                ].map(([num, title, text, threshold]) => <div className={parseProgress >= Number(threshold) ? "active" : ""} key={String(num)}><span>{num}</span><div><strong>{title}</strong><small>{text}</small></div><b>{parseProgress >= Number(threshold) ? "✓" : "·"}</b></div>)}
+              </div>
+              {!tenderFiles.length && <p className="analysis-hint">请先上传至少一份招标方文件，或载入演示材料。</p>}
+            </section>
+
+            {parseState === "done" && (
+              <>
+                <section className="extraction-panel paper-card">
+                  <div className="section-heading"><div><span>TENDER RULE EXTRACTION</span><h2>已抽取的项目规则</h2><p>每条规则保留来源位置；任何人工修改都应产生新版本并重新执行匹配。</p></div><div className="parse-confidence"><span>抽取置信度</span><strong>94.6%</strong><small>模拟值 · 待人工复核</small></div></div>
+                  <div className="extraction-grid">
+                    <article><span>01 · 评审方法</span><strong>{project.method}</strong><p>{project.decisionNote}</p><small>来源：招标文件“评标办法”章节</small></article>
+                    <article><span>02 · 价格边界</span><strong>{money(project.maxPrice)}</strong><p>最高限价；异常低价重点审查线为限价的 {Math.round(project.lowPriceReviewRate * 100)}%。</p><small>来源：投标人须知与报价要求</small></article>
+                    <article><span>03 · 硬门槛</span><strong>{project.qualifications.length + project.compliance.length} 项</strong><p>{project.qualifications.length} 项资格条件，{project.compliance.length} 项实质性要求。</p><small>来源：资格条件与 ★ 条款</small></article>
+                    <article><span>04 · 详细评分</span><strong>{project.method === "综合评分法" ? `价格 ${project.priceWeight} 分` : "最低评标价排序"}</strong><p>{project.method === "综合评分法" ? project.dimensions.map((item) => `${item.label} ${item.points}`).join(" · ") : "技术参数通过制，不另设主观分值。"}</p><small>来源：评分因素及分值表</small></article>
+                  </div>
+                  <div className="extracted-formula"><span>报价规则</span><strong>{project.priceRule}</strong><button type="button" onClick={() => setTab("rules")}>查看全部规则 →</button></div>
+                </section>
+
+                <section className="matching-panel paper-card">
+                  <div className="matching-summary">
+                    <div className={`analysis-verdict ${analysisGatePass ? "pass" : "fail"}`}><span>{analysisGatePass ? "GATE PASS" : "GATE GAP"}</span><strong>{analysisGatePass ? "预计可进入详细评审" : "当前预计不能通过门槛"}</strong><p>{analysisGatePass ? "资格和实质性要求均已找到可验证证据，仍需人工逐页复核。" : `发现 ${hardGateGaps.length} 个强制要求未完全满足，不能用技术高分抵消。`}</p></div>
+                    <div className="coverage-metrics">
+                      <div><span>资格覆盖</span><strong>{qualificationCoverage}%</strong><i><b style={{ width: `${qualificationCoverage}%` }} /></i></div>
+                      <div><span>实质响应</span><strong>{complianceCoverage}%</strong><i><b style={{ width: `${complianceCoverage}%` }} /></i></div>
+                      <div><span>评分证据</span><strong>{scoringCoverage}%</strong><i><b style={{ width: `${scoringCoverage}%` }} /></i></div>
+                      <div><span>综合覆盖</span><strong>{overallDocumentCoverage}%</strong><i><b style={{ width: `${overallDocumentCoverage}%` }} /></i></div>
+                    </div>
+                    <div className="matching-actions"><button className="button ghost" type="button" onClick={() => setGapsClosed(true)} disabled={analysisGatePass}>模拟补齐缺口</button><button className="button dark" type="button" onClick={applyAnalysisToSimulation}>将结果带入竞标模拟 →</button></div>
+                  </div>
+
+                  <div className="match-table-title"><div><span>EVIDENCE MATCH MATRIX</span><h2>招标要求 ↔ 公司证据匹配矩阵</h2></div><div><span className="match-dot matched" />已满足 <span className="match-dot partial" />部分满足 <span className="match-dot missing" />缺失</div></div>
+                  <div className="table-scroll"><table className="document-match-table"><thead><tr><th>类型</th><th>招标要求</th><th>要求证据</th><th>公司材料定位</th><th>匹配结果</th><th>置信度</th></tr></thead><tbody>
+                    {documentMatches.map((row) => <tr key={row.id}><td><span className={`requirement-kind ${row.mandatory ? "mandatory" : "scored"}`}>{row.kind}{row.mandatory && " · 必须"}</span></td><td><strong>{row.requirement}</strong><small>{row.tenderSource}</small></td><td>{row.requiredEvidence}</td><td><span className={row.status === "missing" ? "missing-source" : "company-source"}>{row.companySource}</span></td><td><span className={`match-status ${row.status}`}>{matchStatusLabel(row.status)}</span></td><td><strong>{row.confidence}%</strong></td></tr>)}
+                  </tbody></table></div>
+                  <div className="matching-footnote"><span>!</span><p><strong>机器判断不能直接替代投标负责人签字确认。</strong>正式版应允许用户查看原文高亮、纠正规则、指定证据版本，并保留解析与复核审计记录。</p></div>
+                </section>
+              </>
+            )}
+          </div>
+        )}
 
         {tab === "cockpit" && (
           <div className="cockpit-layout">
