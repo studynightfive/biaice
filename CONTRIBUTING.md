@@ -5,6 +5,7 @@
 - 分支名：`feature/m{成员号}-{domain}-{short-name}`。
 - 每个提交只处理一个主题，提交信息使用祈使句并说明结果。
 - 禁止直接 push、force-push 或删除 `main`；通过 PR 和 squash merge 集成。
+- 成员 1（组长）的公共平台与集成 PR 在全部必需 CI 通过且对话已解决后可直接 squash merge；该权限不允许绕过 CI，也不下放给其他成员。
 - 契约变更先提交独立的“契约 PR”，由成员 1 导出 OpenAPI 并重新生成客户端，功能 PR 才可依赖。
 
 ## 目录所有权

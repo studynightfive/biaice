@@ -103,17 +103,24 @@ jobs:
             exit 2
           fi
       - name: Reject breaking OpenAPI changes on main
-        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        if: github.event_name == 'push'
         env:
           BASE_SHA: ${{ github.event.before }}
-        run: python scripts/contracts/check_breaking_changes.py "${BASE_SHA}"
-      - name: Explicitly establish the initial OpenAPI freeze
-        if: github.event_name == 'push' && github.event.before == '0000000000000000000000000000000000000000'
-        env:
-          BASE_SHA: ${{ github.event.before }}
-        run: >-
-          python scripts/contracts/check_breaking_changes.py
-          "${BASE_SHA}" --allow-missing-baseline
+        run: |
+          ZERO_SHA=0000000000000000000000000000000000000000
+          if [ "${BASE_SHA}" = "${ZERO_SHA}" ]; then
+            python scripts/contracts/check_breaking_changes.py \
+              "${BASE_SHA}" --allow-missing-baseline
+          elif git cat-file -e "${BASE_SHA}:packages/contracts/openapi.generated.json"; then
+            python scripts/contracts/check_breaking_changes.py "${BASE_SHA}"
+          elif git cat-file -e "HEAD:packages/contracts/openapi.generated.json"; then
+            echo "Establishing the first reviewed OpenAPI baseline on main."
+            python scripts/contracts/check_breaking_changes.py \
+              "${BASE_SHA}" --allow-missing-baseline
+          else
+            echo "The current main commit is missing the OpenAPI baseline." >&2
+            exit 2
+          fi
       - name: Audit locked production Python dependencies
         run: python -m pip_audit --requirement apps/backend/requirements.lock --require-hashes --disable-pip --strict
       - name: Generated contract must be current
