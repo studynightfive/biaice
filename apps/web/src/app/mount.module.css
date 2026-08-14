@@ -1,0 +1,12 @@
+.standalone {
+  width: min(1180px, calc(100% - clamp(1.5rem, 6vw, 5rem)));
+  min-height: calc(100vh - 166px);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 4rem) 0;
+}
+
+@media (max-width: 390px) {
+  .standalone {
+    width: calc(100% - 1.25rem);
+  }
+}

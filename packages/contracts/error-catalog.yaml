@@ -1,0 +1,230 @@
+{
+  "AUDIT_INTEGRITY_FAILED": {
+    "recoverable": false,
+    "remediation": "Keep sensitive operations blocked and restore from the independent anchor.",
+    "status": 503,
+    "title": "Audit integrity check failed"
+  },
+  "AUDIT_UNAVAILABLE": {
+    "recoverable": true,
+    "remediation": "Retry after audit integrity is restored.",
+    "status": 503,
+    "title": "Audit writer unavailable"
+  },
+  "AUTH_NOT_CONFIGURED": {
+    "recoverable": true,
+    "remediation": "Configure the approved OIDC verifier.",
+    "status": 503,
+    "title": "Authentication unavailable"
+  },
+  "AUTH_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Sign in and retry.",
+    "status": 401,
+    "title": "Authentication required"
+  },
+  "BYOK_SECRET_GATE_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Pass BYOK_SECRET_GATE before submitting a credential.",
+    "status": 503,
+    "title": "BYOK secret gate required"
+  },
+  "CURSOR_SCOPE_MISMATCH": {
+    "recoverable": false,
+    "remediation": "Do not reuse cursors across scopes.",
+    "status": 400,
+    "title": "Pagination cursor scope mismatch"
+  },
+  "DATABASE_UNAVAILABLE": {
+    "recoverable": true,
+    "remediation": "Retry after PostgreSQL recovers.",
+    "status": 503,
+    "title": "Database unavailable"
+  },
+  "DELETION_BLOCKED_BY_LEGAL_HOLD": {
+    "recoverable": true,
+    "remediation": "Release the hold through dual control.",
+    "status": 409,
+    "title": "Deletion blocked by legal hold"
+  },
+  "DELETION_RECEIPTS_INCOMPLETE": {
+    "recoverable": true,
+    "remediation": "Retry or escalate missing required replicas.",
+    "status": 409,
+    "title": "Deletion receipts incomplete"
+  },
+  "DELETION_RECEIPT_INVALID": {
+    "recoverable": false,
+    "remediation": "Obtain a verified receipt from the registered adapter.",
+    "status": 409,
+    "title": "Deletion receipt invalid"
+  },
+  "EGRESS_AUTHORIZATION_UNAVAILABLE": {
+    "recoverable": true,
+    "remediation": "Keep Provider egress disabled until the atomic single-use grant store is bound.",
+    "status": 503,
+    "title": "Provider egress authorization unavailable"
+  },
+  "ETAG_MISMATCH": {
+    "recoverable": true,
+    "remediation": "Refresh the draft before retrying.",
+    "status": 412,
+    "title": "ETag mismatch"
+  },
+  "GATE_ASSESSMENT_NOT_FOUND": {
+    "recoverable": false,
+    "remediation": "Run the approved machine assessment.",
+    "status": 404,
+    "title": "Gate assessment not found"
+  },
+  "GATE_EVIDENCE_VERIFIER_UNAVAILABLE": {
+    "recoverable": true,
+    "remediation": "Restore the machine evidence verifier.",
+    "status": 503,
+    "title": "Gate verifier unavailable"
+  },
+  "GATE_NOT_CURRENT": {
+    "recoverable": true,
+    "remediation": "Refresh and pass all gate evidence.",
+    "status": 503,
+    "title": "Required gate is not current"
+  },
+  "GOVERNANCE_STORE_UNAVAILABLE": {
+    "recoverable": true,
+    "remediation": "Retry after the governance repository recovers.",
+    "status": 503,
+    "title": "Governance store unavailable"
+  },
+  "IDEMPOTENCY_CONFLICT": {
+    "recoverable": false,
+    "remediation": "Use the same payload or a new idempotency key.",
+    "status": 409,
+    "title": "Idempotency key conflict"
+  },
+  "IDEMPOTENCY_KEY_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Send a unique Idempotency-Key header.",
+    "status": 400,
+    "title": "Idempotency key required"
+  },
+  "IF_MATCH_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Refresh the draft and send its current ETag.",
+    "status": 428,
+    "title": "If-Match required"
+  },
+  "INTERNAL_ERROR": {
+    "recoverable": true,
+    "remediation": "Retry with the request_id or contact an administrator.",
+    "status": 500,
+    "title": "Internal server error"
+  },
+  "INVALID_CURSOR": {
+    "recoverable": true,
+    "remediation": "Restart pagination without the cursor.",
+    "status": 400,
+    "title": "Invalid pagination cursor"
+  },
+  "INVALID_IDEMPOTENCY_KEY": {
+    "recoverable": true,
+    "remediation": "Use 16-128 URL-safe ASCII characters.",
+    "status": 400,
+    "title": "Invalid idempotency key"
+  },
+  "JOB_NOT_CANCELLABLE": {
+    "recoverable": false,
+    "remediation": "Refresh the job state.",
+    "status": 409,
+    "title": "Job cannot be cancelled"
+  },
+  "JOB_NOT_FOUND": {
+    "recoverable": false,
+    "remediation": "Check the job identifier.",
+    "status": 404,
+    "title": "Job not found"
+  },
+  "JOB_NOT_RETRYABLE": {
+    "recoverable": false,
+    "remediation": "Resolve the terminal failure or create a new command.",
+    "status": 409,
+    "title": "Job cannot be retried"
+  },
+  "JOB_STORE_UNAVAILABLE": {
+    "recoverable": true,
+    "remediation": "Retry after PostgreSQL recovers.",
+    "status": 503,
+    "title": "Job store unavailable"
+  },
+  "MAKER_CHECKER_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Choose a checker different from the maker.",
+    "status": 409,
+    "title": "Independent checker required"
+  },
+  "MFA_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Complete MFA and retry.",
+    "status": 403,
+    "title": "Multi-factor authentication required"
+  },
+  "NOT_IMPLEMENTED": {
+    "recoverable": false,
+    "remediation": "Wait for the owning module implementation.",
+    "status": 501,
+    "title": "Operation not implemented"
+  },
+  "PERMISSION_DENIED": {
+    "recoverable": false,
+    "remediation": "Ask a tenant administrator for the required role.",
+    "status": 403,
+    "title": "Permission denied"
+  },
+  "REAL_DATA_MODE_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Use synthetic data or pass REAL_DATA_MODE.",
+    "status": 503,
+    "title": "Real-data gate required"
+  },
+  "REQUEST_VALIDATION_FAILED": {
+    "recoverable": true,
+    "remediation": "Correct the listed fields.",
+    "status": 422,
+    "title": "Request validation failed"
+  },
+  "RESOURCE_NOT_FOUND": {
+    "recoverable": false,
+    "remediation": "Check the resource identifier.",
+    "status": 404,
+    "title": "Resource not found"
+  },
+  "RETENTION_EXPIRED": {
+    "recoverable": false,
+    "remediation": "The object is no longer available for formal use.",
+    "status": 410,
+    "title": "Retention period expired"
+  },
+  "SCOPE_OVERRIDE_FORBIDDEN": {
+    "recoverable": false,
+    "remediation": "Remove tenant/data-domain scope fields and headers.",
+    "status": 400,
+    "title": "Client scope override is forbidden"
+  },
+  "TENANT_SCOPE_VIOLATION": {
+    "recoverable": false,
+    "remediation": "Use a resource in the authenticated scope.",
+    "status": 404,
+    "title": "Resource not found"
+  },
+  "TOKEN_INVALID": {
+    "recoverable": true,
+    "remediation": "Sign in again.",
+    "status": 401,
+    "title": "Invalid access token"
+  },
+  "WAIVER_PROHIBITED": {
+    "recoverable": false,
+    "remediation": "Resolve the mandatory gate evidence.",
+    "status": 409,
+    "title": "Waiver prohibited"
+  }
+}

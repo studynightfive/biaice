@@ -1,0 +1,19 @@
+# Temporary bootstrap ownership. Replace feature lines with each member's
+# GitHub handle after all seven collaborators confirm the ownership matrix.
+* @studynightfive
+
+/package.json @studynightfive
+/package-lock.json @studynightfive
+/.github/ @studynightfive
+/CODEOWNERS @studynightfive
+/compose*.yaml @studynightfive
+/.env.example @studynightfive
+/infra/ @studynightfive
+/scripts/ @studynightfive
+/packages/contracts/ @studynightfive
+/apps/backend/src/biaice/core/ @studynightfive
+/apps/backend/src/biaice/modules/governance/ @studynightfive
+/apps/backend/src/biaice/workers/governance/ @studynightfive
+/apps/web/src/app/ @studynightfive
+/apps/web/src/components/ui/ @studynightfive
+/apps/web/src/features/access-audit/ @studynightfive

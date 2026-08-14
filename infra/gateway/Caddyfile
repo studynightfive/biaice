@@ -1,0 +1,80 @@
+{
+	admin off
+	auto_https disable_redirects
+	local_certs
+	servers {
+		client_ip_headers X-Forwarded-For X-Real-IP
+		trusted_proxies static private_ranges
+	}
+}
+
+(security_headers) {
+	header {
+		-Server
+		-X-Powered-By
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; font-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		Referrer-Policy "no-referrer"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+	}
+}
+
+(routes) {
+	@health path /_gateway/health
+	handle @health {
+		respond 200 {
+			body "ok"
+			close
+		}
+	}
+
+	# Browser API traffic goes through the Web BFF so access/refresh tokens
+	# remain HttpOnly and are never exposed to feature JavaScript. Only
+	# unauthenticated health and development contract documents reach FastAPI
+	# directly through the public gateway.
+	@api_direct path /health/live /health/ready /api/docs /api/openapi.json
+	handle @api_direct {
+		import security_headers
+		reverse_proxy api:8000 {
+			transport http {
+				dial_timeout 5s
+				response_header_timeout 60s
+			}
+		}
+	}
+
+	@private_control_plane path /internal/* /admin/*
+	handle @private_control_plane {
+		respond 404
+	}
+
+	@keycloak path /realms/* /resources/* /robots.txt
+	handle @keycloak {
+		reverse_proxy keycloak:8080 {
+			header_up X-Forwarded-Port {server_port}
+		}
+	}
+
+	handle {
+		import security_headers
+		reverse_proxy web:3000
+	}
+}
+
+http://:8080 {
+	# Synthetic/de-identified development only. API and network guards keep
+	# credential writes, connection tests and provider egress disabled.
+	request_body {
+		max_size 110MB
+	}
+	import routes
+}
+
+https://biaice.local:8443 {
+	tls internal
+	request_body {
+		max_size 110MB
+	}
+	import routes
+}

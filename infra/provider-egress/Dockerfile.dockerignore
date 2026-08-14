@@ -1,0 +1,6 @@
+*
+!infra/
+infra/*
+!infra/provider-egress/
+infra/provider-egress/*
+!infra/provider-egress/proxy.py

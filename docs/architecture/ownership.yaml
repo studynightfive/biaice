@@ -1,0 +1,50 @@
+version: 1
+status: FROZEN_FOR_M0_SCAFFOLD
+approved_by: pending_group_lead_signature
+rules:
+  branch_pattern: "feature/m{member}-{domain}-{short-name}"
+  integration: pull_request_only
+  merge_strategy: squash
+  contract_first: true
+members:
+  m1:
+    role: architecture_governance_integration
+    owns:
+      - "/* root configuration"
+      - "/.github/**"
+      - "/infra/**"
+      - "/packages/contracts/**"
+      - "/apps/backend/src/biaice/core/**"
+      - "/apps/backend/src/biaice/modules/governance/{lineage,invalidation,retention,legal_hold,deletion,audit}/**"
+      - "/apps/backend/src/biaice/workers/governance/**"
+      - "/apps/web/src/app/**"
+      - "/apps/web/src/components/ui/**"
+      - "/apps/web/src/features/access-audit/**"
+    must_not_own:
+      - member_2_to_7_domain_logic
+      - member_3_replica_deletion_adapter
+      - member_5_provider_replica_deletion_adapter
+  m2:
+    role: projects_scope_rules
+    owns: ["projects/**", "rules/**", "web/features/projects/**", "web/features/rules/**"]
+    single_writer: [decision_unit_lifecycle]
+  m3:
+    role: document_ingestion
+    owns: ["documents/**", "workers/ingest/**", "web/features/documents/**"]
+    single_writer: [local_replica_deletion_adapter]
+  m4:
+    role: evidence_commercial
+    owns: ["evidence/**", "commercial/**", "web/features/evidence/**", "web/features/commercial/**"]
+    single_writer: [condition]
+  m5:
+    role: market_privacy_model_governance
+    owns: ["market/**", "model_governance/**", "workers/provider/**", "web/features/market/**", "web/features/privacy-models/**"]
+    single_writer: [provider_configuration, provider_invocation, provider_replica_deletion_adapter]
+  m6:
+    role: simulation_optimization
+    owns: ["simulation/**", "workers/simulation/**", "web/features/simulation/**", "web/features/eligibility/**"]
+    single_writer: [recommendation_eligibility, simulation_assessment_snapshot]
+  m7:
+    role: approvals_reports_outcomes
+    owns: ["approvals/**", "reports/**", "web/features/approvals/**", "web/features/reports/**", "web/features/outcomes/**"]
+    single_writer: [risk_acceptance, reports, approval, submission]

@@ -1,0 +1,1121 @@
+name: ${COMPOSE_PROJECT_NAME:-biaice}
+
+x-runtime-defaults: &runtime-defaults
+  init: true
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "5"
+
+x-backend-image: &backend-image
+  build:
+    context: .
+    dockerfile: infra/compose/backend.Dockerfile
+  image: biaice/backend:${BIAICE_IMAGE_TAG:-local}
+
+x-backend-environment: &backend-environment
+  BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+  BIAICE_ENVIRONMENT: development
+  BIAICE_DEPLOYMENT_PROFILE: synthetic_http
+  BIAICE_PUBLIC_ORIGIN: ${BIAICE_PUBLIC_ORIGIN:-http://biaice.local:8080}
+  BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+  BIAICE_BYOK_ENABLED: "false"
+  REAL_DATA_MODE: "false"
+  BYOK_SECRET_GATE: FAIL
+  CREDENTIAL_ENDPOINTS_ENABLED: "false"
+  PROVIDER_EGRESS_ENABLED: "false"
+  BIAICE_DATABASE_URL: postgresql+psycopg://${POSTGRES_RUNTIME_USER:-biaice_runtime}:${POSTGRES_RUNTIME_PASSWORD:?Run scripts/init.ps1 first}@postgres:5432/${POSTGRES_DB:-biaice}
+  DATABASE_URL: postgresql+psycopg://${POSTGRES_RUNTIME_USER:-biaice_runtime}:${POSTGRES_RUNTIME_PASSWORD:?Run scripts/init.ps1 first}@postgres:5432/${POSTGRES_DB:-biaice}
+  BIAICE_REDIS_BROKER_URL: redis://:${REDIS_BROKER_PASSWORD:?Run scripts/init.ps1 first}@redis-broker:6379/0
+  CELERY_BROKER_URL: redis://:${REDIS_BROKER_PASSWORD:?Run scripts/init.ps1 first}@redis-broker:6379/0
+  BIAICE_REDIS_CACHE_URL: redis://:${REDIS_CACHE_PASSWORD:?Run scripts/init.ps1 first}@redis-cache:6379/0
+  REDIS_CACHE_URL: redis://:${REDIS_CACHE_PASSWORD:?Run scripts/init.ps1 first}@redis-cache:6379/0
+  BIAICE_MINIO_ENDPOINT: http://minio:9000
+  KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+  BIAICE_OIDC_ISSUER: ${BIAICE_OIDC_ISSUER:-http://biaice.local:8080/realms/biaice}
+  BIAICE_OIDC_AUDIENCE: biaice-api
+  BIAICE_OIDC_JWKS_URL: http://keycloak:8080/realms/biaice/protocol/openid-connect/certs
+  OIDC_ISSUER: ${BIAICE_OIDC_ISSUER:-http://biaice.local:8080/realms/biaice}
+  BIAICE_OPENBAO_ADDR: http://openbao:8200
+  BIAICE_CLAMAV_HOST: clamav
+  BIAICE_CLAMAV_PORT: "3310"
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+  OTEL_SDK_DISABLED: "true"
+  NEXT_TELEMETRY_DISABLED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUNBUFFERED: "1"
+
+services:
+  gateway:
+    <<: *runtime-defaults
+    image: caddy:2.10.0-alpine@sha256:ae4458638da8e1a91aafffb231c5f8778e964bca650c8a8cb23a7e8ac557aa3c
+    environment:
+      BIAICE_PUBLIC_HOST: biaice.local
+    ports:
+      - "${GATEWAY_BIND_ADDRESS:-0.0.0.0}:${GATEWAY_HOST_PORT:-8080}:${GATEWAY_CONTAINER_PORT:-8080}"
+    volumes:
+      - ./infra/gateway/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      host-ingress:
+        gw_priority: 100
+      front: {}
+      back: {}
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    # The official Caddy binary carries cap_net_bind_service; keeping it in
+    # the bounding set is required for exec even though our ports are >1024.
+    cap_add:
+      - NET_BIND_SERVICE
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8080/_gateway/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          memory: 64M
+
+  web:
+    <<: *runtime-defaults
+    build:
+      context: .
+      dockerfile: infra/compose/web.Dockerfile
+    image: biaice/web:${BIAICE_IMAGE_TAG:-local}
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      NEXT_TELEMETRY_DISABLED: "1"
+      BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+      BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+      BIAICE_BYOK_ENABLED: "false"
+      REAL_DATA_MODE: "false"
+      BYOK_SECRET_GATE: FAIL
+      PROVIDER_EGRESS_ENABLED: "false"
+      API_INTERNAL_URL: http://api:8000
+      BIAICE_PUBLIC_ORIGIN: ${BIAICE_PUBLIC_ORIGIN:-http://biaice.local:8080}
+      BIAICE_OIDC_ISSUER: ${BIAICE_OIDC_ISSUER:-http://biaice.local:8080/realms/biaice}
+      BIAICE_OIDC_INTERNAL_ISSUER: http://keycloak:8080/realms/biaice
+      BIAICE_OIDC_CLIENT_ID: biaice-web
+    expose:
+      - "3000"
+    networks:
+      - front
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /app/.next/cache:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 30s
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.50"
+          memory: 768M
+        reservations:
+          memory: 192M
+
+  api:
+    <<: [*runtime-defaults, *backend-image]
+    command: ["python", "-m", "uvicorn", "biaice.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-server-header"]
+    environment:
+      <<: *backend-environment
+      AUDIT_ANCHOR_PATH: /var/lib/biaice/audit-anchors
+    expose:
+      - "8000"
+    volumes:
+      - audit_anchors:/var/lib/biaice/audit-anchors
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3).read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 30s
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis-broker:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  migrate:
+    <<: *backend-image
+    command: ["python", "-m", "biaice.cli", "migrate"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      <<: *backend-environment
+      BIAICE_DATABASE_URL: postgresql+psycopg://${POSTGRES_MIGRATION_USER:-biaice_migrator}:${POSTGRES_MIGRATION_PASSWORD:?Run scripts/init.ps1 first}@postgres:5432/${POSTGRES_DB:-biaice}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_MIGRATION_USER:-biaice_migrator}:${POSTGRES_MIGRATION_PASSWORD:?Run scripts/init.ps1 first}@postgres:5432/${POSTGRES_DB:-biaice}
+      BIAICE_BACKEND_ROOT: /opt/biaice/app
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  seed-synthetic:
+    <<: *backend-image
+    profiles: ["seed"]
+    command: ["python", "-m", "biaice.cli", "seed-synthetic"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      <<: *backend-environment
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker-ingest:
+    <<: [*runtime-defaults, *backend-image]
+    hostname: worker-ingest
+    command: ["python", "-m", "celery", "-A", "biaice.worker.celery_app", "worker", "--loglevel=INFO", "--queues=ingest", "--concurrency=${WORKER_INGEST_CONCURRENCY:-2}", "--hostname=worker-ingest@%h"]
+    environment:
+      <<: *backend-environment
+      CELERY_WORKER_KIND: ingest
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=1g,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "python -m celery -A biaice.worker.celery_app inspect ping --destination worker-ingest@worker-ingest --timeout 5 | grep -q pong"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on: &worker-dependencies
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis-broker:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      clamav:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "3.00"
+          memory: 3G
+        reservations:
+          memory: 512M
+
+  worker-simulation:
+    <<: [*runtime-defaults, *backend-image]
+    hostname: worker-simulation
+    command: ["python", "-m", "celery", "-A", "biaice.worker.celery_app", "worker", "--loglevel=INFO", "--queues=simulation", "--concurrency=${WORKER_SIMULATION_CONCURRENCY:-2}", "--hostname=worker-simulation@%h"]
+    environment:
+      <<: *backend-environment
+      CELERY_WORKER_KIND: simulation
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "python -m celery -A biaice.worker.celery_app inspect ping --destination worker-simulation@worker-simulation --timeout 5 | grep -q pong"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on: *worker-dependencies
+    deploy:
+      resources:
+        limits:
+          cpus: "4.00"
+          memory: 4G
+        reservations:
+          memory: 512M
+
+  worker-governance:
+    <<: [*runtime-defaults, *backend-image]
+    hostname: worker-governance
+    command: ["python", "-m", "celery", "-A", "biaice.worker.celery_app", "worker", "--loglevel=INFO", "--queues=governance", "--concurrency=${WORKER_GOVERNANCE_CONCURRENCY:-1}", "--hostname=worker-governance@%h"]
+    environment:
+      <<: *backend-environment
+      CELERY_WORKER_KIND: governance
+      AUDIT_ANCHOR_PATH: /var/lib/biaice/audit-anchors
+    volumes:
+      - audit_anchors:/var/lib/biaice/audit-anchors
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "python -m celery -A biaice.worker.celery_app inspect ping --destination worker-governance@worker-governance --timeout 5 | grep -q pong"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on: *worker-dependencies
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  worker-provider:
+    <<: [*runtime-defaults, *backend-image]
+    hostname: worker-provider
+    command: ["python", "-m", "celery", "-A", "biaice.worker.celery_app", "worker", "--loglevel=INFO", "--queues=provider", "--concurrency=${WORKER_PROVIDER_CONCURRENCY:-1}", "--hostname=worker-provider@%h"]
+    environment:
+      <<: *backend-environment
+      CELERY_WORKER_KIND: provider
+      HTTPS_PROXY: http://provider-egress-gateway:8888
+      NO_PROXY: api,postgres,redis-broker,redis-cache,minio,keycloak,openbao,clamav,otel-collector,127.0.0.1,localhost
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "python -m celery -A biaice.worker.celery_app inspect ping --destination worker-provider@worker-provider --timeout 5 | grep -q pong"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on: *worker-dependencies
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  scheduler:
+    <<: [*runtime-defaults, *backend-image]
+    command: ["python", "-m", "celery", "-A", "biaice.worker.celery_app", "beat", "--loglevel=INFO", "--pidfile=/tmp/celerybeat.pid", "--schedule=/tmp/celerybeat-schedule"]
+    environment:
+      <<: *backend-environment
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "test -s /tmp/celerybeat.pid && kill -0 $$(cat /tmp/celerybeat.pid)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on: *worker-dependencies
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          memory: 128M
+
+  postgres:
+    <<: *runtime-defaults
+    image: postgres:16.14-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-biaice}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/init.ps1 first}
+      POSTGRES_DB: ${POSTGRES_DB:-biaice}
+      POSTGRES_MIGRATION_USER: ${POSTGRES_MIGRATION_USER:-biaice_migrator}
+      POSTGRES_MIGRATION_PASSWORD: ${POSTGRES_MIGRATION_PASSWORD:?Run scripts/init.ps1 first}
+      POSTGRES_RUNTIME_USER: ${POSTGRES_RUNTIME_USER:-biaice_runtime}
+      POSTGRES_RUNTIME_PASSWORD: ${POSTGRES_RUNTIME_PASSWORD:?Run scripts/init.ps1 first}
+      KEYCLOAK_DB: ${KEYCLOAK_DB:-keycloak}
+      KEYCLOAK_DB_USER: ${KEYCLOAK_DB_USER:-keycloak}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Run scripts/init.ps1 first}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    command:
+      - postgres
+      - -c
+      - password_encryption=scram-sha-256
+      - -c
+      - ssl=off
+      - -c
+      - log_statement=none
+      - -c
+      - log_connections=on
+      - -c
+      - log_disconnections=on
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - backup_staging:/backup-staging
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - back
+    shm_size: 256m
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h 127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2G
+        reservations:
+          memory: 512M
+
+  redis-broker:
+    <<: *runtime-defaults
+    image: redis:7.4.9-alpine@sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
+    user: "999:1000"
+    environment:
+      REDIS_BROKER_PASSWORD: ${REDIS_BROKER_PASSWORD:?Run scripts/init.ps1 first}
+    command: ["sh", "-ceu", "exec redis-server --appendonly yes --appendfsync everysec --save 900 1 --save 300 10 --maxmemory-policy noeviction --requirepass \"$${REDIS_BROKER_PASSWORD}\""]
+    volumes:
+      - redis_broker_data:/data
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --no-auth-warning -a \"$${REDIS_BROKER_PASSWORD}\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+        reservations:
+          memory: 128M
+
+  redis-cache:
+    <<: *runtime-defaults
+    image: redis:7.4.9-alpine@sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
+    user: "999:1000"
+    environment:
+      REDIS_CACHE_PASSWORD: ${REDIS_CACHE_PASSWORD:?Run scripts/init.ps1 first}
+    command: ["sh", "-ceu", "exec redis-server --save '' --appendonly no --maxmemory ${REDIS_CACHE_MAXMEMORY:-512mb} --maxmemory-policy allkeys-lru --requirepass \"$${REDIS_CACHE_PASSWORD}\""]
+    volumes:
+      - redis_cache_data:/data
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --no-auth-warning -a \"$${REDIS_CACHE_PASSWORD}\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 640M
+        reservations:
+          memory: 96M
+
+  minio:
+    <<: *runtime-defaults
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z@sha256:a1ea29fa28355559ef137d71fc570e508a214ec84ff8083e39bc5428980b015e
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-biaice-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Run scripts/init.ps1 first}
+      MINIO_BROWSER: "off"
+      MINIO_UPDATE: "off"
+    volumes:
+      - minio_data:/data
+    networks:
+      - back
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  minio-init:
+    image: quay.io/minio/mc:RELEASE.2025-04-16T18-13-26Z@sha256:aead63c77f9db9107f1696fb08ecb0faeda23729cde94b0f663edf4fe09728e3
+    entrypoint: ["/bin/sh", "/infra/init.sh"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-biaice-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Run scripts/init.ps1 first}
+    volumes:
+      - ./infra/minio/init.sh:/infra/init.sh:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /root/.mc:size=8m,mode=0700
+    cap_drop:
+      - ALL
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  keycloak:
+    <<: *runtime-defaults
+    build:
+      context: .
+      dockerfile: infra/keycloak/Dockerfile
+    image: biaice/keycloak:${BIAICE_IMAGE_TAG:-local}
+    command: ["start", "--optimized", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:-biaice-bootstrap}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Run scripts/init.ps1 first}
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB:-keycloak}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Run scripts/init.ps1 first}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME: ${BIAICE_PUBLIC_ORIGIN:-http://biaice.local:8080}
+      KC_HOSTNAME_STRICT: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_CACHE: local
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./infra/keycloak/biaice-realm.json:/opt/keycloak/data/import/biaice-realm.json:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/9000; printf \"GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200 OK\" <&3'"]
+      interval: 15s
+      timeout: 8s
+      retries: 20
+      start_period: 45s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1G
+        reservations:
+          memory: 384M
+
+  keycloak-init:
+    image: quay.io/keycloak/keycloak:26.2.5@sha256:4883630ef9db14031cde3e60700c9a9a8eaf1b5c24db1589d6a2d43de38ba2a9
+    profiles: ["init"]
+    entrypoint: ["/bin/bash", "/infra/init.sh"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:-biaice-bootstrap}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Run scripts/init.ps1 first}
+    volumes:
+      - ./infra/keycloak/init.sh:/infra/init.sh:ro
+      - ./infra/keycloak/user-profile.json:/infra/user-profile.json:ro
+      - ./infra/keycloak/generated:/run/biaice-keycloak:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /opt/keycloak/.keycloak:size=8m,mode=0700,uid=1000,gid=0
+    cap_drop:
+      - ALL
+    depends_on:
+      keycloak:
+        condition: service_healthy
+
+  openbao:
+    <<: *runtime-defaults
+    image: quay.io/openbao/openbao:2.3.1@sha256:41dc3e47da01575e1ffea70aa635180b57ff999264398313334c259a697bf7a2
+    command: ["server", "-config=/openbao/config/server.hcl"]
+    environment:
+      BAO_ADDR: http://127.0.0.1:8200
+    volumes:
+      - openbao_data:/openbao/file
+      - openbao_audit:/openbao/logs
+      - backup_staging:/backup-staging
+      - ./infra/openbao/server.hcl:/openbao/config/server.hcl:ro
+      - ${BIAICE_OPENBAO_OPERATOR_DIR:-./infra/openbao/generated}:/run/biaice-openbao:ro
+    networks:
+      - back
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    healthcheck:
+      test: ["CMD-SHELL", "bao status -address=http://127.0.0.1:8200 >/dev/null 2>&1; rc=$$?; [ $$rc -eq 0 ] || [ $$rc -eq 2 ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          memory: 128M
+
+  clamav:
+    <<: *runtime-defaults
+    image: clamav/clamav:1.4.5-debian@sha256:0542880c8abebb7430be5366657aec561f03693ed7be4e64a45fd2ee60b08d02
+    user: clamav
+    entrypoint: ["/init-unprivileged"]
+    environment:
+      CLAMAV_NO_FRESHCLAMD: "true"
+    volumes:
+      - clamav_signatures:/var/lib/clamav
+    networks:
+      - back
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "find /var/lib/clamav -maxdepth 1 -type f \\( -name '*.cvd' -o -name '*.cld' \\) -size +0c -print -quit | grep -q . && clamdscan --ping=1 >/dev/null 2>&1"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 4G
+        reservations:
+          memory: 1G
+
+  provider-egress-gateway:
+    <<: *runtime-defaults
+    profiles: ["provider-egress"]
+    build:
+      context: .
+      dockerfile: infra/provider-egress/Dockerfile
+    image: biaice/provider-egress:${BIAICE_IMAGE_TAG:-local}
+    environment:
+      BIAICE_EGRESS_LISTEN: 0.0.0.0:8888
+      BIAICE_EGRESS_GATE_FILE: /run/biaice-egress/byok-secret-gate.json
+      BIAICE_EGRESS_ALLOWLIST_FILE: /run/biaice-egress/provider-domains.txt
+      BIAICE_EGRESS_GATE_VERIFICATION_KEY_FILE: /run/biaice-egress/gate-verification.key
+      BIAICE_EGRESS_AUTHORIZATION_URL: http://api:8000/internal/provider-egress/authorize
+      BIAICE_EGRESS_MAX_CONNECTIONS_PER_MINUTE: ${PROVIDER_EGRESS_RATE_LIMIT:-30}
+    volumes:
+      - ${BIAICE_PROVIDER_EGRESS_GATE_DIR:-./infra/provider-egress/generated}:/run/biaice-egress:ro
+    expose:
+      - "8888"
+    networks:
+      - back
+      - provider-egress
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8888/health', timeout=3).read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    depends_on:
+      api:
+        condition: service_healthy
+      openbao:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+        reservations:
+          memory: 64M
+
+  clamav-signature-update:
+    image: clamav/clamav:1.4.5-debian@sha256:0542880c8abebb7430be5366657aec561f03693ed7be4e64a45fd2ee60b08d02
+    profiles: ["maintenance-egress"]
+    user: clamav
+    entrypoint: ["/bin/sh", "-ceu", "freshclam --verbose"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - clamav_signatures:/var/lib/clamav
+    networks:
+      - maintenance-egress
+    cap_drop:
+      - ALL
+
+  clamav-signature-import:
+    image: clamav/clamav:1.4.5-debian@sha256:0542880c8abebb7430be5366657aec561f03693ed7be4e64a45fd2ee60b08d02
+    profiles: ["maintenance-import"]
+    user: clamav
+    entrypoint: ["/bin/sh", "/infra/import-signatures.sh"]
+    restart: "no"
+    network_mode: none
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - clamav_signatures:/var/lib/clamav
+      - ./infra/clamav/import-signatures.sh:/infra/import-signatures.sh:ro
+      - type: bind
+        source: ${CLAMAV_SIGNATURE_IMPORT_DIR:-./infra/clamav/offline-import-placeholder}
+        target: /import
+        read_only: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+
+  prometheus:
+    <<: *runtime-defaults
+    image: prom/prometheus:v3.4.1@sha256:9abc6cf6aea7710d163dbb28d8eeb7dc5baef01e38fa4cd146a406dd9f07f70d
+    profiles: ["observability"]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle=false
+    volumes:
+      - ./infra/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+
+  loki:
+    <<: *runtime-defaults
+    image: grafana/loki:3.5.1@sha256:a74594532eec4cc313401beedc4dd2708c43674c032084b1aeb87c14a5be1745
+    profiles: ["observability"]
+    command: ["-config.file=/etc/loki/config.yml"]
+    volumes:
+      - ./infra/observability/loki.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "/usr/bin/loki", "-version"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+
+  tempo:
+    <<: *runtime-defaults
+    image: grafana/tempo:2.8.1@sha256:bc9245fe3da4e63dc4c6862d9c2dad9bcd8be13d0ba4f7705fa6acda4c904d0e
+    profiles: ["observability"]
+    command: ["-config.file=/etc/tempo/config.yml"]
+    volumes:
+      - ./infra/observability/tempo.yml:/etc/tempo/config.yml:ro
+      - tempo_data:/var/tempo
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "/tempo", "-version"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+
+  otel-collector:
+    <<: *runtime-defaults
+    image: otel/opentelemetry-collector-contrib:0.128.0@sha256:1ab0baba0ee3695d823c46653d8a6e8894896e668ce8bd7ebe002e948d827bc7
+    profiles: ["observability"]
+    command: ["--config=/etc/otelcol/config.yml"]
+    volumes:
+      - ./infra/observability/otel-collector.yml:/etc/otelcol/config.yml:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "/otelcol-contrib", "--version"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      loki:
+        condition: service_healthy
+      tempo:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+
+  grafana:
+    <<: *runtime-defaults
+    image: grafana/grafana:12.0.1@sha256:06dc8d60e184705e5dc00e051a6d92342a44010d7d5e538d0a36339e85abb9b7
+    profiles: ["observability"]
+    environment:
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-biaice-observer}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Run scripts/init.ps1 first}
+      GF_SERVER_ROOT_URL: http://grafana:3000
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/observability/grafana-datasources.yml:/etc/grafana/provisioning/datasources/biaice.yml:ro
+    networks:
+      - back
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      tempo:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+
+  backup:
+    image: restic/restic:0.18.0@sha256:4cf4a61ef9786f4de53e9de8c8f5c040f33830eb0a10bf3d614410ee2fcb6120
+    profiles: ["backup"]
+    entrypoint: ["/bin/sh", "/infra/restic-job.sh"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      BACKUP_ACTION: backup
+      RESTIC_REPOSITORY: /repository
+      RESTIC_PASSWORD_FILE: /run/biaice-backup/restic-password
+    volumes: &backup-mounts
+      - backup_repository:/repository
+      - backup_staging:/snapshot/staging:ro
+      - minio_data:/snapshot/minio:ro
+      - audit_anchors:/snapshot/audit-anchors:ro
+      - openbao_data:/snapshot/openbao-data:ro
+      - openbao_audit:/snapshot/openbao-audit:ro
+      - caddy_data:/snapshot/caddy-data:ro
+      - keycloak_data:/snapshot/keycloak-data:ro
+      - ./infra/backup/restic-job.sh:/infra/restic-job.sh:ro
+      - ${BIAICE_BACKUP_PASSWORD_FILE:-./infra/secrets/restic-password.txt}:/run/biaice-backup/restic-password:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+
+  restore-verify:
+    image: restic/restic:0.18.0@sha256:4cf4a61ef9786f4de53e9de8c8f5c040f33830eb0a10bf3d614410ee2fcb6120
+    profiles: ["restore"]
+    entrypoint: ["/bin/sh", "/infra/restic-job.sh"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      BACKUP_ACTION: verify
+      RESTIC_REPOSITORY: /repository
+      RESTIC_PASSWORD_FILE: /run/biaice-backup/restic-password
+      RESTORE_SNAPSHOT: ${RESTORE_SNAPSHOT:-}
+    volumes:
+      - backup_repository:/repository:ro
+      - ./infra/backup/restic-job.sh:/infra/restic-job.sh:ro
+      - ${BIAICE_BACKUP_PASSWORD_FILE:-./infra/secrets/restic-password.txt}:/run/biaice-backup/restic-password:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+
+  restore-fetch:
+    image: restic/restic:0.18.0@sha256:4cf4a61ef9786f4de53e9de8c8f5c040f33830eb0a10bf3d614410ee2fcb6120
+    profiles: ["restore"]
+    entrypoint: ["/bin/sh", "/infra/restic-job.sh"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      BACKUP_ACTION: restore
+      RESTIC_REPOSITORY: /repository
+      RESTIC_PASSWORD_FILE: /run/biaice-backup/restic-password
+      RESTORE_SNAPSHOT: ${RESTORE_SNAPSHOT:-}
+    volumes:
+      - backup_repository:/repository:ro
+      - restore_staging:/restore
+      - ./infra/backup/restic-job.sh:/infra/restic-job.sh:ro
+      - ${BIAICE_BACKUP_PASSWORD_FILE:-./infra/secrets/restic-password.txt}:/run/biaice-backup/restic-password:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+
+  restore-crypto-materials:
+    image: alpine:3.22.0@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715
+    profiles: ["restore"]
+    entrypoint: ["/bin/sh", "/infra/restore-materials.sh", "crypto"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      RESTORE_CONFIRMATION: ${RESTORE_CONFIRMATION:-}
+      RESTORE_SNAPSHOT: ${RESTORE_SNAPSHOT:-}
+    volumes:
+      - restore_staging:/restore:ro
+      - openbao_data:/target/openbao-data
+      - openbao_audit:/target/openbao-audit
+      - caddy_data:/target/caddy-data
+      - ./infra/backup/restore-materials.sh:/infra/restore-materials.sh:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+
+  restore-identity-materials:
+    image: alpine:3.22.0@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715
+    profiles: ["restore"]
+    entrypoint: ["/bin/sh", "/infra/restore-materials.sh", "identity"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      RESTORE_CONFIRMATION: ${RESTORE_CONFIRMATION:-}
+      RESTORE_SNAPSHOT: ${RESTORE_SNAPSHOT:-}
+    volumes:
+      - restore_staging:/restore:ro
+      - keycloak_data:/target/keycloak-data
+      - backup_staging:/target/staging
+      - ./infra/backup/restore-materials.sh:/infra/restore-materials.sh:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+
+  restore-object-materials:
+    image: alpine:3.22.0@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715
+    profiles: ["restore"]
+    entrypoint: ["/bin/sh", "/infra/restore-materials.sh", "objects"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      RESTORE_CONFIRMATION: ${RESTORE_CONFIRMATION:-}
+      RESTORE_SNAPSHOT: ${RESTORE_SNAPSHOT:-}
+    volumes:
+      - restore_staging:/restore:ro
+      - minio_data:/target/minio
+      - audit_anchors:/target/audit-anchors
+      - ./infra/backup/restore-materials.sh:/infra/restore-materials.sh:ro
+    networks:
+      - back
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+
+networks:
+  # Docker Desktop does not publish ports for containers attached only to
+  # internal networks.  This bridge is the single host-facing ingress and is
+  # topology-checked to contain gateway only.
+  host-ingress:
+    driver: bridge
+    internal: false
+    attachable: false
+  front:
+    driver: bridge
+    internal: true
+    attachable: false
+  back:
+    driver: bridge
+    internal: true
+    attachable: false
+  provider-egress:
+    driver: bridge
+    internal: false
+    attachable: false
+  maintenance-egress:
+    driver: bridge
+    internal: false
+    attachable: false
+
+volumes:
+  postgres_data:
+  redis_broker_data:
+  redis_cache_data:
+  minio_data:
+  keycloak_data:
+  openbao_data:
+  openbao_audit:
+  audit_anchors:
+  caddy_data:
+  caddy_config:
+  clamav_signatures:
+  backup_repository:
+  backup_staging:
+  restore_staging:
+  prometheus_data:
+  loki_data:
+  tempo_data:
+  grafana_data:

@@ -1,0 +1,57 @@
+# This file is loaded automatically for local development.  It deliberately
+# repeats the fail-closed switches so a value in the host environment cannot
+# turn the HTTP/synthetic stack into a real-data or BYOK stack.
+services:
+  api:
+    environment:
+      BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+      BIAICE_DEPLOYMENT_PROFILE: synthetic_http
+      BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+      BIAICE_BYOK_ENABLED: "false"
+      REAL_DATA_MODE: "false"
+      BYOK_SECRET_GATE: FAIL
+      CREDENTIAL_ENDPOINTS_ENABLED: "false"
+      PROVIDER_EGRESS_ENABLED: "false"
+      OTEL_SDK_DISABLED: "true"
+  web:
+    environment:
+      BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+      REAL_DATA_MODE: "false"
+      BYOK_SECRET_GATE: FAIL
+      PROVIDER_EGRESS_ENABLED: "false"
+  worker-ingest:
+    environment:
+      BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+      BIAICE_DEPLOYMENT_PROFILE: synthetic_http
+      BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+      BIAICE_BYOK_ENABLED: "false"
+      REAL_DATA_MODE: "false"
+      BYOK_SECRET_GATE: FAIL
+      PROVIDER_EGRESS_ENABLED: "false"
+  worker-simulation:
+    environment:
+      BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+      BIAICE_DEPLOYMENT_PROFILE: synthetic_http
+      BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+      BIAICE_BYOK_ENABLED: "false"
+      REAL_DATA_MODE: "false"
+      BYOK_SECRET_GATE: FAIL
+      PROVIDER_EGRESS_ENABLED: "false"
+  worker-governance:
+    environment:
+      BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+      BIAICE_DEPLOYMENT_PROFILE: synthetic_http
+      BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+      BIAICE_BYOK_ENABLED: "false"
+      REAL_DATA_MODE: "false"
+      BYOK_SECRET_GATE: FAIL
+      PROVIDER_EGRESS_ENABLED: "false"
+  worker-provider:
+    environment:
+      BIAICE_DEPLOYMENT_MODE: SYNTHETIC_ONLY
+      BIAICE_DEPLOYMENT_PROFILE: synthetic_http
+      BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+      BIAICE_BYOK_ENABLED: "false"
+      REAL_DATA_MODE: "false"
+      BYOK_SECRET_GATE: FAIL
+      PROVIDER_EGRESS_ENABLED: "false"

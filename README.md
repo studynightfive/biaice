@@ -1,100 +1,80 @@
-# vinext-starter
+# 标策 AI（Biaice）
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+标策 AI 是面向采购投标团队的本地自托管决策辅助系统。应用、身份、数据库、对象存储、队列、OCR、审计与监控均运行在组内电脑或局域网设备上；生成式模型仅能由租户管理员配置 API Key 后，经服务端受控网关调用已批准的外部 Provider。
 
-## Prerequisites
+> 当前阶段：**M0 平台与契约骨架**。仅允许合成或脱敏测试数据；真实数据模式、真实 API Key、Provider 出网、正式推荐、审批与提交能力默认关闭。当前代码不代表 Production 准入。
 
-- Node.js `>=22.13.0`
+## 核心边界
 
-## Quick Start
+- 单仓库、模块化单体 API，加独立 Celery Worker；不拆成七个微服务。
+- 标准 Next.js Node Web、FastAPI API、PostgreSQL、两个独立 Redis、MinIO、Keycloak、OpenBao、ClamAV 与 Caddy。
+- `gateway` 是唯一局域网入口；浏览器、Web、API 与普通 Worker 不得直接访问 Provider。
+- 不保证中标，不自动操作外部采购平台，不使用未授权竞对信息、个人信息或商业秘密。
+- 未冻结契约、未通过 Gate 或状态未知时，正式能力失败关闭，只保留明确水印的安全探索或人工录入。
 
-```bash
-npm install
-npm run dev
-npm run build
+## 架构
+
+```mermaid
+flowchart LR
+  U["局域网用户"] --> G["Caddy / biaice.local"]
+  G --> W["Next.js Web"]
+  G --> A["FastAPI API"]
+  A --> P[("PostgreSQL")]
+  A --> C[("Redis Cache")]
+  A --> M[("MinIO")]
+  A --> K["Keycloak"]
+  A --> B["OpenBao"]
+  A --> R[("Redis Broker")]
+  R --> WI["ingest worker"]
+  R --> WS["simulation worker"]
+  R --> WG["governance worker"]
+  R --> WP["provider worker"]
+  WP --> E["provider-egress-gateway"]
+  E -. "Gate 通过后唯一受控出网" .-> X["批准的模型 Provider"]
 ```
 
-This starter does not use `wrangler.jsonc`.
+## 仓库结构
 
-## Included Shape
-
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Email and name are intended for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```text
+apps/web/                 Next.js App Shell、公共 UI、生成客户端与 feature 空挂载
+apps/backend/             FastAPI、公共 core、治理编排与 Celery Worker
+packages/contracts/       OpenAPI 快照、事件/错误目录与生成 TypeScript 类型
+infra/                    Compose、网关、身份、密钥、数据库及可观测性配置
+docs/                     PRD、ADR、架构、追踪、Stage Gate、安全与运行手册
+scripts/                  Windows 初始化、运行、测试、备份与恢复入口
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+目录写入边界和集成规则见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [docs/architecture/ownership.yaml](docs/architecture/ownership.yaml)。成员 1 的交付范围、验证状态和回滚边界见 [M0 组长交接说明](docs/delivery/M0-member1-handoff.md)。
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+## 本地准备
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+- Windows 11 + PowerShell 5.1/7
+- Docker Desktop（Compose v2）
+- Node.js 22 LTS 或更高兼容版本
+- Python 3.12
+- uv（按锁文件建立 Python 开发环境）
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+运行 `scripts/init.ps1` 生成被 Git 忽略并收紧权限的 `.env.local` 合成开发配置；不得写入真实 API Key、OpenBao root token 或 unseal share。然后使用 `scripts/dev.ps1` 启动合成数据 profile。详细步骤见 [本地开发手册](docs/runbooks/development.md)。
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+## 开发与验证
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+```powershell
+npm ci
+uv sync --project apps/backend --locked --extra test
+npm test
+python scripts/validate_compose_topology.py
+```
 
-## Useful Commands
+所有功能分支使用 `feature/m{成员号}-{domain}-{short-name}`。`main` 禁止直接开发；共享契约先合并，功能实现再依赖生成客户端。PR 必须通过 CI、CODEOWNERS 与权限/审计负向测试后 squash merge。
 
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+## 安全
 
-## Learn More
+本仓库公开，但业务数据、密钥与本机安全材料绝不能公开。提交前请阅读 [SECURITY.md](SECURITY.md) 与 [公开仓库安全基线](docs/security/public-repository.md)。发现漏洞请勿在公开 Issue 中披露利用细节。
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+## 需求基线
+
+- `docs/标策AI_产品需求文档_PRD_V1.3.md`
+- `docs/标策AI_项目构建完整提示词_V1.0.md`
+- `docs/标策AI_前端设计文档_V1.0.md`（仅作交互参考）
+
+本项目当前未授予开源许可证。公开可见不等于获得复制、修改或再分发许可。

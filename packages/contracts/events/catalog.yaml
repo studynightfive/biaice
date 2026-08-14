@@ -1,0 +1,730 @@
+{
+  "approvals_reports.approval_decided.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ApprovalDecided; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "ApprovalDecidedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ApprovalDecided"
+  },
+  "approvals_reports.approval_package_frozen.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ApprovalPackageFrozen; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "ApprovalPackageFrozenV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ApprovalPackageFrozen"
+  },
+  "approvals_reports.approval_package_invalidated.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ApprovalPackageInvalidated; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "ApprovalPackageInvalidatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ApprovalPackageInvalidated"
+  },
+  "approvals_reports.approval_requested.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ApprovalRequested; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "ApprovalRequestedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ApprovalRequested"
+  },
+  "approvals_reports.decision_report_created.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DecisionReportCreated; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "DecisionReportCreatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DecisionReportCreated"
+  },
+  "approvals_reports.decision_report_revoked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DecisionReportRevoked; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "DecisionReportRevokedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DecisionReportRevoked"
+  },
+  "approvals_reports.decision_unit_transition_requested.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DecisionUnitTransitionRequested; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "DecisionUnitTransitionRequestedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DecisionUnitTransitionRequested"
+  },
+  "approvals_reports.outcome_conflicting.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event OutcomeConflicting; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "OutcomeConflictingV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "OutcomeConflicting"
+  },
+  "approvals_reports.outcome_verified.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event OutcomeVerified; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "OutcomeVerifiedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "OutcomeVerified"
+  },
+  "approvals_reports.precheck_report_created.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event PrecheckReportCreated; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "PrecheckReportCreatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "PrecheckReportCreated"
+  },
+  "approvals_reports.risk_accepted.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event RiskAccepted; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "RiskAcceptedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "RiskAccepted"
+  },
+  "approvals_reports.risk_revoked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event RiskRevoked; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "RiskRevokedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "RiskRevoked"
+  },
+  "approvals_reports.submission_authorization_blocked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionAuthorizationBlocked; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionAuthorizationBlockedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionAuthorizationBlocked"
+  },
+  "approvals_reports.submission_authorization_created.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionAuthorizationCreated; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionAuthorizationCreatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionAuthorizationCreated"
+  },
+  "approvals_reports.submission_declared.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionDeclared; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionDeclaredV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionDeclared"
+  },
+  "approvals_reports.submission_drafted.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionDrafted; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionDraftedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionDrafted"
+  },
+  "approvals_reports.submission_failed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionFailed; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionFailedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionFailed"
+  },
+  "approvals_reports.submission_mismatch.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionMismatch; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionMismatchV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionMismatch"
+  },
+  "approvals_reports.submission_verified.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionVerified; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionVerifiedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionVerified"
+  },
+  "approvals_reports.submission_withdrawn.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SubmissionWithdrawn; payload fields await the owner schema PR.",
+    "owner": "member-7",
+    "payload_schema": "SubmissionWithdrawnV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SubmissionWithdrawn"
+  },
+  "audit.integrity.failed.v1": {
+    "contract_only": false,
+    "description": "Audit hash-chain or external-anchor validation failed.",
+    "owner": "member-1",
+    "payload_schema": "AuditIntegrityFailedV1",
+    "schema_status": "FROZEN_ENVELOPE_PAYLOAD_PENDING_PERSISTENCE",
+    "source_name": "audit.integrity.failed.v1"
+  },
+  "documents.derived_asset_registered.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DerivedAssetRegistered; payload fields await the owner schema PR.",
+    "owner": "member-3",
+    "payload_schema": "DerivedAssetRegisteredV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DerivedAssetRegistered"
+  },
+  "documents.document_quarantined.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DocumentQuarantined; payload fields await the owner schema PR.",
+    "owner": "member-3",
+    "payload_schema": "DocumentQuarantinedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DocumentQuarantined"
+  },
+  "documents.parse_completed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ParseCompleted; payload fields await the owner schema PR.",
+    "owner": "member-3",
+    "payload_schema": "ParseCompletedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ParseCompleted"
+  },
+  "documents.parse_failed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ParseFailed; payload fields await the owner schema PR.",
+    "owner": "member-3",
+    "payload_schema": "ParseFailedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ParseFailed"
+  },
+  "documents.replica_deletion_receipt_produced.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ReplicaDeletionReceiptProduced; payload fields await the owner schema PR.",
+    "owner": "member-3",
+    "payload_schema": "ReplicaDeletionReceiptProducedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ReplicaDeletionReceiptProduced"
+  },
+  "documents.source_document_released.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SourceDocumentReleased; payload fields await the owner schema PR.",
+    "owner": "member-3",
+    "payload_schema": "SourceDocumentReleasedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SourceDocumentReleased"
+  },
+  "documents.source_document_uploaded.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SourceDocumentUploaded; payload fields await the owner schema PR.",
+    "owner": "member-3",
+    "payload_schema": "SourceDocumentUploadedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SourceDocumentUploaded"
+  },
+  "evidence_commercial.commercial_policy_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event CommercialPolicyPublished; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "CommercialPolicyPublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "CommercialPolicyPublished"
+  },
+  "evidence_commercial.condition_changed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ConditionChanged; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "ConditionChangedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ConditionChanged"
+  },
+  "evidence_commercial.cost_baseline_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event CostBaselinePublished; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "CostBaselinePublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "CostBaselinePublished"
+  },
+  "evidence_commercial.evidence_match_reviewed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event EvidenceMatchReviewed; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "EvidenceMatchReviewedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "EvidenceMatchReviewed"
+  },
+  "evidence_commercial.evidence_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event EvidencePublished; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "EvidencePublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "EvidencePublished"
+  },
+  "evidence_commercial.evidence_revoked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event EvidenceRevoked; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "EvidenceRevokedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "EvidenceRevoked"
+  },
+  "evidence_commercial.precheck_assessed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event PrecheckAssessed; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "PrecheckAssessedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "PrecheckAssessed"
+  },
+  "evidence_commercial.readiness_assessed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ReadinessAssessed; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "ReadinessAssessedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ReadinessAssessed"
+  },
+  "evidence_commercial.response_profile_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ResponseProfilePublished; payload fields await the owner schema PR.",
+    "owner": "member-4",
+    "payload_schema": "ResponseProfilePublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ResponseProfilePublished"
+  },
+  "governance.deletion.completed.v1": {
+    "contract_only": false,
+    "description": "Every required replica receipt was verified and a tombstone persisted.",
+    "owner": "member-1",
+    "payload_schema": "DeletionCompletedV1",
+    "schema_status": "FROZEN_ENVELOPE_PAYLOAD_PENDING_PERSISTENCE",
+    "source_name": "governance.deletion.completed.v1"
+  },
+  "governance.deletion.requested.v1": {
+    "contract_only": false,
+    "description": "Logical access was blocked and replica deletion orchestration began.",
+    "owner": "member-1",
+    "payload_schema": "DeletionRequestedV1",
+    "schema_status": "FROZEN_ENVELOPE_PAYLOAD_PENDING_PERSISTENCE",
+    "source_name": "governance.deletion.requested.v1"
+  },
+  "governance.invalidation.recorded.v1": {
+    "contract_only": false,
+    "description": "A concrete downstream object was marked stale or invalidated.",
+    "owner": "member-1",
+    "payload_schema": "InvalidationRecordedV1",
+    "schema_status": "FROZEN_ENVELOPE_PAYLOAD_PENDING_PERSISTENCE",
+    "source_name": "governance.invalidation.recorded.v1"
+  },
+  "governance.invalidation.requested.v1": {
+    "contract_only": false,
+    "description": "An effective upstream event requires dependency-matrix evaluation.",
+    "owner": "member-1",
+    "payload_schema": "InvalidationRequestedV1",
+    "schema_status": "FROZEN_ENVELOPE_PAYLOAD_PENDING_PERSISTENCE",
+    "source_name": "governance.invalidation.requested.v1"
+  },
+  "governance.retention.expired.v1": {
+    "contract_only": false,
+    "description": "Formal use was immediately blocked at retention expiry.",
+    "owner": "member-1",
+    "payload_schema": "RetentionExpiredV1",
+    "schema_status": "FROZEN_ENVELOPE_PAYLOAD_PENDING_PERSISTENCE",
+    "source_name": "governance.retention.expired.v1"
+  },
+  "governance.tombstone.replay-required.v1": {
+    "contract_only": false,
+    "description": "Recovery remains closed until tombstones are replayed.",
+    "owner": "member-1",
+    "payload_schema": "TombstoneReplayRequiredV1",
+    "schema_status": "FROZEN_ENVELOPE_PAYLOAD_PENDING_PERSISTENCE",
+    "source_name": "governance.tombstone.replay-required.v1"
+  },
+  "model_governance.competitor_profile_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event CompetitorProfilePublished; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "CompetitorProfilePublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "CompetitorProfilePublished"
+  },
+  "model_governance.competitor_profile_quarantined.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event CompetitorProfileQuarantined; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "CompetitorProfileQuarantinedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "CompetitorProfileQuarantined"
+  },
+  "model_governance.market_prior_expired.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event MarketPriorExpired; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "MarketPriorExpiredV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "MarketPriorExpired"
+  },
+  "model_governance.market_prior_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event MarketPriorPublished; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "MarketPriorPublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "MarketPriorPublished"
+  },
+  "model_governance.model_deployment_activated.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ModelDeploymentActivated; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ModelDeploymentActivatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ModelDeploymentActivated"
+  },
+  "model_governance.model_policy_effective.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ModelPolicyEffective; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ModelPolicyEffectiveV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ModelPolicyEffective"
+  },
+  "model_governance.model_rolled_back.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ModelRolledBack; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ModelRolledBackV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ModelRolledBack"
+  },
+  "model_governance.processing_authorization_withdrawn.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProcessingAuthorizationWithdrawn; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProcessingAuthorizationWithdrawnV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProcessingAuthorizationWithdrawn"
+  },
+  "model_governance.provider_catalog_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderCatalogPublished; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderCatalogPublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderCatalogPublished"
+  },
+  "model_governance.provider_catalog_revoked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderCatalogRevoked; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderCatalogRevokedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderCatalogRevoked"
+  },
+  "model_governance.provider_configuration_activated.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderConfigurationActivated; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderConfigurationActivatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderConfigurationActivated"
+  },
+  "model_governance.provider_configuration_revoked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderConfigurationRevoked; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderConfigurationRevokedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderConfigurationRevoked"
+  },
+  "model_governance.provider_configuration_successor_created.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderConfigurationSuccessorCreated; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderConfigurationSuccessorCreatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderConfigurationSuccessorCreated"
+  },
+  "model_governance.provider_configuration_superseded.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderConfigurationSuperseded; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderConfigurationSupersededV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderConfigurationSuperseded"
+  },
+  "model_governance.provider_configuration_suspended.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderConfigurationSuspended; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderConfigurationSuspendedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderConfigurationSuspended"
+  },
+  "model_governance.provider_configuration_verified.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderConfigurationVerified; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderConfigurationVerifiedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderConfigurationVerified"
+  },
+  "model_governance.provider_credential_local_reference_destroyed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderCredentialLocalReferenceDestroyed; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderCredentialLocalReferenceDestroyedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderCredentialLocalReferenceDestroyed"
+  },
+  "model_governance.provider_credential_rotated.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderCredentialRotated; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderCredentialRotatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderCredentialRotated"
+  },
+  "model_governance.provider_credential_set.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderCredentialSet; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderCredentialSetV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderCredentialSet"
+  },
+  "model_governance.provider_credential_usage_restricted.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderCredentialUsageRestricted; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderCredentialUsageRestrictedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderCredentialUsageRestricted"
+  },
+  "model_governance.provider_invocation_blocked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderInvocationBlocked; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderInvocationBlockedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderInvocationBlocked"
+  },
+  "model_governance.provider_invocation_cancelled.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderInvocationCancelled; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderInvocationCancelledV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderInvocationCancelled"
+  },
+  "model_governance.provider_invocation_failed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderInvocationFailed; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderInvocationFailedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderInvocationFailed"
+  },
+  "model_governance.provider_invocation_queued.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderInvocationQueued; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderInvocationQueuedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderInvocationQueued"
+  },
+  "model_governance.provider_invocation_started.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderInvocationStarted; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderInvocationStartedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderInvocationStarted"
+  },
+  "model_governance.provider_invocation_succeeded.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderInvocationSucceeded; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderInvocationSucceededV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderInvocationSucceeded"
+  },
+  "model_governance.provider_invocation_timed_out.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderInvocationTimedOut; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderInvocationTimedOutV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderInvocationTimedOut"
+  },
+  "model_governance.provider_policy_approved.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderPolicyApproved; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderPolicyApprovedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderPolicyApproved"
+  },
+  "model_governance.provider_policy_expired.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderPolicyExpired; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderPolicyExpiredV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderPolicyExpired"
+  },
+  "model_governance.provider_policy_revoked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderPolicyRevoked; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderPolicyRevokedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderPolicyRevoked"
+  },
+  "model_governance.provider_remote_credential_revocation_receipt_produced.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderRemoteCredentialRevocationReceiptProduced; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderRemoteCredentialRevocationReceiptProducedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderRemoteCredentialRevocationReceiptProduced"
+  },
+  "model_governance.provider_replica_deletion_receipt_produced.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ProviderReplicaDeletionReceiptProduced; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "ProviderReplicaDeletionReceiptProducedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ProviderReplicaDeletionReceiptProduced"
+  },
+  "model_governance.unknown_entrant_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event UnknownEntrantPublished; payload fields await the owner schema PR.",
+    "owner": "member-5",
+    "payload_schema": "UnknownEntrantPublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "UnknownEntrantPublished"
+  },
+  "rules.cross_lot_constraint_confirmed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event CrossLotConstraintConfirmed; payload fields await the owner schema PR.",
+    "owner": "member-2",
+    "payload_schema": "CrossLotConstraintConfirmedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "CrossLotConstraintConfirmed"
+  },
+  "rules.decision_unit_lifecycle_advanced.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DecisionUnitLifecycleAdvanced; payload fields await the owner schema PR.",
+    "owner": "member-2",
+    "payload_schema": "DecisionUnitLifecycleAdvancedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DecisionUnitLifecycleAdvanced"
+  },
+  "rules.decision_unit_reopened.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DecisionUnitReopened; payload fields await the owner schema PR.",
+    "owner": "member-2",
+    "payload_schema": "DecisionUnitReopenedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DecisionUnitReopened"
+  },
+  "rules.regime_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event RegimePublished; payload fields await the owner schema PR.",
+    "owner": "member-2",
+    "payload_schema": "RegimePublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "RegimePublished"
+  },
+  "rules.rule_set_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event RuleSetPublished; payload fields await the owner schema PR.",
+    "owner": "member-2",
+    "payload_schema": "RuleSetPublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "RuleSetPublished"
+  },
+  "rules.rule_set_revoked.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event RuleSetRevoked; payload fields await the owner schema PR.",
+    "owner": "member-2",
+    "payload_schema": "RuleSetRevokedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "RuleSetRevoked"
+  },
+  "rules.scope_assessment_published.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ScopeAssessmentPublished; payload fields await the owner schema PR.",
+    "owner": "member-2",
+    "payload_schema": "ScopeAssessmentPublishedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ScopeAssessmentPublished"
+  },
+  "simulation.decision_baseline_frozen.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event DecisionBaselineFrozen; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "DecisionBaselineFrozenV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "DecisionBaselineFrozen"
+  },
+  "simulation.eligibility_assessed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event EligibilityAssessed; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "EligibilityAssessedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "EligibilityAssessed"
+  },
+  "simulation.scenario_sets_frozen.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event ScenarioSetsFrozen; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "ScenarioSetsFrozenV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "ScenarioSetsFrozen"
+  },
+  "simulation.simulation_assessed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SimulationAssessed; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "SimulationAssessedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SimulationAssessed"
+  },
+  "simulation.simulation_failed.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SimulationFailed; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "SimulationFailedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SimulationFailed"
+  },
+  "simulation.simulation_snapshot_created.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SimulationSnapshotCreated; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "SimulationSnapshotCreatedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SimulationSnapshotCreated"
+  },
+  "simulation.simulation_started.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event SimulationStarted; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "SimulationStartedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "SimulationStarted"
+  },
+  "simulation.strategy_plans_finalized.v1": {
+    "contract_only": true,
+    "description": "CONTRACT_ONLY domain event StrategyPlansFinalized; payload fields await the owner schema PR.",
+    "owner": "member-6",
+    "payload_schema": "StrategyPlansFinalizedV1",
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
+    "source_name": "StrategyPlansFinalized"
+  }
+}

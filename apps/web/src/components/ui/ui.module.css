@@ -1,0 +1,253 @@
+.button,
+.linkButton {
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.button:not(:disabled):hover,
+.linkButton:not([aria-disabled="true"]):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(29, 43, 38, 0.12);
+}
+
+.primary {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.secondary {
+  border-color: var(--color-green);
+  background: var(--color-paper);
+  color: var(--color-green);
+}
+
+.quiet {
+  border-color: var(--color-line-strong);
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.danger {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: white;
+}
+
+.linkButton[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.58;
+}
+
+.card {
+  min-width: 0;
+  padding: clamp(1.1rem, 2.4vw, 1.75rem);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-paper) 94%, transparent);
+  box-shadow: var(--shadow-paper);
+}
+
+.cardHeader {
+  margin-bottom: 1rem;
+}
+
+.cardEyebrow {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--color-green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cardTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  line-height: 1.25;
+}
+
+.statusBadge {
+  width: fit-content;
+  min-height: 28px;
+  padding: 0.25rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.statusBadge::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.neutral {
+  border-color: var(--color-line-strong);
+  background: color-mix(in srgb, var(--color-paper) 80%, var(--color-canvas));
+  color: var(--color-muted);
+}
+
+.info {
+  border-color: color-mix(in srgb, var(--color-blue) 28%, transparent);
+  background: var(--color-blue-soft);
+  color: var(--color-blue);
+}
+
+.success {
+  border-color: color-mix(in srgb, var(--color-green) 28%, transparent);
+  background: var(--color-green-soft);
+  color: var(--color-green);
+}
+
+.warning {
+  border-color: color-mix(in srgb, var(--color-amber) 34%, transparent);
+  background: var(--color-amber-soft);
+  color: #80561f;
+}
+
+.critical {
+  border-color: color-mix(in srgb, var(--color-danger) 32%, transparent);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.notice {
+  padding: 0.9rem 1rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7rem;
+  border: 1px solid var(--color-line);
+  border-left-width: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+}
+
+.noticeIcon {
+  width: 1.55rem;
+  height: 1.55rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: currentColor;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.noticeContent strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.noticeContent p {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: 0.875rem;
+}
+
+.noticeInfo {
+  border-left-color: var(--color-blue);
+}
+
+.noticeInfo .noticeIcon {
+  background: var(--color-blue);
+}
+
+.noticeWarning {
+  border-left-color: var(--color-amber);
+  background: color-mix(in srgb, var(--color-amber-soft) 60%, var(--color-paper));
+}
+
+.noticeWarning .noticeIcon {
+  background: var(--color-amber);
+}
+
+.noticeDanger {
+  border-left-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger-soft) 60%, var(--color-paper));
+}
+
+.noticeDanger .noticeIcon {
+  background: var(--color-danger);
+}
+
+.emptyState {
+  min-height: 180px;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-paper) 62%, transparent);
+  text-align: center;
+}
+
+.emptyMark {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  background: var(--color-paper);
+  color: var(--color-green);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.emptyState h3 {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.emptyState p {
+  max-width: 42rem;
+  margin: 0.45rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.visuallyHidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (max-width: 480px) {
+  .button,
+  .linkButton {
+    width: 100%;
+  }
+}
