@@ -18,7 +18,7 @@ jobs:
     name: Repository policy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v5
@@ -42,7 +42,7 @@ jobs:
       CI: "1"
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -66,7 +66,7 @@ jobs:
       BIAICE_REAL_DATA_MODE_REQUESTED: "false"
       BIAICE_BYOK_ENABLED: "false"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v5
@@ -130,7 +130,7 @@ jobs:
     name: Compose topology
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: docker compose --env-file .env.example config --quiet
       - name: Only gateway may publish LAN ports
         run: python scripts/validate_compose_topology.py
