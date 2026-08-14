@@ -3,15 +3,68 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+      interval: monthly
+    open-pull-requests-limit: 1
+    allow:
+      # Scheduled version updates exclude majors. Security updates are not
+      # filtered by allow.update-types and remain eligible at every severity.
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
+    groups:
+      npm-monthly-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
   - package-ecosystem: pip
     directory: /apps/backend
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+      interval: monthly
+    open-pull-requests-limit: 1
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
+    groups:
+      python-monthly-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+      python-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 3
+      interval: monthly
+    open-pull-requests-limit: 1
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
+    groups:
+      actions-monthly-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+      actions-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
