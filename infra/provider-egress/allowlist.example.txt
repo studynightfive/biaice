@@ -1,0 +1,5 @@
+# Example format only. Do not activate this file.
+# One exact HTTPS hostname per line; schemes, paths, ports, wildcards and IP
+# literals are rejected. The published catalog process writes the ignored
+# generated/provider-domains.txt and a matching Gate evidence hash.
+# api.example-provider.invalid

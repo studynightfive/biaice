@@ -1,0 +1,11 @@
+{
+  "error-catalog.yaml": "3d2daceb85aacfd7a38e48da9354db8a1eb8d11351786ffdd4914323803bedb4",
+  "events/catalog.yaml": "f434ccadfa2ebced7e96edf94bf6fa644ea06be573376a996c2866636a036f39",
+  "events/event-envelope.schema.json": "aa7f6a7fec9c14e5558ea199bf0599ffcc582ef8e46f802dc93e44066582d96d",
+  "generated-typescript/client.ts": "d560f2244fd87504243cf4c83006635fc2fa3aab32c83a65111f656361673af6",
+  "generated-typescript/index.ts": "910149d0109fd486ed5518a16e47d02d39ac6c8e9462e5a4fafe70bcd71a0ff1",
+  "generated-typescript/types.ts": "7693ee804622c1b350126d44b8e9a247de3da8510a21d3cc37c3132a3d5b3274",
+  "openapi.generated.json": "82dbc93058cd410e80f6a8ba82b9519420f05ac40579e799f71e56ac3c4af26c",
+  "operation-catalog.generated.json": "45d53d2d6e1c0cd55d9eefa2cf453c85b9cc2f28ccf9b7772598625a78462b6c",
+  "traceability.generated.json": "b65358d7707fe873b156e800cc61f312003b56c3e94c3787ef17d09669c4152c"
+}

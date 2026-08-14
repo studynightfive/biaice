@@ -1,0 +1,175 @@
+{
+  "realm": "biaice",
+  "displayName": "标策 AI",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "registrationEmailAsUsername": false,
+  "rememberMe": false,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "passwordPolicy": "length(14) and digits(1) and lowerCase(1) and upperCase(1) and specialChars(1) and notUsername(undefined) and passwordHistory(5)",
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA256",
+  "otpPolicyInitialCounter": 0,
+  "otpPolicyDigits": 6,
+  "otpPolicyLookAheadWindow": 1,
+  "otpPolicyPeriod": 30,
+  "otpPolicyCodeReusable": false,
+  "roles": {
+    "realm": [
+      { "name": "SYSTEM_ADMIN", "description": "Platform operations without business正文、cost or secret read access" },
+      { "name": "GOVERNANCE_ADMIN", "description": "Audit, retention, hold and deletion orchestration" },
+      { "name": "PROJECT_MANAGER", "description": "Project and decision-unit manager" },
+      { "name": "RULE_EDITOR", "description": "Regime and rules editor" },
+      { "name": "DOCUMENT_STEWARD", "description": "Quarantine and document processing operator" },
+      { "name": "COMMERCIAL_ANALYST", "description": "Evidence, cost and commercial analyst" },
+      { "name": "TENANT_AI_ADMIN", "description": "Write-only tenant Provider credential administrator" },
+      { "name": "PRIVACY_OFFICER", "description": "PIA, DSR and processing-policy checker" },
+      { "name": "SIMULATION_ANALYST", "description": "Simulation operator" },
+      { "name": "APPROVER", "description": "Independent approval checker" },
+      { "name": "REPORT_MANAGER", "description": "Report and submission operator" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "biaice-web",
+      "name": "标策 AI Web",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "redirectUris": [
+        "https://biaice.local:8443/*",
+        "http://biaice.local:8080/*",
+        "http://localhost:8080/*"
+      ],
+      "webOrigins": [
+        "https://biaice.local:8443",
+        "http://biaice.local:8080",
+        "http://localhost:8080"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "https://biaice.local:8443/*##http://biaice.local:8080/*##http://localhost:8080/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "biaice-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "biaice-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "biaice-tenant-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "tenant_id",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "false"
+          }
+        },
+        {
+          "name": "biaice-data-domain-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "data_domain_id",
+            "claim.name": "data_domain_id",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "false"
+          }
+        },
+        {
+          "name": "biaice-project-ids",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "project_ids",
+            "claim.name": "project_ids",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "true"
+          }
+        },
+        {
+          "name": "biaice-decision-unit-ids",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "decision_unit_ids",
+            "claim.name": "decision_unit_ids",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "true"
+          }
+        },
+        {
+          "name": "biaice-authentication-method-reference",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-amr-mapper",
+          "consentRequired": false,
+          "config": {
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "lightweight.claim": "false"
+          }
+        }
+      ],
+      "defaultClientScopes": ["web-origins", "acr", "basic", "roles", "profile", "email"],
+      "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
+    },
+    {
+      "clientId": "biaice-api",
+      "name": "标策 AI API",
+      "enabled": true,
+      "bearerOnly": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false
+    }
+  ],
+  "eventsEnabled": true,
+  "eventsExpiration": 7776000,
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": false,
+  "eventsListeners": ["jboss-logging"]
+}

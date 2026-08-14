@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -12,15 +13,32 @@
 
 # testing
 /coverage
+**/coverage/
+**/playwright-report/
+**/test-results/
+/.coverage
+/.pytest_cache/
+/.mypy_cache/
+/.ruff_cache/
+htmlcov/
 
 # next.js
 /.next/
 /.vinext/
 /out/
+**/.next/
 
 # misc
 .DS_Store
+~$*.docx
 *.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.tsbuildinfo
+.docx_qa/
+.sites-deploy/
 
 # debug
 npm-debug.log*
@@ -28,8 +46,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Environment and local secrets. Only documented placeholders may be committed.
+.env
+.env.*
+!.env.example
+!**/.env.example
 
 # vercel
 .vercel
@@ -38,3 +59,23 @@ yarn-error.log*
 /.wrangler/
 /outputs/
 /work/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Local runtime state and generated security material
+/data/
+/backups/
+/tmp/
+/infra/**/generated/
+/infra/**/pki/
+/infra/**/secrets/
+
+# IDE and OS files
+.idea/
+.vscode/
+Thumbs.db
