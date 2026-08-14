@@ -9,7 +9,7 @@ description = "Biaice self-hosted API and governance workers"
 requires-python = ">=3.12,<3.14"
 dependencies = [
   "alembic==1.16.5",
-  "celery[redis]==5.5.3",
+  "celery[redis]==5.6.3",
   "fastapi==0.137.1",
   "psycopg[binary]==3.2.10",
   "pydantic==2.12.4",
