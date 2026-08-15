@@ -73,12 +73,15 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: apps/backend/requirements.lock
+          cache-dependency-path: apps/backend/requirements-test.lock
       - run: python -m pip install --require-hashes --requirement apps/backend/requirements-test.lock
+      - name: Verify Python dependency locks are synchronized
+        run: python scripts/verify_dependency_locks.py
       - run: >-
           python -m ruff check apps/backend packages/contracts/scripts
           scripts/contracts scripts/security scripts/validate_compose_topology.py
-          scripts/verify_image_locks.py scripts/verify_no_legacy.py
+          scripts/verify_dependency_locks.py scripts/verify_image_locks.py
+          scripts/verify_no_legacy.py
       - run: python -m pytest apps/backend/tests
       - run: python packages/contracts/scripts/generate_contracts.py --check
       - run: python scripts/contracts/check_contract_status.py

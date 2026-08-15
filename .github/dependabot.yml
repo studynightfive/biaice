@@ -12,6 +12,12 @@ updates:
         update-types:
           - version-update:semver-minor
           - version-update:semver-patch
+    ignore:
+      # 6.10.0 was deprecated by its publisher because it introduced breaking
+      # changes in a minor release. Revisit only after a deliberate 7.x review.
+      - dependency-name: "@testing-library/jest-dom"
+        versions:
+          - "6.10.0"
     groups:
       npm-monthly-minor-and-patch:
         applies-to: version-updates
@@ -24,7 +30,7 @@ updates:
         applies-to: security-updates
         patterns:
           - "*"
-  - package-ecosystem: pip
+  - package-ecosystem: uv
     directory: /apps/backend
     schedule:
       interval: monthly
@@ -34,6 +40,12 @@ updates:
         update-types:
           - version-update:semver-minor
           - version-update:semver-patch
+    ignore:
+      # Ruff 0.16 changes repository-wide lint behavior. Keep the validated
+      # 0.15 line until that migration is reviewed as its own platform PR.
+      - dependency-name: ruff
+        versions:
+          - ">=0.16.0,<0.17.0"
     groups:
       python-monthly-minor-and-patch:
         applies-to: version-updates

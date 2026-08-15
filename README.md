@@ -62,8 +62,11 @@ scripts/                  Windows 初始化、运行、测试、备份与恢复�
 npm ci
 uv sync --project apps/backend --locked --extra test
 npm test
+python scripts/verify_dependency_locks.py
 python scripts/validate_compose_topology.py
 ```
+
+依赖更新必须同时提交声明文件与锁文件。修改 `apps/backend/pyproject.toml` 后，组长需要重新生成 `uv.lock`、`requirements.lock` 和 `requirements-test.lock`，并运行上述锁一致性检查；CI 不接受只修改版本声明但仍测试旧锁的 PR。
 
 所有功能分支使用 `feature/m{成员号}-{domain}-{short-name}`。`main` 禁止直接开发；共享契约先合并，功能实现再依赖生成客户端。成员功能 PR 必须通过 CI、CODEOWNERS 与权限/审计负向测试；成员 1（组长）的公共平台和集成 PR 在四项必需 CI 全部通过、对话均已解决后可以直接 squash merge，但不得绕过 CI 或直接推送 `main`。
 
