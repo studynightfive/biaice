@@ -8,7 +8,7 @@ from typing import Callable, Sequence
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from biaice.api import contract_stubs, gates, health, internal, jobs, me
+from biaice.api import approvals_reports, contract_stubs, gates, health, internal, jobs, me
 from biaice.core.audit import (
     AuditWriter,
     HashChainAuditWriter,
@@ -92,6 +92,12 @@ def create_app(
     app.state.gate_service = gate_service
     app.state.audit_writer = runtime_audit_writer
     app.state.job_port = job_port or UnavailableJobPort()
+    # member-7 approvals/reports services: in-memory repository + services wired here
+    from biaice.modules.approvals_reports.application.services import (
+        configure_approvals_reports,
+    )
+
+    configure_approvals_reports(app)
     app.state.readiness_checks = tuple(
         readiness_checks
         if readiness_checks is not None
@@ -109,6 +115,9 @@ def create_app(
     app.include_router(me.router)
     app.include_router(jobs.router)
     app.include_router(gates.router)
+    # member-7 approvals/reports router MUST be registered before contract_stubs
+    # so FastAPI first-match-wins routes FR-09b operations to the real handler.
+    app.include_router(approvals_reports.router)
     app.include_router(contract_stubs.router)
     app.include_router(internal.router)
 
@@ -158,6 +167,10 @@ def create_app(
                 "PUBLIC",
                 "gate:waiver:decide+mfa",
             ),
+            "create_risk_acceptance": ("member-7", "FR-09b", "fr-09b:create+mfa"),
+            "list_risk_acceptances": ("member-7", "FR-09b", "fr-09b:read"),
+            "get_risk_acceptance": ("member-7", "FR-09b", "fr-09b:read"),
+            "revoke_risk_acceptance": ("member-7", "FR-09b", "fr-09b:revoke+mfa"),
             "list_manual_overrides": ("member-1", "PUBLIC", "gate:read"),
             "append_manual_override": (
                 "member-1",
