@@ -1536,7 +1536,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-09b",
     "idempotency_required": false,
@@ -1545,19 +1545,19 @@
     "owner": "member-7",
     "path": "/api/v1/decision-units/{unit_id}/risk-acceptances",
     "permission": "fr-09b:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-09b",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "create_risk_acceptance",
     "owner": "member-7",
     "path": "/api/v1/decision-units/{unit_id}/risk-acceptances",
-    "permission": "fr-09b:create",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "permission": "fr-09b:create+mfa",
+    "schema_status": "FROZEN"
   },
   {
     "contract_only": true,
@@ -3672,7 +3672,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-09b",
     "idempotency_required": false,
@@ -3681,19 +3681,19 @@
     "owner": "member-7",
     "path": "/api/v1/risk-acceptances/{risk_acceptance_id}",
     "permission": "fr-09b:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-09b",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "revoke_risk_acceptance",
     "owner": "member-7",
     "path": "/api/v1/risk-acceptances/{risk_acceptance_id}/revoke",
-    "permission": "fr-09b:revoke",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "permission": "fr-09b:revoke+mfa",
+    "schema_status": "FROZEN"
   },
   {
     "contract_only": true,

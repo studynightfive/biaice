@@ -203,6 +203,24 @@
     "status": 410,
     "title": "Retention period expired"
   },
+  "RISK_ACCEPTANCE_ALREADY_REVOKED": {
+    "recoverable": false,
+    "remediation": "Keep the append-only history; create a new acceptance if needed.",
+    "status": 409,
+    "title": "Risk acceptance is already revoked"
+  },
+  "RISK_ACCEPTANCE_EXPIRED": {
+    "recoverable": false,
+    "remediation": "Create a new risk acceptance for the current period.",
+    "status": 410,
+    "title": "Risk acceptance has expired"
+  },
+  "RISK_ACCEPTANCE_INVALID_PERIOD": {
+    "recoverable": false,
+    "remediation": "valid_until must be later than valid_from.",
+    "status": 422,
+    "title": "Risk acceptance period is invalid"
+  },
   "SCOPE_OVERRIDE_FORBIDDEN": {
     "recoverable": false,
     "remediation": "Remove tenant/data-domain scope fields and headers.",

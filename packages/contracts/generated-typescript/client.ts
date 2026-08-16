@@ -549,12 +549,12 @@ export async function create_response_profile(client: BiaiceClient, options: Req
   return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/response-profiles", options);
 }
 
-export async function list_risk_acceptances(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/risk-acceptances", options);
+export async function list_risk_acceptances(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RiskAcceptanceListResponse> {
+  return client.request<Models.RiskAcceptanceListResponse>("GET", "/api/v1/decision-units/{unit_id}/risk-acceptances", options);
 }
 
-export async function create_risk_acceptance(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/risk-acceptances", options);
+export async function create_risk_acceptance(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RiskAcceptance> {
+  return client.request<Models.RiskAcceptance>("POST", "/api/v1/decision-units/{unit_id}/risk-acceptances", options);
 }
 
 export async function list_rule_sets(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
@@ -1261,12 +1261,12 @@ export async function retry_retention_job(client: BiaiceClient, options: Request
   return client.request<Models.ContractOnlyResource>("POST", "/api/v1/retention-jobs/{retention_job_id}/retry", options);
 }
 
-export async function get_risk_acceptance(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/risk-acceptances/{risk_acceptance_id}", options);
+export async function get_risk_acceptance(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RiskAcceptance> {
+  return client.request<Models.RiskAcceptance>("GET", "/api/v1/risk-acceptances/{risk_acceptance_id}", options);
 }
 
-export async function revoke_risk_acceptance(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/risk-acceptances/{risk_acceptance_id}/revoke", options);
+export async function revoke_risk_acceptance(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RiskAcceptance> {
+  return client.request<Models.RiskAcceptance>("POST", "/api/v1/risk-acceptances/{risk_acceptance_id}/revoke", options);
 }
 
 export async function list_rollback_events(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {

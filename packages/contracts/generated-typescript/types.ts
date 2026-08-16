@@ -19,6 +19,16 @@ export interface ContractOnlyResource {
   readonly schema_status: string;
 }
 
+export interface CreateRiskAcceptanceRequest {
+  readonly risk: string;
+  readonly metric: string;
+  readonly acceptance_scope: string;
+  readonly rationale: string;
+  readonly independent_approver_id: string;
+  readonly valid_from: string;
+  readonly valid_until: string;
+}
+
 export type EvidenceStatus = "PASS" | "FAIL" | "UNKNOWN";
 
 export interface FieldProblem {
@@ -131,5 +141,42 @@ export interface ProblemDetails {
   readonly recoverable?: boolean;
   readonly remediation?: string | null;
 }
+
+export interface RevokeRiskAcceptanceRequest {
+  readonly revocation_reason: string;
+}
+
+export interface RiskAcceptance {
+  readonly risk_acceptance_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id?: string | null;
+  readonly decision_unit_id: string;
+  readonly state: RiskAcceptanceState;
+  readonly validity: RiskAcceptanceValidity;
+  readonly risk: string;
+  readonly metric: string;
+  readonly acceptance_scope: string;
+  readonly rationale: string;
+  readonly independent_approver_id: string;
+  readonly valid_from: string;
+  readonly valid_until: string;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly accepted_at: string;
+  readonly accepted_by: string;
+  readonly revoked_at?: string | null;
+  readonly revoked_by?: string | null;
+  readonly revocation_reason?: string | null;
+}
+
+export interface RiskAcceptanceListResponse {
+  readonly items: ReadonlyArray<RiskAcceptance>;
+}
+
+export type RiskAcceptanceState = "ACTIVE" | "REVOKED" | "EXPIRED";
+
+export type RiskAcceptanceValidity = "CURRENT" | "STALE" | "EXPIRED" | "INVALIDATED";
 
 export type WaiverPolicy = "PROHIBITED" | "ALLOWED";
