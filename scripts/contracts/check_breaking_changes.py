@@ -489,6 +489,15 @@ def find_breaking_changes(baseline: JsonObject, current: JsonObject) -> list[str
                 f"{old_method} {old_path} -> {new_method} {new_path}"
             )
 
+        # Graduating a blocked contract-only stub into an implemented schema is
+        # the intentional owner field-freeze path (see packages/contracts/README.md).
+        # Stub placeholder fields must not trap that freeze as a client break.
+        if (
+            old_operation.get("x-contract-only") is True
+            and new_operation.get("x-contract-only") is not True
+        ):
+            continue
+
         old_parameters = _parameter_map(baseline, old_path_item, old_operation)
         new_parameters = _parameter_map(current, new_path_item, new_operation)
         removed_parameters = set(old_parameters) - set(new_parameters)
