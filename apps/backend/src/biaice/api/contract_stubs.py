@@ -128,7 +128,25 @@ def _make_endpoint(spec: OperationSpec):
     return endpoint
 
 
+# Member-7 (FR-09b risk acceptance) owns the real implementation in
+# ``biaice.api.approvals_reports``; the router is registered BEFORE this one
+# in ``biaice.main.create_app`` so FastAPI first-match-wins routes those
+# operations to the real handler and never to a 501 stub.
+MEMBER7_IMPLEMENTED_OPERATIONS = frozenset(
+    {
+        "create_risk_acceptance",
+        "list_risk_acceptances",
+        "get_risk_acceptance",
+        "revoke_risk_acceptance",
+    }
+)
+
 for operation in OPERATION_CATALOG:
+    if (
+        operation.owner == "member-7"
+        and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATIONS
+    ):
+        continue
     responses = dict(PROBLEM_RESPONSES)
     responses[501] = {
         "model": ProblemDetails,

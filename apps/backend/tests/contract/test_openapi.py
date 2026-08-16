@@ -6,6 +6,16 @@ from biaice.core.outbox import EVENT_CATALOG
 from biaice.main import create_app
 
 
+MEMBER7_IMPLEMENTED_OPERATION_IDS = frozenset(
+    {
+        "create_risk_acceptance",
+        "list_risk_acceptances",
+        "get_risk_acceptance",
+        "revoke_risk_acceptance",
+    }
+)
+
+
 def operations(schema):
     for path, path_item in schema["paths"].items():
         for method, operation in path_item.items():
@@ -20,8 +30,14 @@ def test_openapi_has_unique_operations_all_p0_groups_and_explicit_contract_only_
     items = list(operations(schema))
     operation_ids = [item[2]["operationId"] for item in items]
     assert len(operation_ids) == len(set(operation_ids))
-    assert len([item for item in items if item[2].get("x-contract-only")]) == len(
-        OPERATION_CATALOG
+    implemented = [
+        operation
+        for operation in OPERATION_CATALOG
+        if operation.owner == "member-7"
+        and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATION_IDS
+    ]
+    assert len([item for item in items if item[2].get("x-contract-only")]) == (
+        len(OPERATION_CATALOG) - len(implemented)
     )
     covered = {item[2]["x-fr"] for item in items}
     assert {
