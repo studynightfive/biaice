@@ -1,0 +1,65 @@
+# M0 member-7 (FR-09b risk acceptance) traceability matrix.
+# Maps the MVP-B RiskAcceptanceVersion slice to handler/service/event/test so
+# the Stage Gate reviewer can join it with m0-platform.md and simulation.yaml.
+traceability:
+  owner: member-7
+  status: IMPLEMENTED_SLICE
+  contract_only: false
+  handler_module: biaice.api.approvals_reports
+  service_module: biaice.modules.approvals_reports.application.services
+  domain_module: biaice.modules.approvals_reports.domain
+  repository_module: biaice.modules.approvals_reports.application.repository
+  migration_revision: m7_approvals_reports_0001
+  items:
+    - fr: FR-09b
+      use_case: Create RiskAcceptanceVersion with maker-checker and validity period
+      operation_id: create_risk_acceptance
+      path: /api/v1/decision-units/{unit_id}/risk-acceptances
+      method: POST
+      permission: fr-09b:create+mfa
+      idempotency: true
+      service: RiskAcceptanceService.create
+      event: approvals_reports.risk_accepted.v1
+      tests:
+        - apps/backend/tests/unit/test_risk_acceptance.py::test_create_risk_acceptance_is_active_and_current
+        - apps/backend/tests/contract/test_approvals_reports_api.py::test_create_risk_acceptance_and_read_back
+    - fr: FR-09b
+      use_case: List RiskAcceptanceVersion rows for a decision unit
+      operation_id: list_risk_acceptances
+      path: /api/v1/decision-units/{unit_id}/risk-acceptances
+      method: GET
+      permission: fr-09b:read
+      service: RiskAcceptanceService.list
+      tests:
+        - apps/backend/tests/contract/test_approvals_reports_api.py::test_list_risk_acceptances_returns_empty
+    - fr: FR-09b
+      use_case: Fetch a RiskAcceptanceVersion (read-time expiry projection)
+      operation_id: get_risk_acceptance
+      path: /api/v1/risk-acceptances/{risk_acceptance_id}
+      method: GET
+      permission: fr-09b:read
+      service: RiskAcceptanceService.get
+      tests:
+        - apps/backend/tests/unit/test_risk_acceptance.py::test_get_projects_expiry_without_mutating_history
+    - fr: FR-09b
+      use_case: Revoke RiskAcceptanceVersion append-only
+      operation_id: revoke_risk_acceptance
+      path: /api/v1/risk-acceptances/{risk_acceptance_id}/revoke
+      method: POST
+      permission: fr-09b:revoke+mfa
+      idempotency: true
+      service: RiskAcceptanceService.revoke
+      event: approvals_reports.risk_revoked.v1
+      tests:
+        - apps/backend/tests/unit/test_risk_acceptance.py::test_revoke_is_append_only_and_idempotent_fail_closed
+        - apps/backend/tests/contract/test_approvals_reports_api.py::test_revoke_requires_idempotency_and_is_append_only
+  tables:
+    - risk_acceptance
+  invariants:
+    - maker_checker: created_by must differ from independent_approver_id and accepted_by must equal independent_approver_id.
+    - append_only: revocation writes a new immutable version, never overwrites history.
+    - validity_period: valid_until must be later than valid_from; expiry is derived at read time.
+    - fail_closed: revoked or expired risk acceptance blocks further revocation.
+    - scope_projection: tenant_id + data_domain_id + decision_unit scope enforced by the repository.
+    - audit_and_outbox: every create/revoke writes an AuditEvent and RiskAccepted/RiskRevoked event.
+

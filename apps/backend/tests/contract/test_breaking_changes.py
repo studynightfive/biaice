@@ -168,6 +168,60 @@ def test_effective_security_or_scheme_changes_break() -> None:
     assert "changed security scheme: bearerAuth" in scheme_failures
 
 
+def test_contract_only_stub_graduation_is_not_a_breaking_change() -> None:
+    old_operation = _operation()
+    old_operation["x-contract-only"] = True
+    old_operation["x-schema-status"] = "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    old_operation["responses"]["200"]["content"]["application/json"]["schema"] = {
+        "type": "object",
+        "properties": {
+            "contract_only": {"type": "boolean"},
+            "operation_id": {"type": "string"},
+            "owner": {"type": "string"},
+            "schema_status": {"type": "string"},
+        },
+        "required": ["operation_id", "owner", "schema_status"],
+        "additionalProperties": True,
+    }
+    old_operation["requestBody"] = {
+        "required": False,
+        "content": {"application/json": {"schema": {}}},
+    }
+
+    new_operation = _operation()
+    new_operation["requestBody"] = {
+        "required": True,
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "rationale": {"type": "string"},
+                        "risk": {"type": "string"},
+                    },
+                    "required": ["rationale", "risk"],
+                    "additionalProperties": False,
+                }
+            }
+        },
+    }
+
+    failures = checker.find_breaking_changes(
+        _document(old_operation), _document(new_operation)
+    )
+    assert failures == []
+
+    # Still-stub updates remain subject to compatibility checks.
+    still_stub = copy.deepcopy(old_operation)
+    stub_schema = still_stub["responses"]["200"]["content"]["application/json"]["schema"]
+    del stub_schema["properties"]["owner"]
+    stub_schema["required"].remove("owner")
+    stub_failures = checker.find_breaking_changes(
+        _document(old_operation), _document(still_stub)
+    )
+    assert any("removed response properties ['owner']" in item for item in stub_failures)
+
+
 def test_missing_baseline_fails_closed_unless_initial_freeze_is_explicit(
     monkeypatch, capsys
 ) -> None:

@@ -1809,24 +1809,24 @@
       "test_status": "M0_CONTRACT_TEST_ONLY"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_risk_acceptances",
       "owner": "member-7",
       "path": "/api/v1/decision-units/{unit_id}/risk-acceptances",
       "permission": "fr-09b:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_risk_acceptance",
       "owner": "member-7",
       "path": "/api/v1/decision-units/{unit_id}/risk-acceptances",
-      "permission": "fr-09b:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-09b:create+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
       "contract_only": true,
@@ -1849,24 +1849,24 @@
       "test_status": "M0_CONTRACT_TEST_ONLY"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_risk_acceptance",
       "owner": "member-7",
       "path": "/api/v1/risk-acceptances/{risk_acceptance_id}",
       "permission": "fr-09b:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "revoke_risk_acceptance",
       "owner": "member-7",
       "path": "/api/v1/risk-acceptances/{risk_acceptance_id}/revoke",
-      "permission": "fr-09b:revoke",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-09b:revoke+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
       "contract_only": true,

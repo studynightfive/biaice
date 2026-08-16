@@ -6,6 +6,7 @@ from uuid import UUID
 
 import schemathesis
 from hypothesis import HealthCheck, settings
+from schemathesis.specs.openapi.checks import positive_data_acceptance
 
 from biaice.api.operation_catalog import OPERATION_CATALOG
 from biaice.core.auth import Authenticator, IdentityContext, Role, TenantScope
@@ -107,6 +108,15 @@ APP = create_app(
 )
 OPENAPI = APP.openapi()
 
+MEMBER7_IMPLEMENTED_OPERATION_IDS = frozenset(
+    {
+        "create_risk_acceptance",
+        "list_risk_acceptances",
+        "get_risk_acceptance",
+        "revoke_risk_acceptance",
+    }
+)
+
 
 def _operation_partitions() -> tuple[frozenset[str], frozenset[str]]:
     implemented: set[str] = set()
@@ -135,13 +145,31 @@ EXPECTED_FOUNDATION_UNAVAILABLE: dict[str, frozenset[int]] = {
     "revoke_manual_override": frozenset({501}),
 }
 
+# Cross-field business rules (valid_until > valid_from) cannot be expressed in
+# the OpenAPI schema, and Schemathesis' UUID path examples can be rejected by
+# FastAPI's stricter parser. The documented 422 is still the fail-closed
+# answer; only the generic "positive data must be accepted" check is waived
+# for these operations. Positive and negative paths are covered by explicit
+# contract tests.
+EXPECTED_BUSINESS_RULE_422: frozenset[str] = frozenset(
+    {
+        "create_risk_acceptance",
+    }
+)
+
 
 def test_schemathesis_version_and_openapi_partition_are_explicit() -> None:
     assert schemathesis.__version__ == "4.24.3"
     assert IMPLEMENTED_OPERATION_IDS
     assert CONTRACT_ONLY_OPERATION_IDS
     assert IMPLEMENTED_OPERATION_IDS.isdisjoint(CONTRACT_ONLY_OPERATION_IDS)
-    assert len(CONTRACT_ONLY_OPERATION_IDS) == len(OPERATION_CATALOG)
+    implemented_in_catalog = IMPLEMENTED_OPERATION_IDS & frozenset(
+        operation.operation_id for operation in OPERATION_CATALOG
+    )
+    assert implemented_in_catalog == MEMBER7_IMPLEMENTED_OPERATION_IDS
+    assert len(CONTRACT_ONLY_OPERATION_IDS) == (
+        len(OPERATION_CATALOG) - len(MEMBER7_IMPLEMENTED_OPERATION_IDS)
+    )
 
 
 @IMPLEMENTED_SCHEMA.parametrize()
@@ -169,11 +197,11 @@ def test_implemented_operations_conform_to_openapi(case: schemathesis.Case) -> N
             response.text,
         )
 
-    excluded_checks = (
-        [schemathesis.checks.not_a_server_error]
-        if response.status_code in allowed_server_errors
-        else []
-    )
+    excluded_checks = []
+    if response.status_code in allowed_server_errors:
+        excluded_checks.append(schemathesis.checks.not_a_server_error)
+    if response.status_code == 422 and operation_id in EXPECTED_BUSINESS_RULE_422:
+        excluded_checks.append(positive_data_acceptance)
     case.validate_response(
         response,
         headers=headers,

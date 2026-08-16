@@ -55,6 +55,9 @@ class Permission(StrEnum):
     AUDIT_INTEGRITY_RUN = "audit:integrity:run"
     SENSITIVE_CONTENT_READ = "sensitive-content:read"
     COST_READ = "cost:read"
+    APPROVALS_RISK_READ = "fr-09b:read"
+    APPROVALS_RISK_CREATE = "fr-09b:create"
+    APPROVALS_RISK_REVOKE = "fr-09b:revoke"
 
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
@@ -149,6 +152,9 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.JOB_READ,
             Permission.JOB_COMMAND,
             Permission.GATE_READ,
+            Permission.APPROVALS_RISK_READ,
+            Permission.APPROVALS_RISK_CREATE,
+            Permission.APPROVALS_RISK_REVOKE,
         }
     ),
     Role.BID_MANAGER: frozenset(
@@ -159,6 +165,8 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.GATE_READ,
             Permission.GATE_WAIVER_REQUEST,
             Permission.GOVERNANCE_READ,
+            Permission.APPROVALS_RISK_READ,
+            Permission.APPROVALS_RISK_REVOKE,
         }
     ),
     Role.DOCUMENT_SPECIALIST: frozenset(
@@ -206,7 +214,13 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
         }
     ),
     Role.APPROVER: frozenset(
-        {Permission.PROFILE_READ, Permission.JOB_READ, Permission.GATE_READ}
+        {
+            Permission.PROFILE_READ,
+            Permission.JOB_READ,
+            Permission.GATE_READ,
+            Permission.APPROVALS_RISK_READ,
+            Permission.APPROVALS_RISK_REVOKE,
+        }
     ),
     Role.AUDITOR: frozenset(
         {

@@ -91,6 +91,61 @@
         "title": "ContractOnlyResource",
         "type": "object"
       },
+      "CreateRiskAcceptanceRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "acceptance_scope": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Acceptance Scope",
+            "type": "string"
+          },
+          "independent_approver_id": {
+            "format": "uuid",
+            "title": "Independent Approver Id",
+            "type": "string"
+          },
+          "metric": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Metric",
+            "type": "string"
+          },
+          "rationale": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "risk": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Risk",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_until": {
+            "format": "date-time",
+            "title": "Valid Until",
+            "type": "string"
+          }
+        },
+        "required": [
+          "risk",
+          "metric",
+          "acceptance_scope",
+          "rationale",
+          "independent_approver_id",
+          "valid_from",
+          "valid_until"
+        ],
+        "title": "CreateRiskAcceptanceRequest",
+        "type": "object"
+      },
       "EvidenceStatus": {
         "enum": [
           "PASS",
@@ -684,6 +739,223 @@
         ],
         "title": "ProblemDetails",
         "type": "object"
+      },
+      "RevokeRiskAcceptanceRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "revocation_reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Revocation Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "revocation_reason"
+        ],
+        "title": "RevokeRiskAcceptanceRequest",
+        "type": "object"
+      },
+      "RiskAcceptance": {
+        "additionalProperties": false,
+        "properties": {
+          "acceptance_scope": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Acceptance Scope",
+            "type": "string"
+          },
+          "accepted_at": {
+            "format": "date-time",
+            "title": "Accepted At",
+            "type": "string"
+          },
+          "accepted_by": {
+            "format": "uuid",
+            "title": "Accepted By",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "independent_approver_id": {
+            "format": "uuid",
+            "title": "Independent Approver Id",
+            "type": "string"
+          },
+          "metric": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Metric",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "rationale": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "revocation_reason": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revocation Reason"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "revoked_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked By"
+          },
+          "risk": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Risk",
+            "type": "string"
+          },
+          "risk_acceptance_id": {
+            "format": "uuid",
+            "title": "Risk Acceptance Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/RiskAcceptanceState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_until": {
+            "format": "date-time",
+            "title": "Valid Until",
+            "type": "string"
+          },
+          "validity": {
+            "$ref": "#/components/schemas/RiskAcceptanceValidity"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "risk_acceptance_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "state",
+          "validity",
+          "risk",
+          "metric",
+          "acceptance_scope",
+          "rationale",
+          "independent_approver_id",
+          "valid_from",
+          "valid_until",
+          "created_at",
+          "created_by",
+          "accepted_at",
+          "accepted_by"
+        ],
+        "title": "RiskAcceptance",
+        "type": "object"
+      },
+      "RiskAcceptanceListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RiskAcceptance"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "RiskAcceptanceListResponse",
+        "type": "object"
+      },
+      "RiskAcceptanceState": {
+        "enum": [
+          "ACTIVE",
+          "REVOKED",
+          "EXPIRED"
+        ],
+        "title": "RiskAcceptanceState",
+        "type": "string"
+      },
+      "RiskAcceptanceValidity": {
+        "enum": [
+          "CURRENT",
+          "STALE",
+          "EXPIRED",
+          "INVALIDATED"
+        ],
+        "title": "RiskAcceptanceValidity",
+        "type": "string"
       },
       "WaiverPolicy": {
         "enum": [
@@ -22872,7 +23144,6 @@
     },
     "/api/v1/decision-units/{unit_id}/risk-acceptances": {
       "get": {
-        "description": "List risk acceptances",
         "operationId": "list_risk_acceptances",
         "parameters": [
           {
@@ -22891,7 +23162,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/RiskAcceptanceListResponse"
                 }
               }
             },
@@ -22995,7 +23266,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -23013,21 +23284,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List risk acceptances",
+        "summary": "List Risk Acceptances",
         "tags": [
-          "FR-09b",
-          "contract-only"
+          "approvals-reports"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09b",
-        "x-idempotency-required": false,
         "x-owner": "member-7",
-        "x-required-permission": "fr-09b:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "fr-09b:read"
       },
       "post": {
-        "description": "Create risk acceptance",
         "operationId": "create_risk_acceptance",
         "parameters": [
           {
@@ -23061,25 +23327,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateRiskAcceptanceRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/RiskAcceptance"
                 }
               }
             },
@@ -23183,7 +23442,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -23201,18 +23460,14 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create risk acceptance",
+        "summary": "Create Risk Acceptance",
         "tags": [
-          "FR-09b",
-          "contract-only"
+          "approvals-reports"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09b",
-        "x-idempotency-required": true,
         "x-owner": "member-7",
-        "x-required-permission": "fr-09b:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "fr-09b:create+mfa"
       }
     },
     "/api/v1/decision-units/{unit_id}/rule-sets": {
@@ -53232,7 +53487,6 @@
     },
     "/api/v1/risk-acceptances/{risk_acceptance_id}": {
       "get": {
-        "description": "Get risk acceptance",
         "operationId": "get_risk_acceptance",
         "parameters": [
           {
@@ -53251,7 +53505,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/RiskAcceptance"
                 }
               }
             },
@@ -53355,7 +53609,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -53373,23 +53627,18 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get risk acceptance",
+        "summary": "Get Risk Acceptance",
         "tags": [
-          "FR-09b",
-          "contract-only"
+          "approvals-reports"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09b",
-        "x-idempotency-required": false,
         "x-owner": "member-7",
-        "x-required-permission": "fr-09b:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "fr-09b:read"
       }
     },
     "/api/v1/risk-acceptances/{risk_acceptance_id}/revoke": {
       "post": {
-        "description": "Revoke risk acceptance",
         "operationId": "revoke_risk_acceptance",
         "parameters": [
           {
@@ -53423,25 +53672,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/RevokeRiskAcceptanceRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/RiskAcceptance"
                 }
               }
             },
@@ -53545,7 +53787,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -53563,18 +53805,14 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Revoke risk acceptance",
+        "summary": "Revoke Risk Acceptance",
         "tags": [
-          "FR-09b",
-          "contract-only"
+          "approvals-reports"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09b",
-        "x-idempotency-required": true,
         "x-owner": "member-7",
-        "x-required-permission": "fr-09b:revoke",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "fr-09b:revoke+mfa"
       }
     },
     "/api/v1/rollback-events": {
