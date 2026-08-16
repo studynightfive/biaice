@@ -140,6 +140,24 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         True,
         "Choose a checker different from the maker.",
     ),
+    "RISK_ACCEPTANCE_INVALID_PERIOD": ErrorDefinition(
+        422,
+        "Risk acceptance period is invalid",
+        False,
+        "valid_until must be later than valid_from.",
+    ),
+    "RISK_ACCEPTANCE_EXPIRED": ErrorDefinition(
+        410,
+        "Risk acceptance has expired",
+        False,
+        "Create a new risk acceptance for the current period.",
+    ),
+    "RISK_ACCEPTANCE_ALREADY_REVOKED": ErrorDefinition(
+        409,
+        "Risk acceptance is already revoked",
+        False,
+        "Keep the append-only history; create a new acceptance if needed.",
+    ),
     "GOVERNANCE_STORE_UNAVAILABLE": ErrorDefinition(
         503,
         "Governance store unavailable",
