@@ -46,25 +46,35 @@ export function DocumentsMount() {
   const [parseJobs, setParseJobs] = useState<Record<string, ParseJobResponse>>({});
   const [busy, setBusy] = useState(false);
 
+  const applyList = useCallback((items: ReadonlyArray<SourceDocument>) => {
+    setDocuments(items);
+    setState(items.length === 0 ? "empty" : "ready");
+  }, []);
+
   const refresh = useCallback(
     async (signal?: AbortSignal) => {
       if (!unitId) return;
       const result = await listUnitDocuments(unitId, signal);
-      setDocuments(result.items);
-      setState(result.items.length === 0 ? "empty" : "ready");
+      applyList(result.items);
     },
-    [unitId],
+    [applyList, unitId],
   );
 
   useEffect(() => {
+    if (!unitId) return undefined;
     const controller = new AbortController();
-    refresh(controller.signal).catch((error: unknown) => {
-      if (controller.signal.aborted) return;
-      setErrorDetail(error instanceof Error ? error.message : "资料服务暂时不可用。");
-      setState(classifyError(error));
-    });
+    listUnitDocuments(unitId, controller.signal).then(
+      (result) => {
+        applyList(result.items);
+      },
+      (error: unknown) => {
+        if (controller.signal.aborted) return;
+        setErrorDetail(error instanceof Error ? error.message : "资料服务暂时不可用。");
+        setState(classifyError(error));
+      },
+    );
     return () => controller.abort();
-  }, [refresh]);
+  }, [applyList, unitId]);
 
   useEffect(() => {
     const active = Object.values(parseJobs).filter((job) => !TERMINAL_PARSE.has(job.status));
