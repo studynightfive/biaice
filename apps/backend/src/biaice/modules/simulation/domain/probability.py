@@ -10,7 +10,6 @@ weights so they sum to 1 across multi-award scenarios.
 """
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Iterable, Mapping, Sequence

@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
+from conftest import DOMAIN_A, TENANT_A, StaticAuthenticator
 from fastapi.testclient import TestClient
 
-from conftest import DOMAIN_A, StaticAuthenticator, TENANT_A
 from biaice.core.audit import HashChainAuditWriter, InMemoryAppendOnlyAuditSink
 from biaice.core.auth import IdentityContext, Role, TenantScope
 from biaice.core.config import Settings
@@ -155,7 +155,7 @@ def test_recommendation_eligibility_blocks_unknown(client):
         },
         headers={"Idempotency-Key": _idem()},
     )
-    assert r.status_code == 422, r.text
+    assert r.status_code == 409, r.text
     assert r.json()["code"] == "ELIGIBILITY_INPUT_UNKNOWN"
 
 

@@ -8,7 +8,6 @@ from uuid import uuid4
 from biaice.modules.simulation.domain.models import ReviewValidity
 from biaice.modules.simulation.domain.referee import RefereeInput, evaluate_scenario
 
-
 TENANT = uuid4()
 DOMAIN = uuid4()
 UNIT = uuid4()

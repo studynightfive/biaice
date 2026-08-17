@@ -14,7 +14,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Sequence
 from uuid import UUID, uuid4
 
 from biaice.core.errors import BiaiceError
@@ -22,9 +22,7 @@ from biaice.modules.simulation.domain.models import (
     AwardMode,
     DecimalStr,
     ObjectiveKind,
-    ScenarioOutcome,
     SimulationCandidate,
-    new_uuid,
 )
 
 

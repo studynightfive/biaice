@@ -14,7 +14,7 @@ independent snapshots and therefore deterministic behaviour.
 from __future__ import annotations
 
 import threading
-from typing import Iterable, Protocol
+from typing import Protocol
 from uuid import UUID
 
 from biaice.core.auth import TenantScope
@@ -24,15 +24,15 @@ from biaice.modules.simulation.domain.models import (
     MergeAssessment,
     OptimizationRun,
     RecommendationEligibility,
-        ScenarioSet,
+    ScenarioOutcome,
+    ScenarioSet,
+    ScenarioStrategyAssessment,
     SimulationAssessmentSnapshot,
     SimulationBatch,
     SimulationCandidate,
     StaticCandidateValidation,
-    ScenarioOutcome,
-    ScenarioStrategyAssessment,
-    StressTestAssessment,
     StrategyPlan,
+    StressTestAssessment,
 )
 
 

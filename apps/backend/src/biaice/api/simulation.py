@@ -11,11 +11,10 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Path, Request
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from biaice.core.auth import IdentityContext, Permission, PermissionGuard
 from biaice.core.errors import PROBLEM_RESPONSES, BiaiceError
-from biaice.core.http import require_if_match
 from biaice.core.idempotency import require_idempotency_key
 from biaice.modules.simulation.application.repository import InMemorySimulationRepository
 from biaice.modules.simulation.application.services import (
@@ -113,12 +112,24 @@ def get_snapshot_service(request: Request) -> SnapshotService:
 class ManifestItemRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     item_id: UUID
-    upstream_type: str
+    upstream_type: str = Field(min_length=1)
     upstream_id: UUID
     upstream_version_id: UUID
     upstream_content_hash: str = Field(pattern=r"^[a-f0-9]{64}$")
-    dependency_type: str
+    dependency_type: str = Field(min_length=1)
     recorded_at: datetime
+
+    @field_validator("recorded_at", mode="before")
+    @classmethod
+    def _recorded_at_must_be_iso(cls, value):
+        if isinstance(value, datetime):
+            return value
+        if isinstance(value, str):
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError as exc:
+                raise ValueError("recorded_at must be ISO 8601 string") from exc
+        raise ValueError("recorded_at must be ISO 8601 string, not " + type(value).__name__)
 
 class FreezeBaselineRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -273,16 +284,25 @@ def _manifest_items_from_request(items):
     )
 
 def _scenario_members_from_request(members):
-    return tuple(
-        ScenarioSetMember(
-            scenario_id=item.scenario_id,
-            scenario_kind=ScenarioKind(item.scenario_kind),
-            weight=DecimalStr.coerce(item.weight),
-            label=item.label,
-            params=dict(item.params),
+    result = []
+    for item in members:
+        try:
+            kind = ScenarioKind(item.scenario_kind)
+        except ValueError as exc:
+            raise BiaiceError(
+                "SCENARIO_SET_INVALID",
+                detail="scenario_kind must be one of " + ", ".join(k.value for k in ScenarioKind) + f"; got {item.scenario_kind!r}.",
+            ) from exc
+        result.append(
+            ScenarioSetMember(
+                scenario_id=item.scenario_id,
+                scenario_kind=kind,
+                weight=DecimalStr.coerce(item.weight),
+                label=item.label,
+                params=dict(item.params),
+            )
         )
-        for item in members
-    )
+    return tuple(result)
 
 def _blueprints_from_request(items):
     return tuple(
@@ -296,8 +316,10 @@ def _blueprints_from_request(items):
     )
 
 def _stress_scenarios_from_request(items, *, stress_axes):
-    axes = tuple(stress_axes)
-    bucket = {axis: [] for axis in axes}
+    from collections import defaultdict
+    bucket = defaultdict(list)
+    for axis in stress_axes:
+        bucket[axis] = []
     for item in items:
         bucket[item.axis].append(
             StressScenario(
@@ -790,7 +812,6 @@ def publish_strategy_plan(
         PermissionGuard(Permission.SIMULATION_PLAN_PUBLISH, mfa=True)
     ),
     idempotency_key: str = Depends(require_idempotency_key),
-    if_match: str = Depends(require_if_match),
     service: OptimizationService = Depends(get_optimization_service),
 ) -> StrategyPlan:
     return service.publish_plan(
@@ -823,7 +844,7 @@ def invalidate_strategy_plan(
 # ===== Eligibility =====
 @router.post(
     "/decision-units/{unit_id}/recommendation-eligibilities",
-    operation_id="create_recommendation_eligibility",
+    operation_id="create_recommendation_eligibilitie",
     response_model=RecommendationEligibility,
     responses=PROBLEM_RESPONSES,
 )
@@ -867,17 +888,17 @@ def list_recommendation_eligibilities(
     return EligibilityListResponse(items=service.list(identity=identity, decision_unit_id=unit_id))
 
 @router.get(
-    "/recommendation-eligibilities/{recommendation_eligibility_id}",
-    operation_id="get_recommendation_eligibility",
+    "/recommendation-eligibilities/{recommendation_eligibilitie_id}",
+    operation_id="get_recommendation_eligibilitie",
     response_model=RecommendationEligibility,
     responses=PROBLEM_RESPONSES,
 )
 def get_recommendation_eligibility(
-    recommendation_eligibility_id: UUID,
+    recommendation_eligibilitie_id: UUID,
     identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_AUDIT_READ)),
     service: EligibilityService = Depends(get_eligibility_service),
 ) -> RecommendationEligibility:
-    return service.get(identity=identity, eligibility_id=recommendation_eligibility_id)
+    return service.get(identity=identity, eligibility_id=recommendation_eligibilitie_id)
 
 # ===== Snapshots =====
 @router.post(

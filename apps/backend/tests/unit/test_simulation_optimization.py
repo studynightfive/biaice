@@ -5,8 +5,6 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import uuid4
 
-import pytest
-
 from biaice.modules.simulation.domain.models import (
     AwardMode,
     DecimalStr,
@@ -19,7 +17,6 @@ from biaice.modules.simulation.domain.optimization import (
     rank_candidates,
     select_objective_candidates,
 )
-
 
 NOW = datetime(2026, 8, 15, tzinfo=timezone.utc)
 

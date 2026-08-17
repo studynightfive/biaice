@@ -12,9 +12,9 @@ from uuid import UUID
 from biaice.core.clock import Clock, SystemClock
 from biaice.modules.simulation.application.repository import InMemorySimulationRepository
 from biaice.modules.simulation.domain.models import (
+    SHADOW_PILOT_LOCKED_WATERMARK,
     BatchState,
     OptimizationState,
-    SHADOW_PILOT_LOCKED_WATERMARK,
     SnapshotState,
 )
 from biaice.modules.simulation.domain.snapshot import compute_payload_hash

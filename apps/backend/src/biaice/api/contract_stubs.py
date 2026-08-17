@@ -178,7 +178,9 @@ MEMBER6_IMPLEMENTED_OPERATIONS = frozenset(
         "list_simulation_assessment_snapshots",
         "get_simulation_assessment_snapshot",
         "download_simulation_assessment_snapshot",
-    }
+        "create_recommendation_eligibilitie",
+        "get_recommendation_eligibilitie",
+            }
 )
 
 MEMBER3_IMPLEMENTED_OPERATIONS = frozenset(

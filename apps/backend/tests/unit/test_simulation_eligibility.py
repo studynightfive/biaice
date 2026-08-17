@@ -6,8 +6,8 @@ import pytest
 from biaice.core.errors import BiaiceError
 from biaice.modules.simulation.domain.eligibility import (
     GateInputs,
-    assess_eligibility,
     assert_eligibility_for_recommendation,
+    assess_eligibility,
 )
 from biaice.modules.simulation.domain.models import (
     EligibilityState,

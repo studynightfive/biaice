@@ -366,7 +366,7 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         "Wait for the owning module implementation.",
     ),
     "BASELINE_INCOMPLETE": ErrorDefinition(
-        422,
+        409,
         "Decision baseline is incomplete",
         False,
         "Complete the missing upstream references and retry.",
@@ -378,7 +378,7 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         "Freeze a new baseline version and retry.",
     ),
     "SCENARIO_SET_INVALID": ErrorDefinition(
-        422,
+        409,
         "Scenario set is invalid",
         False,
         "Probability and stress scenarios must be mutually exclusive and weights must be finite.",
@@ -408,7 +408,7 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         "Result is UNDEFINED; do not submit for review.",
     ),
     "ELIGIBILITY_INPUT_UNKNOWN": ErrorDefinition(
-        422,
+        409,
         "Eligibility input is UNKNOWN, EXPIRED or INVALIDATED",
         False,
         "Resolve all upstream inputs to CURRENT before requesting a recommendation.",

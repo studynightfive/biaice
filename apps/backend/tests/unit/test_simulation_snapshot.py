@@ -18,7 +18,6 @@ from biaice.modules.simulation.domain.snapshot import (
     create_snapshot,
 )
 
-
 NOW = datetime(2026, 8, 15, tzinfo=timezone.utc)
 
 

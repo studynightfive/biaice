@@ -280,6 +280,186 @@ def create_app(
                 "PUBLIC",
                 "manual-override:append+mfa",
             ),
+            "list_decision_baselines": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:read",
+            ),
+            "freeze_decision_baseline": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:freeze+mfa",
+            ),
+            "get_decision_baseline": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:read",
+            ),
+            "list_candidate_search_spaces": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:read",
+            ),
+            "create_candidate_search_space": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:freeze+mfa",
+            ),
+            "get_candidate_search_space": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:read",
+            ),
+            "list_scenario_sets": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:read",
+            ),
+            "create_scenario_set": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:freeze+mfa",
+            ),
+            "get_scenario_set": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:read",
+            ),
+            "freeze_scenario_set": (
+                "member-6",
+                "FR-06",
+                "simulation:baseline:freeze+mfa",
+            ),
+            "create_simulation_batch": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:run+mfa",
+            ),
+            "list_simulation_batches": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:read",
+            ),
+            "get_simulation_batch": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:read",
+            ),
+            "cancel_simulation_batch": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:run+mfa",
+            ),
+            "retry_simulation_batch": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:run+mfa",
+            ),
+            "list_simulation_batch_candidates": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:read",
+            ),
+            "list_simulation_batch_static_validations": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:read",
+            ),
+            "list_simulation_batch_scenario_outcomes": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:read",
+            ),
+            "list_simulation_batch_scenario_assessments": (
+                "member-6",
+                "FR-07",
+                "simulation:batch:read",
+            ),
+            "create_optimization_run": (
+                "member-6",
+                "FR-08",
+                "simulation:optimization:run+mfa",
+            ),
+            "list_optimization_runs": (
+                "member-6",
+                "FR-08",
+                "simulation:optimization:run",
+            ),
+            "get_optimization_run": (
+                "member-6",
+                "FR-08",
+                "simulation:optimization:run",
+            ),
+            "finalize_optimization_run": (
+                "member-6",
+                "FR-08",
+                "simulation:optimization:run+mfa",
+            ),
+            "invalidate_optimization_run": (
+                "member-6",
+                "FR-08",
+                "simulation:optimization:run+mfa",
+            ),
+            "list_optimization_stress_test_assessments": (
+                "member-6",
+                "FR-08",
+                "simulation:optimization:run",
+            ),
+            "list_optimization_strategy_plans": (
+                "member-6",
+                "FR-08",
+                "simulation:plan:publish",
+            ),
+            "list_optimization_merge_assessments": (
+                "member-6",
+                "FR-08",
+                "simulation:optimization:run",
+            ),
+            "publish_strategy_plan": (
+                "member-6",
+                "FR-08",
+                "simulation:plan:publish+mfa",
+            ),
+            "invalidate_strategy_plan": (
+                "member-6",
+                "FR-08",
+                "simulation:plan:publish+mfa",
+            ),
+            "create_recommendation_eligibilitie": (
+                "member-6",
+                "FR-09a",
+                "simulation:eligibility:assess+mfa",
+            ),
+            "list_recommendation_eligibilities": (
+                "member-6",
+                "FR-09a",
+                "simulation:eligibility:assess",
+            ),
+            "get_recommendation_eligibilitie": (
+                "member-6",
+                "FR-09a",
+                "simulation:eligibility:assess",
+            ),
+            "create_simulation_assessment_snapshot": (
+                "member-6",
+                "FR-09a",
+                "simulation:snapshot:create+mfa",
+            ),
+            "list_simulation_assessment_snapshots": (
+                "member-6",
+                "FR-09a",
+                "simulation:snapshot:create",
+            ),
+            "get_simulation_assessment_snapshot": (
+                "member-6",
+                "FR-09a",
+                "simulation:snapshot:create",
+            ),
+            "download_simulation_assessment_snapshot": (
+                "member-6",
+                "FR-09a",
+                "simulation:snapshot:create",
+            ),
             "revoke_manual_override": (
                 "member-1",
                 "PUBLIC",

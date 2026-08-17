@@ -12,7 +12,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, FrozenSet, Mapping, Sequence
-from uuid import UUID
 
 from biaice.core.errors import BiaiceError
 from biaice.modules.simulation.domain.models import (

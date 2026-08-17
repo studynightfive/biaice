@@ -22,7 +22,6 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-
 DECIMAL_STR_PATTERN: Final[str] = r"^-?\d+(\.\d+)?$"
 DECIMAL_REGEX: Final[re.Pattern[str]] = re.compile(DECIMAL_STR_PATTERN)
 HASH_PATTERN: Final[str] = r"^[a-f0-9]{64}$"

@@ -16,16 +16,14 @@ import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping
 from uuid import UUID
 
 from biaice.core.errors import BiaiceError
 from biaice.modules.simulation.domain.models import (
     SHADOW_PILOT_LOCKED_WATERMARK,
-    ReviewValidity,
-    SnapshotState,
     SimulationAssessmentSnapshot,
-    new_uuid,
+    SnapshotState,
 )
 
 

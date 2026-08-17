@@ -15,15 +15,12 @@ recommendation MUST NOT be ELIGIBLE. The mapping mirrors the public docs:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Iterable, Mapping, Sequence
-from uuid import UUID
+from typing import Mapping
 
 from biaice.core.errors import BiaiceError
 from biaice.modules.simulation.domain.models import (
     EligibilityState,
     ReviewValidity,
-    new_uuid,
 )
 
 

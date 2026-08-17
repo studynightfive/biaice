@@ -23,7 +23,7 @@ from decimal import Decimal
 from typing import Any, Mapping, Sequence
 from uuid import UUID, uuid4
 
-from biaice.core.audit import AuditEvent, AuditWriter, require_audit
+from biaice.core.audit import AuditWriter, require_audit
 from biaice.core.auth import IdentityContext
 from biaice.core.clock import Clock, SystemClock
 from biaice.core.errors import BiaiceError
@@ -31,14 +31,13 @@ from biaice.core.outbox import EventEnvelope, OutboxPort
 from biaice.modules.simulation.application.repository import InMemorySimulationRepository
 from biaice.modules.simulation.domain.eligibility import (
     GateInputs,
-    assess_eligibility,
     assert_eligibility_for_recommendation,
+    assess_eligibility,
 )
 from biaice.modules.simulation.domain.manifest import (
     assert_manifest_complete,
     assert_manifest_matches_versions,
     build_manifest,
-    verify_manifest,
 )
 from biaice.modules.simulation.domain.merge import (
     MergeRequest,
@@ -46,15 +45,12 @@ from biaice.modules.simulation.domain.merge import (
     merge_assessments,
 )
 from biaice.modules.simulation.domain.models import (
-    SHADOW_PILOT_LOCKED_WATERMARK,
     AwardMode,
     BaselineState,
     BatchState,
     CandidateSearchSpace,
     DecimalStr,
     DecisionBaseline,
-    EligibilityState,
-    InputManifest,
     ManifestItem,
     MergeAssessment,
     ObjectiveKind,
@@ -74,10 +70,8 @@ from biaice.modules.simulation.domain.models import (
     SimulationBatch,
     SimulationCandidate,
     SnapshotState,
-    StaticCandidateValidation,
     StaticValidationStatus,
     StrategyPlan,
-    StrategyPlanMember,
     StressAxis,
     StressTestAssessment,
     new_uuid,
@@ -85,13 +79,6 @@ from biaice.modules.simulation.domain.models import (
 from biaice.modules.simulation.domain.optimization import (
     CandidateBlueprint,
     generate_candidates,
-    rank_candidates,
-    select_objective_candidates,
-)
-from biaice.modules.simulation.domain.probability import (
-    CoverageReport,
-    coverage,
-    mc_ci,
 )
 from biaice.modules.simulation.domain.referee import RefereeInput, evaluate_scenario
 from biaice.modules.simulation.domain.scenarios import (
@@ -473,6 +460,11 @@ class ScenarioSetService:
                     "搜索空间必须先冻结 / Search space must be FROZEN before the scenario set."
                 ),
             )
+        evaluation_space_obj = None
+        if evaluation_space_id is not None:
+            evaluation_space_obj = self.repository.get_search_space(
+                scope=identity.scope, search_space_id=evaluation_space_id
+            )
         scenario_set = freeze_scenarios(
             set_id=new_uuid(),
             version_id=new_uuid(),
@@ -482,7 +474,7 @@ class ScenarioSetService:
             decision_unit_id=decision_unit_id,
             baseline_version_id=baseline.version_id,
             search_space_version_id=space.version_id,
-            evaluation_space_version_id=evaluation_space.version_id if evaluation_space else None,
+            evaluation_space_version_id=evaluation_space_obj.version_id if evaluation_space_obj else None,
             members=members,
             stress_axes=stress_axes,
             search_space_state=space.state,

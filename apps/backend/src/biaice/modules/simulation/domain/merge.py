@@ -23,7 +23,6 @@ from biaice.core.errors import BiaiceError
 from biaice.modules.simulation.domain.models import (
     DecimalStr,
     MergeAssessment,
-    StrategyPlan,
     StrategyPlanMember,
     new_uuid,
 )
