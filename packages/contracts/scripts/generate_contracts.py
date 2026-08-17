@@ -112,9 +112,16 @@ def schema_ref_name(schema: dict[str, Any]) -> str | None:
     return ref.rsplit("/", 1)[-1] if ref else None
 
 
+def sanitize_ts_identifier(value: str) -> str:
+    sanitized = re.sub(r"[^A-Za-z0-9_$]", "_", value)
+    if not re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*", sanitized):
+        sanitized = f"_{sanitized}"
+    return sanitized
+
+
 def ts_type(schema: dict[str, Any]) -> str:
     if "$ref" in schema:
-        return schema["$ref"].rsplit("/", 1)[-1]
+        return sanitize_ts_identifier(schema["$ref"].rsplit("/", 1)[-1])
     if "const" in schema:
         return json.dumps(schema["const"], ensure_ascii=False)
     if "enum" in schema:
@@ -155,7 +162,7 @@ def generate_types(openapi: dict[str, Any]) -> str:
     ):
         if schema.get("type") == "object" or "properties" in schema:
             required = set(schema.get("required", []))
-            lines.append(f"export interface {name} {{")
+            lines.append(f"export interface {sanitize_ts_identifier(name)} {{")
             for property_name, property_schema in schema.get("properties", {}).items():
                 optional = "" if property_name in required else "?"
                 quoted = (
@@ -170,7 +177,7 @@ def generate_types(openapi: dict[str, Any]) -> str:
                 lines.append("  readonly [key: string]: unknown;")
             lines.append("}")
         else:
-            lines.append(f"export type {name} = {ts_type(schema)};")
+            lines.append(f"export type {sanitize_ts_identifier(name)} = {ts_type(schema)};")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 

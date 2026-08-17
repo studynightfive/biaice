@@ -232,13 +232,13 @@ export interface CostBaseline {
   readonly decision_unit_id: string;
   readonly currency: string;
   readonly tax_mode: TaxMode;
-  readonly input_vat: Money-Output;
+  readonly input_vat: MoneyOutput;
   readonly cycle: string;
-  readonly delivery_cost: Money-Output;
-  readonly post_award_cost: Money-Output;
-  readonly bid_preparation_cost: Money-Output;
-  readonly cashflow_in: Money-Output;
-  readonly cashflow_out: Money-Output;
+  readonly delivery_cost: MoneyOutput;
+  readonly post_award_cost: MoneyOutput;
+  readonly bid_preparation_cost: MoneyOutput;
+  readonly cashflow_in: MoneyOutput;
+  readonly cashflow_out: MoneyOutput;
   readonly lifecycle_state: LifecycleState;
   readonly review_state: ReviewState;
   readonly validity_state: ValidityState;
@@ -279,13 +279,13 @@ export interface CreateCompetitorSourceRequest {
 export interface CreateCostRequest {
   readonly currency: string;
   readonly tax_mode: TaxMode;
-  readonly input_vat: Money-Input;
+  readonly input_vat: MoneyInput;
   readonly cycle: string;
-  readonly delivery_cost: Money-Input;
-  readonly post_award_cost: Money-Input;
-  readonly bid_preparation_cost: Money-Input;
-  readonly cashflow_in: Money-Input;
-  readonly cashflow_out: Money-Input;
+  readonly delivery_cost: MoneyInput;
+  readonly post_award_cost: MoneyInput;
+  readonly bid_preparation_cost: MoneyInput;
+  readonly cashflow_in: MoneyInput;
+  readonly cashflow_out: MoneyInput;
 }
 
 export interface CreateMarketPriorRequest {
@@ -882,12 +882,12 @@ export interface ModelMonitoringSnapshot {
   readonly evidence_hash: string;
 }
 
-export interface Money-Input {
+export interface MoneyInput {
   readonly amount: number | string;
   readonly currency: string;
 }
 
-export interface Money-Output {
+export interface MoneyOutput {
   readonly amount: string;
   readonly currency: string;
 }
