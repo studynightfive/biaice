@@ -23,11 +23,35 @@
     "status": 401,
     "title": "Authentication required"
   },
+  "BASELINE_INCOMPLETE": {
+    "recoverable": false,
+    "remediation": "Complete the missing upstream references and retry.",
+    "status": 409,
+    "title": "Decision baseline is incomplete"
+  },
+  "BATCH_INFRASTRUCTURE_FAILURE": {
+    "recoverable": true,
+    "remediation": "Retry the batch; permanent failure isolates the batch.",
+    "status": 503,
+    "title": "Simulation batch infrastructure failure"
+  },
   "BYOK_SECRET_GATE_REQUIRED": {
     "recoverable": true,
     "remediation": "Pass BYOK_SECRET_GATE before submitting a credential.",
     "status": 503,
     "title": "BYOK secret gate required"
+  },
+  "CANDIDATE_ERROR_NOT_RECOVERABLE": {
+    "recoverable": false,
+    "remediation": "Mark the batch as INDETERMINATE; do not delete scenarios to inflate metrics.",
+    "status": 422,
+    "title": "Candidate-level error blocks the batch"
+  },
+  "COVERAGE_BELOW_THRESHOLD": {
+    "recoverable": false,
+    "remediation": "Increase n_scenarios or relax infra exclusions, then rerun.",
+    "status": 422,
+    "title": "Coverage is below the policy threshold"
   },
   "CURSOR_SCOPE_MISMATCH": {
     "recoverable": false,
@@ -58,6 +82,12 @@
     "remediation": "Obtain a verified receipt from the registered adapter.",
     "status": 409,
     "title": "Deletion receipt invalid"
+  },
+  "DENOMINATOR_BELOW_THRESHOLD": {
+    "recoverable": false,
+    "remediation": "Result is UNDEFINED; do not submit for review.",
+    "status": 422,
+    "title": "Coverage denominator is below the policy threshold"
   },
   "DOCUMENT_ALREADY_RELEASED": {
     "recoverable": false,
@@ -119,6 +149,12 @@
     "status": 503,
     "title": "Provider egress authorization unavailable"
   },
+  "ELIGIBILITY_INPUT_UNKNOWN": {
+    "recoverable": false,
+    "remediation": "Resolve all upstream inputs to CURRENT before requesting a recommendation.",
+    "status": 409,
+    "title": "Eligibility input is UNKNOWN, EXPIRED or INVALIDATED"
+  },
   "ETAG_MISMATCH": {
     "recoverable": true,
     "remediation": "Refresh the draft before retrying.",
@@ -167,6 +203,12 @@
     "status": 428,
     "title": "If-Match required"
   },
+  "INFRASTRUCTURE_RETRYABLE": {
+    "recoverable": true,
+    "remediation": "Retry with backoff; if persistent, isolate the batch.",
+    "status": 503,
+    "title": "Transient infrastructure failure"
+  },
   "INTERNAL_ERROR": {
     "recoverable": true,
     "remediation": "Retry with the request_id or contact an administrator.",
@@ -184,12 +226,6 @@
     "remediation": "Use 16-128 URL-safe ASCII characters.",
     "status": 400,
     "title": "Invalid idempotency key"
-  },
-  "INVALID_STATE_TRANSITION": {
-    "recoverable": false,
-    "remediation": "Refresh the resource and use an action allowed from its current state.",
-    "status": 409,
-    "title": "Invalid state transition"
   },
   "JOB_NOT_CANCELLABLE": {
     "recoverable": false,
@@ -239,113 +275,11 @@
     "status": 403,
     "title": "Permission denied"
   },
-  "PROVIDER_BUDGET_EXCEEDED": {
-    "recoverable": true,
-    "remediation": "Wait for budget reset or obtain an approved budget change.",
-    "status": 409,
-    "title": "Provider budget exceeded"
-  },
-  "PROVIDER_CALL_NOT_AUTHORIZED": {
+  "PLAN_MERGE_BLOCKED": {
     "recoverable": false,
-    "remediation": "Use an approved purpose and data scope.",
-    "status": 403,
-    "title": "Provider call is not authorized"
-  },
-  "PROVIDER_CATALOG_NOT_CURRENT": {
-    "recoverable": true,
-    "remediation": "Refresh the published Provider catalog and use its exact version and hash.",
-    "status": 409,
-    "title": "Provider catalog is not current"
-  },
-  "PROVIDER_CONFIG_NOT_ACTIVE": {
-    "recoverable": true,
-    "remediation": "Activate a current configuration.",
-    "status": 409,
-    "title": "Provider configuration is not active"
-  },
-  "PROVIDER_CREDENTIAL_INVALID": {
-    "recoverable": true,
-    "remediation": "Rotate the credential and test it again.",
-    "status": 409,
-    "title": "Provider credential is invalid"
-  },
-  "PROVIDER_CREDENTIAL_MISSING": {
-    "recoverable": true,
-    "remediation": "Write a credential to a draft configuration.",
-    "status": 409,
-    "title": "Provider credential is missing"
-  },
-  "PROVIDER_CREDENTIAL_REVOKED": {
-    "recoverable": false,
-    "remediation": "Create a successor with a new credential.",
-    "status": 409,
-    "title": "Provider credential is revoked"
-  },
-  "PROVIDER_CREDENTIAL_ROTATION_REQUIRES_SUCCESSOR": {
-    "recoverable": true,
-    "remediation": "Create and verify a draft successor instead of changing the active configuration.",
-    "status": 409,
-    "title": "Provider credential rotation requires a successor"
-  },
-  "PROVIDER_CREDENTIAL_UNVERIFIED": {
-    "recoverable": true,
-    "remediation": "Run the fixed connection test.",
-    "status": 409,
-    "title": "Provider credential is unverified"
-  },
-  "PROVIDER_CREDENTIAL_USAGE_NOT_ALLOWED": {
-    "recoverable": false,
-    "remediation": "Use the credential only within its TEST, BUSINESS or DELETION scope.",
-    "status": 409,
-    "title": "Provider credential usage is not allowed"
-  },
-  "PROVIDER_EGRESS_BLOCKED": {
-    "recoverable": true,
-    "remediation": "Synchronize the approved catalog hash and restore the restricted egress adapter.",
-    "status": 503,
-    "title": "Provider egress is blocked"
-  },
-  "PROVIDER_POLICY_NOT_CURRENT": {
-    "recoverable": true,
-    "remediation": "Refresh Provider policy, legal basis, PIA and cross-border evidence.",
-    "status": 409,
-    "title": "Provider policy is not current"
-  },
-  "PROVIDER_RATE_LIMITED": {
-    "recoverable": true,
-    "remediation": "Retry after the approved backoff interval.",
-    "status": 429,
-    "title": "Provider rate limit reached"
-  },
-  "PROVIDER_REAL_DATA_MODE_REQUIRED": {
-    "recoverable": true,
-    "remediation": "Use verified synthetic data or pass REAL_DATA_MODE before Provider processing.",
-    "status": 503,
-    "title": "Provider real-data gate required"
-  },
-  "PROVIDER_RESPONSE_INVALID": {
-    "recoverable": false,
-    "remediation": "Keep the response blocked and inspect the adapter.",
-    "status": 502,
-    "title": "Provider response is invalid"
-  },
-  "PROVIDER_ROTATION_CONFLICT": {
-    "recoverable": true,
-    "remediation": "Finish or revoke the existing successor before starting another rotation.",
-    "status": 409,
-    "title": "Provider rotation conflict"
-  },
-  "PROVIDER_TIMEOUT": {
-    "recoverable": true,
-    "remediation": "Retry or use the documented manual path.",
-    "status": 504,
-    "title": "Provider request timed out"
-  },
-  "PROVIDER_UPSTREAM_ERROR": {
-    "recoverable": true,
-    "remediation": "Retry after the Provider recovers.",
-    "status": 502,
-    "title": "Provider upstream error"
+    "remediation": "Use complete-linkage; do not chain adjacent candidates across tau_b or tau_m.",
+    "status": 422,
+    "title": "Plan merge was blocked by linkage rules"
   },
   "REAL_DATA_MODE_REQUIRED": {
     "recoverable": true,
@@ -389,17 +323,35 @@
     "status": 422,
     "title": "Risk acceptance period is invalid"
   },
+  "SCENARIO_SET_INVALID": {
+    "recoverable": false,
+    "remediation": "Probability and stress scenarios must be mutually exclusive and weights must be finite.",
+    "status": 409,
+    "title": "Scenario set is invalid"
+  },
   "SCOPE_OVERRIDE_FORBIDDEN": {
     "recoverable": false,
     "remediation": "Remove tenant/data-domain scope fields and headers.",
     "status": 400,
     "title": "Client scope override is forbidden"
   },
-  "SECRET_STORE_UNAVAILABLE": {
-    "recoverable": true,
-    "remediation": "Keep credential operations blocked until the approved write-only store recovers.",
-    "status": 503,
-    "title": "Secret store unavailable"
+  "SNAPSHOT_PAYLOAD_HASH_MISMATCH": {
+    "recoverable": false,
+    "remediation": "Recompute the snapshot payload and retry.",
+    "status": 409,
+    "title": "Snapshot payload hash does not match committed version"
+  },
+  "STALE_BASELINE": {
+    "recoverable": false,
+    "remediation": "Freeze a new baseline version and retry.",
+    "status": 409,
+    "title": "Decision baseline is no longer current"
+  },
+  "STRESS_AXIS_VIOLATED": {
+    "recoverable": false,
+    "remediation": "Do not enter the probability denominator with stress weights.",
+    "status": 422,
+    "title": "Hard stress-axis constraint violated"
   },
   "TENANT_SCOPE_VIOLATION": {
     "recoverable": false,

@@ -65,7 +65,7 @@ export function EligibilityStateBanner({
   const tone: StatusTone = state === "NONE" ? "neutral" : STATE_TONE[state] ?? "neutral";
   return (
     <section className={styles.eligibilityBanner} data-state={state} aria-label="eligibility-state">
-      <StatusBadge tone={tone} label={copy.title} />
+      <StatusBadge tone={tone}>{copy.title}</StatusBadge>
       <div className={styles.eligibilityBannerBody}>
         <strong>{copy.title}</strong>
         <p>{copy.description}</p>

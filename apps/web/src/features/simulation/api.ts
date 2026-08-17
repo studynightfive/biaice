@@ -18,8 +18,9 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 
 import { getBiaiceClient, type BiaiceClient } from "@/lib/api/client";
-import type {
-  CandidateSearchSpaceVersion,
+import {
+  deriveBaselineReadiness,
+  type CandidateSearchSpaceVersion,
   CoverageInterval,
   Decimal,
   DecisionBaselineVersion,
@@ -35,6 +36,8 @@ import type {
   StrategyPlanVersion,
   StressTestAssessment,
   Uuid,
+  BaselineReadiness,
+
 } from "./types";
 
 /* -------------------------------------------------------------------------- */
@@ -334,13 +337,15 @@ export interface BaselineBundle {
   superseded: DecisionBaselineVersion[];
   searchSpaces: CandidateSearchSpaceVersion[];
   scenarioSets: ScenarioSetVersion[];
+  readiness: BaselineReadiness;
 }
 
 export async function loadBaselineBundle(unitId: Uuid): Promise<BaselineBundle> {
   const [baselines, spaces, sets] = await Promise.all([listDecisionBaselines(unitId), listSearchSpaces(unitId), listScenarioSets(unitId)]);
   const current = baselines.find((b) => b.validity_state === "CURRENT") ?? null;
   const superseded = baselines.filter((b) => b.validity_state !== "CURRENT");
-  return { current, superseded, searchSpaces: spaces, scenarioSets: sets };
+  const readiness = deriveBaselineReadiness(current, superseded);
+  return { current, superseded, searchSpaces: spaces, scenarioSets: sets, readiness };
 }
 
 export interface SimulationBundle {

@@ -90,7 +90,7 @@ function InputsAggregate({ latest }: { latest: RecommendationEligibilityVersion 
           <div key={label} className={styles.field}>
             <span className={styles.fieldLabel}>{label}</span>
             <span className={styles.fieldValue}>
-              <StatusBadge tone={VALIDITY_TONE[value]} label={value} />
+              <StatusBadge tone={VALIDITY_TONE[value]}>{value}</StatusBadge>
             </span>
           </div>
         ))}

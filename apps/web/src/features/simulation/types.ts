@@ -106,6 +106,7 @@ export type EligibilityState =
   | "ELIGIBLE_WITH_ACCEPTED_RISK"
   | "ELIGIBLE_WITH_CONDITIONS"
   | "INELIGIBLE"
+  | "NOT_ELIGIBLE"
   | "INDETERMINATE";
 
 export type RoundingMode = "HALF_UP" | "HALF_EVEN" | "FLOOR" | "CEILING";
@@ -396,6 +397,14 @@ export interface SimulationReadiness {
   reason_codes: string[];
 }
 
+export interface BaselineBundle {
+  current: DecisionBaselineVersion | null;
+  superseded: DecisionBaselineVersion[];
+  searchSpaces: CandidateSearchSpaceVersion[];
+  scenarioSets: ScenarioSetVersion[];
+  readiness: BaselineReadiness;
+}
+
 export interface EligibilityReadiness {
   status: Readiness;
   state: EligibilityState | "NONE";
@@ -463,15 +472,15 @@ export function deriveBaselineReadiness(
  * a file that consumes the real generated client.
  */
 export const Models = {
-  DecisionBaselineVersion,
-  CandidateSearchSpaceVersion,
-  ScenarioSetVersion,
-  SimulationBatchVersion,
-  OptimizationRunVersion,
-  StrategyPlanVersion,
-  RecommendationEligibilityVersion,
-  SimulationAssessmentSnapshot,
-  ProblemDetails,
+  DecisionBaselineVersion: 'DecisionBaselineVersion',
+  CandidateSearchSpaceVersion: 'CandidateSearchSpaceVersion',
+  ScenarioSetVersion: 'ScenarioSetVersion',
+  SimulationBatchVersion: 'SimulationBatchVersion',
+  OptimizationRunVersion: 'OptimizationRunVersion',
+  StrategyPlanVersion: 'StrategyPlanVersion',
+  RecommendationEligibilityVersion: 'RecommendationEligibilityVersion',
+  SimulationAssessmentSnapshot: 'SimulationAssessmentSnapshot',
+  ProblemDetails: 'ProblemDetails',
 } as const;
 
 export type ModelsType =

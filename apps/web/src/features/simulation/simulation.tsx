@@ -115,7 +115,7 @@ export default async function SimulationBlock({ unitId, mfaVerified }: Simulatio
 function StatusBar({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>> }) {
   const batchState = bundle.latestBatch?.state ?? "NONE";
   const runState = bundle.latestRun?.state ?? "NONE";
-  const planState = bundle.plans[0]?.state ?? "NONE";
+  const planState: PlanState = bundle.plans[0]?.state ?? "DRAFT";
   const assessmentState =
     bundle.latestBatch && bundle.latestBatch.scenario_assessments.length > 0
       ? "ASSESSED"
@@ -126,7 +126,7 @@ function StatusBar({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulatio
         <div className={styles.field}>
           <span className={styles.fieldLabel}>Batch</span>
           <span>
-            <StatusBadge tone={batchState === "NONE" ? "neutral" : BATCH_TONE[batchState as BatchState]} label={batchState} />
+            <StatusBadge tone={batchState === "NONE" ? "neutral" : BATCH_TONE[batchState as BatchState]}>{batchState}</StatusBadge>
           </span>
         </div>
       </Card>
@@ -134,7 +134,7 @@ function StatusBar({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulatio
         <div className={styles.field}>
           <span className={styles.fieldLabel}>Latest run</span>
           <span>
-            <StatusBadge tone={runState === "NONE" ? "neutral" : RUN_TONE[runState as OptimizationRunVersion["state"]]} label={runState} />
+            <StatusBadge tone={runState === "NONE" ? "neutral" : RUN_TONE[runState as OptimizationRunVersion["state"]]}>{runState}</StatusBadge>
           </span>
         </div>
       </Card>
@@ -142,7 +142,7 @@ function StatusBar({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulatio
         <div className={styles.field}>
           <span className={styles.fieldLabel}>Latest plan</span>
           <span>
-            <StatusBadge tone={planState === "NONE" ? "neutral" : PLAN_TONE[planState as PlanState]} label={planState} />
+            <StatusBadge tone={PLAN_TONE[planState]}>{planState}</StatusBadge>
           </span>
         </div>
       </Card>
@@ -162,7 +162,7 @@ function StatusBar({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulatio
         <div className={styles.field}>
           <span className={styles.fieldLabel}>Assessment state</span>
           <span>
-            <StatusBadge tone={ASSESSMENT_TONE[assessmentState]} label={assessmentState} />
+            <StatusBadge tone={ASSESSMENT_TONE[assessmentState]}>{assessmentState}</StatusBadge>
           </span>
         </div>
       </Card>
