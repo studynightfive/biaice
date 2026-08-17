@@ -12,12 +12,17 @@ from biaice.api import (
     approvals_reports,
     contract_stubs,
     documents,
+    fr05,
     gates,
     health,
     internal,
     jobs,
+    market_privacy,
     me,
+    model_lifecycle,
+    provider_management,
 )
+from biaice.api.operation_catalog import OPERATION_CATALOG
 from biaice.core.audit import (
     AuditWriter,
     HashChainAuditWriter,
@@ -30,10 +35,14 @@ from biaice.core.errors import install_error_handlers
 from biaice.core.jobs import JobPort, UnavailableJobPort
 from biaice.core.readiness import build_readiness_checks
 from biaice.core.security.gates import GateEvidenceProvider, GateService
+from biaice.core.security.restricted_ports import SecretStorePort
 from biaice.core.telemetry import (
     BYOKPreBodyGuardMiddleware,
     RequestContextMiddleware,
     ScopeOverrideMiddleware,
+)
+from biaice.modules.model_governance.application.provider_management import (
+    ProviderRuntimePort,
 )
 
 
@@ -60,6 +69,8 @@ def create_app(
     gate_evidence_provider: GateEvidenceProvider | None = None,
     audit_writer: AuditWriter | None = None,
     job_port: JobPort | None = None,
+    secret_store: SecretStorePort | None = None,
+    provider_runtime: ProviderRuntimePort | None = None,
     readiness_checks: Sequence[Callable[[], health.ComponentHealth]] | None = None,
 ) -> FastAPI:
     runtime_settings = settings or get_settings()
@@ -82,6 +93,15 @@ def create_app(
                 from biaice.core.errors import BiaiceError
 
                 raise BiaiceError("AUDIT_UNAVAILABLE")
+        if runtime_settings.byok_enabled:
+            if secret_store is None:
+                from biaice.core.errors import BiaiceError
+
+                raise BiaiceError("SECRET_STORE_UNAVAILABLE")
+            if provider_runtime is None:
+                from biaice.core.errors import BiaiceError
+
+                raise BiaiceError("EGRESS_AUTHORIZATION_UNAVAILABLE")
         yield
 
     app = FastAPI(
@@ -110,6 +130,30 @@ def create_app(
     from biaice.modules.documents.application.services import configure_documents
 
     configure_documents(app)
+    from biaice.modules.market.application.services import (
+        configure_market_privacy_services,
+    )
+
+    configure_market_privacy_services(app)
+    from biaice.modules.market.privacy.application.services import (
+        configure_market_privacy_services as configure_fr12_privacy_services,
+    )
+
+    configure_fr12_privacy_services(app)
+    from biaice.modules.model_governance.application.model_lifecycle import (
+        configure_model_lifecycle,
+    )
+
+    configure_model_lifecycle(app)
+    from biaice.modules.model_governance.application.provider_management import (
+        configure_provider_management,
+    )
+
+    configure_provider_management(
+        app,
+        secret_store=secret_store,
+        runtime=provider_runtime,
+    )
     app.state.readiness_checks = tuple(
         readiness_checks
         if readiness_checks is not None
@@ -131,6 +175,10 @@ def create_app(
     # so FastAPI first-match-wins routes implemented operations to real handlers.
     app.include_router(approvals_reports.router)
     app.include_router(documents.router)
+    app.include_router(fr05.router)
+    app.include_router(market_privacy.router)
+    app.include_router(model_lifecycle.router)
+    app.include_router(provider_management.router)
     app.include_router(contract_stubs.router)
     app.include_router(internal.router)
 
@@ -229,6 +277,16 @@ def create_app(
                 "manual-override:append+mfa",
             ),
         }
+        for spec in OPERATION_CATALOG:
+            if (
+                spec.fr == "FR-05"
+                or spec.operation_id in model_lifecycle.MODEL_LIFECYCLE_OPERATION_IDS
+            ):
+                actual_owner[spec.operation_id] = (
+                    spec.owner,
+                    spec.fr,
+                    spec.permission,
+                )
         for path_item in schema.get("paths", {}).values():
             for operation in path_item.values():
                 if not isinstance(operation, dict):
@@ -240,6 +298,7 @@ def create_app(
                     operation.setdefault("x-owner", owner)
                     operation.setdefault("x-fr", fr)
                     operation.setdefault("x-required-permission", permission)
+                    operation.setdefault("x-schema-status", "FROZEN")
                 for response_code, response in operation.get("responses", {}).items():
                     if not str(response_code).startswith(("4", "5")) or not isinstance(
                         response, dict

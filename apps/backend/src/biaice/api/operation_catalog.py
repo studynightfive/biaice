@@ -1,14 +1,13 @@
-"""M0 P0 operation catalog for member-owned CONTRACT_ONLY routers.
+"""M0 P0 operation catalog for real and deliberately CONTRACT_ONLY routers.
 
-The paths and operationIds are frozen enough for parallel integration. Field
-schemas remain explicit ``ContractOnly*`` placeholders until the owning member
-submits the jointly reviewed schema PR. Every route returns 501 and therefore
-cannot be mistaken for implemented business behavior.
+Paths and operationIds are frozen for parallel integration. An operation keeps
+``STUB_FIELDS_PENDING_OWNER_FREEZE`` until its owner supplies strict field
+schemas and a real handler; only those remaining entries receive 501 routes.
 """
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,6 +30,14 @@ class OperationSpec:
 _operations: list[OperationSpec] = []
 
 
+def singularize(stem: str) -> str:
+    """Return the catalog's canonical singular snake-case resource name."""
+
+    if stem.endswith("ies"):
+        return f"{stem[:-3]}y"
+    return stem.removesuffix("s")
+
+
 def add(
     method: str,
     path: str,
@@ -42,6 +49,7 @@ def add(
     permission: str | None = None,
     idempotency: bool | None = None,
     etag: bool = False,
+    schema_status: str = "STUB_FIELDS_PENDING_OWNER_FREEZE",
 ) -> None:
     action = operation_id.split("_", 1)[0]
     write = method.upper() != "GET"
@@ -58,6 +66,7 @@ def add(
             if idempotency is None
             else idempotency,
             etag_required=etag,
+            schema_status=schema_status,
         )
     )
 
@@ -72,6 +81,7 @@ def collection(
     draft_update: bool = False,
     archive: bool = False,
 ) -> None:
+    singular = singularize(stem)
     add(
         "GET",
         collection_path,
@@ -83,37 +93,37 @@ def collection(
     add(
         "POST",
         collection_path,
-        f"create_{stem.removesuffix('s')}",
+        f"create_{singular}",
         fr,
         owner,
-        f"Create {stem.removesuffix('s').replace('_', ' ')}",
+        f"Create {singular.replace('_', ' ')}",
     )
     add(
         "GET",
         item_path,
-        f"get_{stem.removesuffix('s')}",
+        f"get_{singular}",
         fr,
         owner,
-        f"Get {stem.removesuffix('s').replace('_', ' ')}",
+        f"Get {singular.replace('_', ' ')}",
     )
     if draft_update:
         add(
             "PATCH",
             item_path,
-            f"update_{stem.removesuffix('s')}_draft",
+            f"update_{singular}_draft",
             fr,
             owner,
-            f"Update draft {stem.removesuffix('s').replace('_', ' ')}",
+            f"Update draft {singular.replace('_', ' ')}",
             etag=True,
         )
     if archive:
         add(
             "POST",
             f"{item_path}/archive",
-            f"archive_{stem.removesuffix('s')}",
+            f"archive_{singular}",
             fr,
             owner,
-            f"Archive {stem.removesuffix('s').replace('_', ' ')}",
+            f"Archive {singular.replace('_', ' ')}",
         )
 
 
@@ -142,11 +152,12 @@ for resource, stem in [
     ("compliance-reviews", "compliance_reviews"),
     ("cross-lot-constraints", "cross_lot_constraints"),
 ]:
+    singular = singularize(stem)
     collection(
         fr="FR-01",
         owner="member-2",
         collection_path=f"/api/v1/decision-units/{{unit_id}}/{resource}",
-        item_path=f"/api/v1/{resource}/{{{stem.removesuffix('s')}_id}}",
+        item_path=f"/api/v1/{resource}/{{{singular}_id}}",
         stem=stem,
         draft_update=stem == "scope_assessments",
     )
@@ -466,11 +477,12 @@ for resource, stem in [
     ("market-priors", "market_priors"),
     ("unknown-entrant-profiles", "unknown_entrant_profiles"),
 ]:
+    singular = singularize(stem)
     collection(
         fr="FR-05",
         owner="member-5",
         collection_path=f"/api/v1/decision-units/{{unit_id}}/{resource}",
-        item_path=f"/api/v1/{resource}/{{{stem.removesuffix('s')}_id}}",
+        item_path=f"/api/v1/{resource}/{{{singular}_id}}",
         stem=stem,
     )
     if resource == "market-priors":
@@ -545,6 +557,7 @@ add(
     "FR-13",
     "member-5",
     "Create model approval",
+    permission="fr-13:create+mfa",
 )
 add(
     "POST",
@@ -553,6 +566,7 @@ add(
     "FR-13",
     "member-5",
     "Decide model approval",
+    permission="fr-13:decide+mfa",
 )
 add(
     "POST",
@@ -561,6 +575,7 @@ add(
     "FR-13",
     "member-5",
     "Create external model deployment binding",
+    permission="fr-13:create+mfa",
 )
 for action in ["activate", "rollback"]:
     add(
@@ -570,6 +585,7 @@ for action in ["activate", "rollback"]:
         "FR-13",
         "member-5",
         f"{action.title()} model deployment",
+        permission=f"fr-13:{action}+mfa",
     )
 
 add(
@@ -579,6 +595,8 @@ add(
     "FR-13",
     "member-5",
     "List published provider catalog",
+    permission="fr-13:read",
+    schema_status="FROZEN",
 )
 add(
     "POST",
@@ -587,6 +605,8 @@ add(
     "FR-13",
     "member-5",
     "Create platform provider catalog version",
+    permission="platform-provider-catalog:create+mfa",
+    schema_status="FROZEN",
 )
 add(
     "GET",
@@ -595,6 +615,8 @@ add(
     "FR-13",
     "member-5",
     "Get provider catalog version",
+    permission="platform-provider-catalog:read",
+    schema_status="FROZEN",
 )
 for action in ["publish", "revoke"]:
     add(
@@ -604,6 +626,8 @@ for action in ["publish", "revoke"]:
         "FR-13",
         "member-5",
         f"{action.title()} provider catalog version",
+        permission=f"platform-provider-catalog:{action}+mfa",
+        schema_status="FROZEN",
     )
 add(
     "GET",
@@ -612,6 +636,8 @@ add(
     "FR-13",
     "member-5",
     "List tenant provider configurations",
+    permission="tenant-provider:read",
+    schema_status="FROZEN",
 )
 add(
     "POST",
@@ -620,6 +646,8 @@ add(
     "FR-13",
     "member-5",
     "Create draft provider configuration",
+    permission="tenant-ai-admin:mfa",
+    schema_status="FROZEN",
 )
 add(
     "GET",
@@ -628,6 +656,8 @@ add(
     "FR-13",
     "member-5",
     "Get redacted provider configuration",
+    permission="tenant-provider:read",
+    schema_status="FROZEN",
 )
 add(
     "PATCH",
@@ -636,7 +666,9 @@ add(
     "FR-13",
     "member-5",
     "Update draft provider configuration",
+    permission="tenant-ai-admin:mfa",
     etag=True,
+    schema_status="FROZEN",
 )
 for action, method, operation_id in [
     ("successors", "POST", "create_ai_provider_configuration_successor"),
@@ -655,6 +687,7 @@ for action, method, operation_id in [
         "member-5",
         operation_id.replace("_", " ").title(),
         permission="tenant-ai-admin:mfa",
+        schema_status="FROZEN",
     )
 add(
     "GET",
@@ -663,6 +696,8 @@ add(
     "FR-13",
     "member-5",
     "List redacted provider invocations",
+    permission="tenant-provider:read",
+    schema_status="FROZEN",
 )
 add(
     "GET",
@@ -671,6 +706,8 @@ add(
     "FR-13",
     "member-5",
     "Get redacted provider invocation",
+    permission="tenant-provider:read",
+    schema_status="FROZEN",
 )
 
 for resource, stem in [
@@ -686,11 +723,12 @@ for resource, stem in [
     ("incident-policies", "incident_policies"),
     ("incidents", "incidents"),
 ]:
+    singular = singularize(stem)
     collection(
         fr="FR-12",
         owner="member-5",
         collection_path=f"/api/v1/{resource}",
-        item_path=f"/api/v1/{resource}/{{{stem.removesuffix('s')}_id}}",
+        item_path=f"/api/v1/{resource}/{{{singular}_id}}",
         stem=stem,
     )
 for resource, stem, actions in [
@@ -1397,7 +1435,15 @@ add(
 )
 
 
-OPERATION_CATALOG: tuple[OperationSpec, ...] = tuple(_operations)
+# Member 5 has replaced every FR-05/FR-12/FR-13 contract stub with a strict,
+# tested handler. Keep the source catalog aligned with that implemented state;
+# the explicit Provider entries above remain useful documentation at the call site.
+OPERATION_CATALOG: tuple[OperationSpec, ...] = tuple(
+    replace(operation, schema_status="FROZEN")
+    if operation.owner == "member-5"
+    else operation
+    for operation in _operations
+)
 
 
 def validate_operation_catalog() -> None:

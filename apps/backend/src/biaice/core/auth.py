@@ -413,6 +413,9 @@ def get_identity(
     request: Request,
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
 ) -> IdentityContext:
+    pre_authenticated = getattr(request.state, "pre_authenticated_identity", None)
+    if isinstance(pre_authenticated, IdentityContext):
+        return pre_authenticated
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise BiaiceError("AUTH_REQUIRED")
     authenticator: Authenticator = request.app.state.authenticator
