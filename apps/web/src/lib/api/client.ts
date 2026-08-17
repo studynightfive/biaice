@@ -15,7 +15,6 @@
  *     receive an authentic failure object.
  */
 
-import "server-only";
 
 export interface BiaiceRequestOptions {
   /** Request body for write operations. Must already be JSON-serialisable. */

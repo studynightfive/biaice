@@ -46,9 +46,3 @@ export async function EligibilityMount({ unitId = "", mfaVerified = false }: Mou
   return <EligibilityBlock unitId={unitId} mfaVerified={mfaVerified} />;
 }
 
-/* Default exports for member 1 if it prefers named imports per-mount. */
-export default {
-  BaselineScenariosMount,
-  SimulationMount,
-  EligibilityMount,
-} as const;
