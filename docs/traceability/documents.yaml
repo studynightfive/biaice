@@ -1,0 +1,171 @@
+# M0 member-3 (FR-02 document intake) traceability matrix.
+traceability:
+  owner: member-3
+  status: IMPLEMENTED
+  contract_only: false
+  handler_module: biaice.api.documents
+  service_module: biaice.modules.documents.application.services
+  domain_module: biaice.modules.documents.domain
+  repository_module: biaice.modules.documents.application.repository
+  migration_revision: m3_documents_0001
+  items:
+    - fr: FR-02
+      use_case: Create project-scoped resumable upload session
+      operation_id: create_project_document_upload_session
+      path: /api/v1/projects/{project_id}/document-upload-sessions
+      method: POST
+      permission: fr-02:create
+      idempotency: true
+      service: DocumentIntakeService.create_session
+      tests:
+        - apps/backend/tests/contract/test_documents_api.py::test_upload_complete_review_and_independent_release
+    - fr: FR-02
+      use_case: Create decision-unit-scoped resumable upload session
+      operation_id: create_unit_document_upload_session
+      path: /api/v1/decision-units/{unit_id}/document-upload-sessions
+      method: POST
+      permission: fr-02:create
+      idempotency: true
+      service: DocumentIntakeService.create_session
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_release_requires_review_and_independent_checker
+    - fr: FR-02
+      use_case: Read resumable upload status
+      operation_id: get_document_upload_session
+      path: /api/v1/document-upload-sessions/{session_id}
+      method: GET
+      permission: fr-02:read
+      service: DocumentIntakeService.get_session
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_scope_isolation_hides_other_tenants
+    - fr: FR-02
+      use_case: Upload a verified binary chunk
+      operation_id: put_document_upload_chunk
+      path: /api/v1/document-upload-sessions/{session_id}/chunks/{part_number}
+      method: PUT
+      permission: fr-02:put
+      idempotency: true
+      service: DocumentIntakeService.put_chunk
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_complete_pdf_upload_scans_clean_and_is_not_released
+    - fr: FR-02
+      use_case: Complete upload into quarantine and scan
+      operation_id: complete_document_upload_session
+      path: /api/v1/document-upload-sessions/{session_id}/complete
+      method: POST
+      permission: fr-02:complete
+      idempotency: true
+      service: DocumentIntakeService.complete
+      event: documents.source_document_uploaded.v1
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_eicar_payload_stays_quarantined_and_cannot_be_reviewed
+        - apps/backend/tests/contract/test_documents_api.py::test_blocked_extension_and_eicar_are_fail_closed
+    - fr: FR-02
+      use_case: Cancel upload and dispose temporary parts
+      operation_id: cancel_document_upload_session
+      path: /api/v1/document-upload-sessions/{session_id}/cancel
+      method: POST
+      permission: fr-02:cancel
+      idempotency: true
+      service: DocumentIntakeService.cancel
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_cancel_is_idempotent_and_drops_partial_parts
+    - fr: FR-02
+      use_case: List and fetch source documents
+      operation_id: get_document
+      path: /api/v1/documents/{document_id}
+      method: GET
+      permission: fr-02:read
+      service: DocumentIntakeService.get_document
+      tests:
+        - apps/backend/tests/contract/test_documents_api.py::test_list_project_documents_returns_empty
+    - fr: FR-02
+      use_case: Review after clean scan
+      operation_id: review_document
+      path: /api/v1/documents/{document_id}/review
+      method: POST
+      permission: fr-02:review
+      idempotency: true
+      service: DocumentIntakeService.review
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_release_requires_review_and_independent_checker
+    - fr: FR-02
+      use_case: Independent release from quarantine
+      operation_id: release_from_quarantine_document
+      path: /api/v1/documents/{document_id}/release-from-quarantine
+      method: POST
+      permission: fr-02:release+mfa
+      idempotency: true
+      service: DocumentIntakeService.release
+      event: documents.source_document_released.v1
+      tests:
+        - apps/backend/tests/contract/test_documents_api.py::test_independent_release_on_shared_app
+    - fr: FR-02
+      use_case: Move a document back to quarantine
+      operation_id: quarantine_document
+      path: /api/v1/documents/{document_id}/quarantine
+      method: POST
+      permission: fr-02:quarantine+mfa
+      idempotency: true
+      service: DocumentIntakeService.quarantine
+      event: documents.document_quarantined.v1
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_release_requires_review_and_independent_checker
+    - fr: FR-02
+      use_case: Download source document body after a clean scan
+      operation_id: download_document
+      path: /api/v1/documents/{document_id}/download
+      method: GET
+      permission: fr-02:read
+      service: DocumentIntakeService.download
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_download_denied_for_infected_payload
+        - apps/backend/tests/contract/test_documents_api.py::test_download_parse_and_replicas
+    - fr: FR-02
+      use_case: Create and poll a parse job
+      operation_id: create_project_parse_job
+      path: /api/v1/projects/{project_id}/parse-jobs
+      method: POST
+      permission: fr-02:create
+      idempotency: true
+      service: DocumentIntakeService.create_parse_job
+      event: documents.parse_completed.v1
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_parse_pdf_registers_derived_asset_and_image_requires_manual_entry
+    - fr: FR-02
+      use_case: Inherit a project document into a decision unit without copying bytes
+      operation_id: inherit_to_unit_document_link
+      path: /api/v1/document-links/inherit-to-unit
+      method: POST
+      permission: fr-02:inherit
+      idempotency: true
+      service: DocumentIntakeService.inherit_to_unit
+      tests:
+        - apps/backend/tests/unit/test_document_intake.py::test_inherit_override_conflict_requires_human_resolve
+        - apps/backend/tests/contract/test_documents_api.py::test_document_link_inherit_and_detach
+    - fr: FR-02
+      use_case: List replica locations owned by member 3
+      operation_id: list_replicas
+      path: /api/v1/replicas
+      method: GET
+      permission: fr-02:read
+      service: DocumentIntakeService.list_replicas
+      tests:
+        - apps/backend/tests/unit/test_replica_deletion_adapter.py::test_adapter_deletes_blob_and_never_completes_a_job
+  tables:
+    - document_upload_session
+    - source_document
+    - document_parse_job
+    - document_derived_asset
+    - document_replica_location
+    - document_link
+  invariants:
+    - no_direct_minio: browser never receives object URLs; chunks only go gateway to API.
+    - hash_gate: complete requires assembled size and SHA-256 to match the declared digest.
+    - mime_sniff: extension is not trusted; sniffed PDF/DOCX/XLSX/image/archive only.
+    - eicar_fail_closed: EICAR or blocked types cannot be reviewed, released, parsed or downloaded.
+    - maker_checker: uploader cannot release; release requires MFA and a different actor.
+    - scope_projection: tenant/data-domain/project/unit mismatch looks like 404.
+    - audit_and_outbox: upload, release, quarantine and parse write AuditEvent and domain events.
+    - no_last_write_wins: inherited/override conflicts stay OPEN until human confirmation.
+    - deletion_receipt_only: member-3 adapter never completes a DeletionJob; legal hold blocks delete.
