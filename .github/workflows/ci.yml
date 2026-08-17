@@ -2,9 +2,22 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - feature/**
+      - chore/**
+      - ci/**
+      - docs/**
+      - dependabot/**
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      simulation_only:
+        description: Run only the member-6 simulation job for faster feedback.
+        type: boolean
+        default: false
+        required: false
 
 permissions:
   contents: read
@@ -16,6 +29,7 @@ concurrency:
 jobs:
   repository-policy:
     name: Repository policy
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +51,7 @@ jobs:
 
   web:
     name: Web lint, test, and build
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     env:
       CI: "1"
@@ -60,6 +75,7 @@ jobs:
 
   backend:
     name: Backend tests and contract drift
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     env:
       BIAICE_DEPLOYMENT_PROFILE: synthetic_http
@@ -165,6 +181,7 @@ jobs:
 
   compose:
     name: Compose topology
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
