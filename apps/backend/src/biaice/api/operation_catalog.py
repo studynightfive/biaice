@@ -384,7 +384,6 @@ for resource, stem, fr in [
     ("precheck-assessments", "precheck_assessments", "FR-03"),
     ("conditions", "conditions", "FR-03"),
     ("cost-baselines", "cost_baselines", "FR-04"),
-    ("commercial-policies", "commercial_policies", "FR-04"),
     ("readiness-assessments", "readiness_assessments", "FR-04"),
 ]:
     singular = stem.removesuffix("s")
@@ -396,6 +395,30 @@ for resource, stem, fr in [
         stem=stem,
         draft_update=resource == "requirements",
     )
+add(
+    "GET",
+    "/api/v1/decision-units/{unit_id}/commercial-policies",
+    "list_commercial_policies",
+    "FR-04",
+    "member-4",
+    "List commercial policies",
+)
+add(
+    "POST",
+    "/api/v1/decision-units/{unit_id}/commercial-policies",
+    "create_commercial_policie",
+    "FR-04",
+    "member-4",
+    "Create commercial policy",
+)
+add(
+    "GET",
+    "/api/v1/commercial-policies/{commercial_policie_id}",
+    "get_commercial_policie",
+    "FR-04",
+    "member-4",
+    "Get commercial policy",
+)
 for resource, stem, actions, fr in [
     ("requirements", "requirement", ["publish", "supersede"], "FR-03"),
     ("evidence", "evidence", ["review", "publish", "revoke"], "FR-03"),
@@ -716,11 +739,8 @@ for resource, stem in [
     ("notice-consent-records", "notice_consent_records"),
     ("pia-records", "pia_records"),
     ("cross-border-assessments", "cross_border_assessments"),
-    ("provider-policies", "provider_policies"),
-    ("dsr-policies", "dsr_policies"),
     ("load-profiles", "load_profiles"),
     ("data-subject-requests", "data_subject_requests"),
-    ("incident-policies", "incident_policies"),
     ("incidents", "incidents"),
 ]:
     singular = singularize(stem)
@@ -731,6 +751,87 @@ for resource, stem in [
         item_path=f"/api/v1/{resource}/{{{singular}_id}}",
         stem=stem,
     )
+add(
+    "GET",
+    "/api/v1/provider-policies",
+    "list_provider_policies",
+    "FR-12",
+    "member-5",
+    "List provider policies",
+    permission="fr-12:read",
+)
+add(
+    "POST",
+    "/api/v1/provider-policies",
+    "create_provider_policie",
+    "FR-12",
+    "member-5",
+    "Create provider policie",
+    permission="fr-12:create",
+)
+add(
+    "GET",
+    "/api/v1/provider-policies/{provider_policie_id}",
+    "get_provider_policie",
+    "FR-12",
+    "member-5",
+    "Get provider policie",
+    permission="fr-12:read",
+)
+add(
+    "GET",
+    "/api/v1/dsr-policies",
+    "list_dsr_policies",
+    "FR-12",
+    "member-5",
+    "List dsr policies",
+    permission="fr-12:read",
+)
+add(
+    "POST",
+    "/api/v1/dsr-policies",
+    "create_dsr_policie",
+    "FR-12",
+    "member-5",
+    "Create dsr policie",
+    permission="fr-12:create",
+)
+add(
+    "GET",
+    "/api/v1/dsr-policies/{dsr_policie_id}",
+    "get_dsr_policie",
+    "FR-12",
+    "member-5",
+    "Get dsr policie",
+    permission="fr-12:read",
+)
+add(
+    "GET",
+    "/api/v1/incident-policies",
+    "list_incident_policies",
+    "FR-12",
+    "member-5",
+    "List incident policies",
+    permission="fr-12:read",
+)
+add(
+    "POST",
+    "/api/v1/incident-policies",
+    "create_incident_policie",
+    "FR-12",
+    "member-5",
+    "Create incident policie",
+    permission="fr-12:create",
+)
+add(
+    "GET",
+    "/api/v1/incident-policies/{incident_policie_id}",
+    "get_incident_policie",
+    "FR-12",
+    "member-5",
+    "Get incident policie",
+    permission="fr-12:read",
+)
 for resource, stem, actions in [
     ("pia-records", "pia_record", ["approve", "revoke"]),
     (

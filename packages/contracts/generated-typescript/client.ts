@@ -169,7 +169,7 @@ export async function get_candidate_search_space(client: BiaiceClient, options: 
   return client.request<Models.ContractOnlyResource>("GET", "/api/v1/candidate-search-spaces/{candidate_search_space_id}", options);
 }
 
-export async function get_commercial_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
+export async function get_commercial_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
   return client.request<Models.ContractOnlyResource>("GET", "/api/v1/commercial-policies/{commercial_policie_id}", options);
 }
 
@@ -401,7 +401,7 @@ export async function list_commercial_policies(client: BiaiceClient, options: Re
   return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/commercial-policies", options);
 }
 
-export async function create_commercial_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
+export async function create_commercial_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
   return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/commercial-policies", options);
 }
 
@@ -717,12 +717,12 @@ export async function list_dsr_policies(client: BiaiceClient, options: RequestOp
   return client.request<Models.MarketResourcePage>("GET", "/api/v1/dsr-policies", options);
 }
 
-export async function create_dsr_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
+export async function create_dsr_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
   return client.request<Models.MarketResourceRecord>("POST", "/api/v1/dsr-policies", options);
 }
 
-export async function get_dsr_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
-  return client.request<Models.MarketResourceRecord>("GET", "/api/v1/dsr-policies/{dsr_policy_id}", options);
+export async function get_dsr_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
+  return client.request<Models.MarketResourceRecord>("GET", "/api/v1/dsr-policies/{dsr_policie_id}", options);
 }
 
 export async function archive_dsr_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
@@ -793,12 +793,12 @@ export async function list_incident_policies(client: BiaiceClient, options: Requ
   return client.request<Models.MarketResourcePage>("GET", "/api/v1/incident-policies", options);
 }
 
-export async function create_incident_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
+export async function create_incident_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
   return client.request<Models.MarketResourceRecord>("POST", "/api/v1/incident-policies", options);
 }
 
-export async function get_incident_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
-  return client.request<Models.MarketResourceRecord>("GET", "/api/v1/incident-policies/{incident_policy_id}", options);
+export async function get_incident_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
+  return client.request<Models.MarketResourceRecord>("GET", "/api/v1/incident-policies/{incident_policie_id}", options);
 }
 
 export async function approve_incident_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
@@ -1169,12 +1169,12 @@ export async function list_provider_policies(client: BiaiceClient, options: Requ
   return client.request<Models.MarketResourcePage>("GET", "/api/v1/provider-policies", options);
 }
 
-export async function create_provider_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
+export async function create_provider_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
   return client.request<Models.MarketResourceRecord>("POST", "/api/v1/provider-policies", options);
 }
 
-export async function get_provider_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
-  return client.request<Models.MarketResourceRecord>("GET", "/api/v1/provider-policies/{provider_policy_id}", options);
+export async function get_provider_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
+  return client.request<Models.MarketResourceRecord>("GET", "/api/v1/provider-policies/{provider_policie_id}", options);
 }
 
 export async function approve_provider_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {

@@ -30,11 +30,11 @@ RESOURCES = (
     ("notice-consent-records", "notice_consent_record_id"),
     ("pia-records", "pia_record_id"),
     ("cross-border-assessments", "cross_border_assessment_id"),
-    ("provider-policies", "provider_policy_id"),
-    ("dsr-policies", "dsr_policy_id"),
+    ("provider-policies", "provider_policie_id"),
+    ("dsr-policies", "dsr_policie_id"),
     ("load-profiles", "load_profile_id"),
     ("data-subject-requests", "data_subject_request_id"),
-    ("incident-policies", "incident_policy_id"),
+    ("incident-policies", "incident_policie_id"),
     ("incidents", "incident_id"),
 )
 
@@ -154,12 +154,12 @@ def test_openapi_exposes_all_fr12_operations_as_real_synthetic_handlers() -> Non
     assert command_schema["additionalProperties"] is False
     assert "api_key" not in command_schema["properties"]
     assert "tenant_id" not in command_schema["properties"]
-    assert operations["get_provider_policy"][0] == (
-        "/api/v1/provider-policies/{provider_policy_id}"
+    assert operations["get_provider_policie"][0] == (
+        "/api/v1/provider-policies/{provider_policie_id}"
     )
-    assert operations["get_dsr_policy"][0] == "/api/v1/dsr-policies/{dsr_policy_id}"
-    assert operations["get_incident_policy"][0] == (
-        "/api/v1/incident-policies/{incident_policy_id}"
+    assert operations["get_dsr_policie"][0] == "/api/v1/dsr-policies/{dsr_policie_id}"
+    assert operations["get_incident_policie"][0] == (
+        "/api/v1/incident-policies/{incident_policie_id}"
     )
     assert "/api/v1/cross_border_assessments/{cross_border_assessment_id}/mark-not-required" not in schema[
         "paths"

@@ -31,6 +31,16 @@ class ResourceSpec:
     list_stem: str
     resource_type: str
     id_parameter: str
+    action_id_parameter: str | None = None
+    operation_resource_type: str | None = None
+
+    @property
+    def create_get_resource_type(self) -> str:
+        return self.operation_resource_type or self.resource_type
+
+    @property
+    def action_resource_parameter(self) -> str:
+        return self.action_id_parameter or self.id_parameter
 
 
 @dataclass(frozen=True, slots=True)
@@ -73,9 +83,18 @@ RESOURCE_SPECS = (
         "provider-policies",
         "provider_policies",
         "provider_policy",
+        "provider_policie_id",
         "provider_policy_id",
+        "provider_policie",
     ),
-    ResourceSpec("dsr-policies", "dsr_policies", "dsr_policy", "dsr_policy_id"),
+    ResourceSpec(
+        "dsr-policies",
+        "dsr_policies",
+        "dsr_policy",
+        "dsr_policie_id",
+        "dsr_policy_id",
+        "dsr_policie",
+    ),
     ResourceSpec(
         "load-profiles", "load_profiles", "load_profile", "load_profile_id"
     ),
@@ -89,7 +108,9 @@ RESOURCE_SPECS = (
         "incident-policies",
         "incident_policies",
         "incident_policy",
+        "incident_policie_id",
         "incident_policy_id",
+        "incident_policie",
     ),
     ResourceSpec("incidents", "incidents", "incident", "incident_id"),
 )
@@ -126,8 +147,8 @@ FR12_IMPLEMENTED_OPERATION_IDS = frozenset(
             for spec in RESOURCE_SPECS
             for operation_id in (
                 f"list_{spec.list_stem}",
-                f"create_{spec.resource_type}",
-                f"get_{spec.resource_type}",
+                f"create_{spec.create_get_resource_type}",
+                f"get_{spec.create_get_resource_type}",
             )
         ),
         *(spec.operation_id for spec in ACTION_SPECS),
@@ -203,7 +224,7 @@ def _list_endpoint(spec: ResourceSpec):
 
 
 def _create_endpoint(spec: ResourceSpec):
-    operation_id = f"create_{spec.resource_type}"
+    operation_id = f"create_{spec.create_get_resource_type}"
 
     async def endpoint(
         request: Request,
@@ -227,7 +248,7 @@ def _create_endpoint(spec: ResourceSpec):
 
 
 def _get_endpoint(spec: ResourceSpec):
-    operation_id = f"get_{spec.resource_type}"
+    operation_id = f"get_{spec.create_get_resource_type}"
 
     async def endpoint(
         resource_id: UUID = Path(..., alias=spec.id_parameter),
@@ -250,7 +271,7 @@ def _action_endpoint(spec: ActionSpec):
 
     async def endpoint(
         request: Request,
-        resource_id: UUID = Path(..., alias=spec.resource.id_parameter),
+        resource_id: UUID = Path(..., alias=spec.resource.action_resource_parameter),
         body: MarketActionCommand | None = Body(default=None),
         identity: IdentityContext = Depends(get_identity),
         idempotency_key: str = Depends(require_idempotency_key),
@@ -288,7 +309,7 @@ for _resource in RESOURCE_SPECS:
         f"/api/v1/{_resource.path}",
         _create_endpoint(_resource),
         methods=["POST"],
-        operation_id=f"create_{_resource.resource_type}",
+        operation_id=f"create_{_resource.create_get_resource_type}",
         response_model=MarketResourceRecord,
         responses=_problem_responses(),
         tags=["FR-12", "privacy"],
@@ -299,7 +320,7 @@ for _resource in RESOURCE_SPECS:
         f"/api/v1/{_resource.path}/{{{_resource.id_parameter}}}",
         _get_endpoint(_resource),
         methods=["GET"],
-        operation_id=f"get_{_resource.resource_type}",
+        operation_id=f"get_{_resource.create_get_resource_type}",
         response_model=MarketResourceRecord,
         responses=_problem_responses(),
         tags=["FR-12", "privacy"],
@@ -309,7 +330,7 @@ for _resource in RESOURCE_SPECS:
 
 for _action in ACTION_SPECS:
     router.add_api_route(
-        f"/api/v1/{_action.resource.path}/{{{_action.resource.id_parameter}}}/{_action.action}",
+        f"/api/v1/{_action.resource.path}/{{{_action.resource.action_resource_parameter}}}/{_action.action}",
         _action_endpoint(_action),
         methods=["POST"],
         operation_id=_action.operation_id,

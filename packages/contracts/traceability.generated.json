@@ -929,7 +929,7 @@
     {
       "contract_only": true,
       "method": "GET",
-      "operation_id": "get_commercial_policy",
+      "operation_id": "get_commercial_policie",
       "owner": "member-4",
       "path": "/api/v1/commercial-policies/{commercial_policie_id}",
       "permission": "fr-04:read",
@@ -989,7 +989,7 @@
     {
       "contract_only": true,
       "method": "POST",
-      "operation_id": "create_commercial_policy",
+      "operation_id": "create_commercial_policie",
       "owner": "member-4",
       "path": "/api/v1/decision-units/{unit_id}/commercial-policies",
       "permission": "fr-04:create",
@@ -2667,7 +2667,7 @@
     {
       "contract_only": false,
       "method": "POST",
-      "operation_id": "create_dsr_policy",
+      "operation_id": "create_dsr_policie",
       "owner": "member-5",
       "path": "/api/v1/dsr-policies",
       "permission": "fr-12:create",
@@ -2677,9 +2677,9 @@
     {
       "contract_only": false,
       "method": "GET",
-      "operation_id": "get_dsr_policy",
+      "operation_id": "get_dsr_policie",
       "owner": "member-5",
-      "path": "/api/v1/dsr-policies/{dsr_policy_id}",
+      "path": "/api/v1/dsr-policies/{dsr_policie_id}",
       "permission": "fr-12:read",
       "schema_status": "FROZEN",
       "test_status": "FOUNDATION_TESTED"
@@ -2717,7 +2717,7 @@
     {
       "contract_only": false,
       "method": "POST",
-      "operation_id": "create_incident_policy",
+      "operation_id": "create_incident_policie",
       "owner": "member-5",
       "path": "/api/v1/incident-policies",
       "permission": "fr-12:create",
@@ -2727,9 +2727,9 @@
     {
       "contract_only": false,
       "method": "GET",
-      "operation_id": "get_incident_policy",
+      "operation_id": "get_incident_policie",
       "owner": "member-5",
-      "path": "/api/v1/incident-policies/{incident_policy_id}",
+      "path": "/api/v1/incident-policies/{incident_policie_id}",
       "permission": "fr-12:read",
       "schema_status": "FROZEN",
       "test_status": "FOUNDATION_TESTED"
@@ -2987,7 +2987,7 @@
     {
       "contract_only": false,
       "method": "POST",
-      "operation_id": "create_provider_policy",
+      "operation_id": "create_provider_policie",
       "owner": "member-5",
       "path": "/api/v1/provider-policies",
       "permission": "fr-12:create",
@@ -2997,9 +2997,9 @@
     {
       "contract_only": false,
       "method": "GET",
-      "operation_id": "get_provider_policy",
+      "operation_id": "get_provider_policie",
       "owner": "member-5",
-      "path": "/api/v1/provider-policies/{provider_policy_id}",
+      "path": "/api/v1/provider-policies/{provider_policie_id}",
       "permission": "fr-12:read",
       "schema_status": "FROZEN",
       "test_status": "FOUNDATION_TESTED"

@@ -44,6 +44,7 @@ from biaice.core.telemetry import (
 from biaice.modules.model_governance.application.provider_management import (
     ProviderRuntimePort,
 )
+from biaice.modules.commercial import api as commercial
 
 
 def _build_authenticator(settings: Settings) -> Authenticator:
@@ -177,6 +178,7 @@ def create_app(
     app.include_router(documents.router)
     app.include_router(fr05.router)
     app.include_router(market_privacy.router)
+    app.include_router(commercial.router)
     app.include_router(model_lifecycle.router)
     app.include_router(provider_management.router)
     app.include_router(contract_stubs.router)

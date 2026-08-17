@@ -532,6 +532,208 @@
         "title": "CalibrationPurpose",
         "type": "string"
       },
+      "CommercialPolicy": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Capacity Constraint",
+            "type": "string"
+          },
+          "cashflow_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Cashflow Constraint",
+            "type": "string"
+          },
+          "coverage_ratio": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Coverage Ratio",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "exception_authority": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Exception Authority",
+            "type": "string"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/LifecycleState"
+          },
+          "merge_tolerance": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Merge Tolerance",
+            "type": "string"
+          },
+          "min_award_quality": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Min Award Quality",
+            "type": "string"
+          },
+          "objective_weights": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Objective Weights",
+            "type": "object"
+          },
+          "policy_id": {
+            "format": "uuid",
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "profit_floor": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Profit Floor",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "retention_state": {
+            "$ref": "#/components/schemas/RetentionState",
+            "default": "RETAIN"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "risk_threshold": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Risk Threshold",
+            "type": "string"
+          },
+          "superseded_by_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Id"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "profit_floor",
+          "cashflow_constraint",
+          "capacity_constraint",
+          "risk_threshold",
+          "coverage_ratio",
+          "min_award_quality",
+          "merge_tolerance",
+          "exception_authority",
+          "lifecycle_state",
+          "review_state",
+          "validity_state",
+          "created_at",
+          "created_by"
+        ],
+        "title": "CommercialPolicy",
+        "type": "object"
+      },
       "Competitor": {
         "additionalProperties": false,
         "properties": {
@@ -1123,6 +1325,232 @@
         "title": "ContractOnlyResource",
         "type": "object"
       },
+      "CostBaseline": {
+        "additionalProperties": false,
+        "properties": {
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "bid_preparation_cost": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "cashflow_in": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "cashflow_out": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "cost_baseline_id": {
+            "format": "uuid",
+            "title": "Cost Baseline Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "cycle": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Cycle",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "delivery_cost": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "exploration_only": {
+            "title": "Exploration Only",
+            "type": "boolean"
+          },
+          "input_vat": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/LifecycleState"
+          },
+          "post_award_cost": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "retention_state": {
+            "$ref": "#/components/schemas/RetentionState",
+            "default": "RETAIN"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "superseded_by_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Id"
+          },
+          "tax_mode": {
+            "$ref": "#/components/schemas/TaxMode"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cost_baseline_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "currency",
+          "tax_mode",
+          "input_vat",
+          "cycle",
+          "delivery_cost",
+          "post_award_cost",
+          "bid_preparation_cost",
+          "cashflow_in",
+          "cashflow_out",
+          "lifecycle_state",
+          "review_state",
+          "validity_state",
+          "created_at",
+          "created_by",
+          "exploration_only"
+        ],
+        "title": "CostBaseline",
+        "type": "object"
+      },
+      "CostListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CostBaseline"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "CostListResponse",
+        "type": "object"
+      },
       "CreateCompetitorRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1223,6 +1651,56 @@
         "title": "CreateCompetitorSourceRequest",
         "type": "object"
       },
+      "CreateCostRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bid_preparation_cost": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "cashflow_in": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "cashflow_out": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "cycle": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Cycle",
+            "type": "string"
+          },
+          "delivery_cost": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "input_vat": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "post_award_cost": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "tax_mode": {
+            "$ref": "#/components/schemas/TaxMode"
+          }
+        },
+        "required": [
+          "currency",
+          "tax_mode",
+          "input_vat",
+          "cycle",
+          "delivery_cost",
+          "post_award_cost",
+          "bid_preparation_cost",
+          "cashflow_in",
+          "cashflow_out"
+        ],
+        "title": "CreateCostRequest",
+        "type": "object"
+      },
       "CreateMarketPriorRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1289,6 +1767,78 @@
           "document_id"
         ],
         "title": "CreateParseJobRequest",
+        "type": "object"
+      },
+      "CreatePolicyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Capacity Constraint",
+            "type": "string"
+          },
+          "cashflow_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Cashflow Constraint",
+            "type": "string"
+          },
+          "coverage_ratio": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Coverage Ratio",
+            "type": "string"
+          },
+          "exception_authority": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Exception Authority",
+            "type": "string"
+          },
+          "merge_tolerance": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Merge Tolerance",
+            "type": "string"
+          },
+          "min_award_quality": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Min Award Quality",
+            "type": "string"
+          },
+          "objective_weights": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Objective Weights",
+            "type": "object"
+          },
+          "profit_floor": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Profit Floor",
+            "type": "string"
+          },
+          "risk_threshold": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Risk Threshold",
+            "type": "string"
+          }
+        },
+        "required": [
+          "profit_floor",
+          "cashflow_constraint",
+          "capacity_constraint",
+          "risk_threshold",
+          "coverage_ratio",
+          "min_award_quality",
+          "merge_tolerance",
+          "exception_authority"
+        ],
+        "title": "CreatePolicyRequest",
         "type": "object"
       },
       "CreateRiskAcceptanceRequest": {
@@ -3032,6 +3582,16 @@
         "title": "JobView",
         "type": "object"
       },
+      "LifecycleState": {
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "ARCHIVED",
+          "DELETED"
+        ],
+        "title": "LifecycleState",
+        "type": "string"
+      },
       "ManualOverrideRequest": {
         "additionalProperties": false,
         "properties": {
@@ -4751,6 +5311,58 @@
         "title": "ModelMonitoringSnapshot",
         "type": "object"
       },
+      "Money-Input": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "description": "Decimal fixed-point value, serialized as a string",
+            "title": "Amount"
+          },
+          "currency": {
+            "description": "ISO 4217 currency code",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "Money-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Decimal fixed-point value, serialized as a string",
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "description": "ISO 4217 currency code",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
       "MonitoringSnapshotCreate": {
         "additionalProperties": false,
         "properties": {
@@ -5003,6 +5615,23 @@
           "completed_at"
         ],
         "title": "ParseJobResponse",
+        "type": "object"
+      },
+      "PolicyListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CommercialPolicy"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "PolicyListResponse",
         "type": "object"
       },
       "ProblemDetails": {
@@ -6230,6 +6859,61 @@
         "title": "QuarantineCompetitorSourceRequest",
         "type": "object"
       },
+      "ReadinessDecision": {
+        "enum": [
+          "READY",
+          "CONDITIONAL",
+          "NOT_READY",
+          "UNKNOWN"
+        ],
+        "title": "ReadinessDecision",
+        "type": "string"
+      },
+      "ReadinessItem": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "commercial_not_procurement": {
+            "default": false,
+            "title": "Commercial Not Procurement",
+            "type": "boolean"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReadinessDecision"
+          },
+          "reason_code": {
+            "title": "Reason Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "decision",
+          "reason_code"
+        ],
+        "title": "ReadinessItem",
+        "type": "object"
+      },
+      "ReadinessListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StrategyReadinessAssessment"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ReadinessListResponse",
+        "type": "object"
+      },
       "ReplicaKind": {
         "enum": [
           "DATABASE",
@@ -6351,6 +7035,16 @@
         "title": "ResolveConflictDocumentLinkRequest",
         "type": "object"
       },
+      "RetentionState": {
+        "enum": [
+          "RETAIN",
+          "DISPOSITION_DUE",
+          "DISPOSITION_RUNNING",
+          "DISPOSED"
+        ],
+        "title": "RetentionState",
+        "type": "string"
+      },
       "ReviewCompetitorSourceRequest": {
         "additionalProperties": false,
         "properties": {
@@ -6381,6 +7075,17 @@
         },
         "title": "ReviewCompetitorSourceRequest",
         "type": "object"
+      },
+      "ReviewState": {
+        "enum": [
+          "PENDING",
+          "APPROVED",
+          "NOT_REQUIRED",
+          "REJECTED",
+          "QUARANTINED"
+        ],
+        "title": "ReviewState",
+        "type": "string"
       },
       "RevokeRiskAcceptanceRequest": {
         "additionalProperties": false,
@@ -7099,6 +7804,90 @@
         "title": "SourceReviewState",
         "type": "string"
       },
+      "StrategyReadinessAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReadinessDecision"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "exploration_watermark": {
+            "title": "Exploration Watermark",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReadinessItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "readiness_id": {
+            "format": "uuid",
+            "title": "Readiness Id",
+            "type": "string"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "readiness_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "decision",
+          "validity_state",
+          "items",
+          "created_at",
+          "created_by",
+          "exploration_watermark"
+        ],
+        "title": "StrategyReadinessAssessment",
+        "type": "object"
+      },
       "SubjectDeduplicationRun": {
         "additionalProperties": false,
         "properties": {
@@ -7196,6 +7985,14 @@
           "SUCCEEDED"
         ],
         "title": "SubjectDeduplicationState",
+        "type": "string"
+      },
+      "TaxMode": {
+        "enum": [
+          "INCLUSIVE",
+          "EXCLUSIVE"
+        ],
+        "title": "TaxMode",
         "type": "string"
       },
       "UnknownEntrantProfileListResponse": {
@@ -7546,6 +8343,15 @@
         ],
         "title": "UploadSessionResponse",
         "type": "object"
+      },
+      "ValidityState": {
+        "enum": [
+          "CURRENT",
+          "STALE",
+          "INVALIDATED"
+        ],
+        "title": "ValidityState",
+        "type": "string"
       },
       "WaiverPolicy": {
         "enum": [
@@ -13573,7 +14379,7 @@
     "/api/v1/commercial-policies/{commercial_policie_id}": {
       "get": {
         "description": "Get commercial policy",
-        "operationId": "get_commercial_policy",
+        "operationId": "get_commercial_policie",
         "parameters": [
           {
             "in": "path",
@@ -24067,7 +24873,7 @@
       },
       "post": {
         "description": "Create commercial policy",
-        "operationId": "create_commercial_policy",
+        "operationId": "create_commercial_policie",
         "parameters": [
           {
             "in": "path",
@@ -38336,7 +39142,7 @@
         "x-schema-status": "FROZEN"
       },
       "post": {
-        "operationId": "create_dsr_policy",
+        "operationId": "create_dsr_policie",
         "parameters": [
           {
             "in": "header",
@@ -38506,17 +39312,17 @@
         "x-schema-status": "FROZEN"
       }
     },
-    "/api/v1/dsr-policies/{dsr_policy_id}": {
+    "/api/v1/dsr-policies/{dsr_policie_id}": {
       "get": {
-        "operationId": "get_dsr_policy",
+        "operationId": "get_dsr_policie",
         "parameters": [
           {
             "in": "path",
-            "name": "dsr_policy_id",
+            "name": "dsr_policie_id",
             "required": true,
             "schema": {
               "format": "uuid",
-              "title": "Dsr Policy Id",
+              "title": "Dsr Policie Id",
               "type": "string"
             }
           }
@@ -41785,7 +42591,7 @@
         "x-schema-status": "FROZEN"
       },
       "post": {
-        "operationId": "create_incident_policy",
+        "operationId": "create_incident_policie",
         "parameters": [
           {
             "in": "header",
@@ -41955,17 +42761,17 @@
         "x-schema-status": "FROZEN"
       }
     },
-    "/api/v1/incident-policies/{incident_policy_id}": {
+    "/api/v1/incident-policies/{incident_policie_id}": {
       "get": {
-        "operationId": "get_incident_policy",
+        "operationId": "get_incident_policie",
         "parameters": [
           {
             "in": "path",
-            "name": "incident_policy_id",
+            "name": "incident_policie_id",
             "required": true,
             "schema": {
               "format": "uuid",
-              "title": "Incident Policy Id",
+              "title": "Incident Policie Id",
               "type": "string"
             }
           }
@@ -58469,7 +59275,7 @@
         "x-schema-status": "FROZEN"
       },
       "post": {
-        "operationId": "create_provider_policy",
+        "operationId": "create_provider_policie",
         "parameters": [
           {
             "in": "header",
@@ -58639,17 +59445,17 @@
         "x-schema-status": "FROZEN"
       }
     },
-    "/api/v1/provider-policies/{provider_policy_id}": {
+    "/api/v1/provider-policies/{provider_policie_id}": {
       "get": {
-        "operationId": "get_provider_policy",
+        "operationId": "get_provider_policie",
         "parameters": [
           {
             "in": "path",
-            "name": "provider_policy_id",
+            "name": "provider_policie_id",
             "required": true,
             "schema": {
               "format": "uuid",
-              "title": "Provider Policy Id",
+              "title": "Provider Policie Id",
               "type": "string"
             }
           }
