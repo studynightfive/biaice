@@ -1049,254 +1049,254 @@
   ],
   "FR-05": [
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_competitor_profile",
       "owner": "member-5",
       "path": "/api/v1/competitor-profiles/{competitor_profile_id}",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_competitor_profile",
       "owner": "member-5",
       "path": "/api/v1/competitor-profiles/{competitor_profile_id}/publish",
       "permission": "fr-05:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_competitor_source",
       "owner": "member-5",
       "path": "/api/v1/competitor-sources/{competitor_source_id}",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "quarantine_competitor_source",
       "owner": "member-5",
       "path": "/api/v1/competitor-sources/{competitor_source_id}/quarantine",
       "permission": "fr-05:quarantine",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "review_competitor_source",
       "owner": "member-5",
       "path": "/api/v1/competitor-sources/{competitor_source_id}/review",
       "permission": "fr-05:review",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_competitors",
       "owner": "member-5",
       "path": "/api/v1/competitors",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_competitor",
       "owner": "member-5",
       "path": "/api/v1/competitors",
       "permission": "fr-05:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_competitor",
       "owner": "member-5",
       "path": "/api/v1/competitors/{competitor_id}",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "PATCH",
       "operation_id": "update_competitor_draft",
       "owner": "member-5",
       "path": "/api/v1/competitors/{competitor_id}",
       "permission": "fr-05:update",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "archive_competitor",
       "owner": "member-5",
       "path": "/api/v1/competitors/{competitor_id}/archive",
       "permission": "fr-05:archive",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_competitor_profiles",
       "owner": "member-5",
       "path": "/api/v1/competitors/{competitor_id}/profiles",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "build_competitor_profile",
       "owner": "member-5",
       "path": "/api/v1/competitors/{competitor_id}/profiles/build",
       "permission": "fr-05:build",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_competitor_sources",
       "owner": "member-5",
       "path": "/api/v1/competitors/{competitor_id}/sources",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_competitor_source",
       "owner": "member-5",
       "path": "/api/v1/competitors/{competitor_id}/sources",
       "permission": "fr-05:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_market_priors",
       "owner": "member-5",
       "path": "/api/v1/decision-units/{unit_id}/market-priors",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_market_prior",
       "owner": "member-5",
       "path": "/api/v1/decision-units/{unit_id}/market-priors",
       "permission": "fr-05:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_subject_deduplication_run",
       "owner": "member-5",
       "path": "/api/v1/decision-units/{unit_id}/subject-deduplication-runs",
       "permission": "fr-05:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_unknown_entrant_profiles",
       "owner": "member-5",
       "path": "/api/v1/decision-units/{unit_id}/unknown-entrant-profiles",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_unknown_entrant_profile",
       "owner": "member-5",
       "path": "/api/v1/decision-units/{unit_id}/unknown-entrant-profiles",
       "permission": "fr-05:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_market_prior",
       "owner": "member-5",
       "path": "/api/v1/market-priors/{market_prior_id}",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_market_prior",
       "owner": "member-5",
       "path": "/api/v1/market-priors/{market_prior_id}/publish",
       "permission": "fr-05:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "review_market_prior",
       "owner": "member-5",
       "path": "/api/v1/market-priors/{market_prior_id}/review",
       "permission": "fr-05:review",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_subject_deduplication_run",
       "owner": "member-5",
       "path": "/api/v1/subject-deduplication-runs/{run_id}",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_unknown_entrant_profile",
       "owner": "member-5",
       "path": "/api/v1/unknown-entrant-profiles/{unknown_entrant_profile_id}",
       "permission": "fr-05:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_unknown_entrant_profile",
       "owner": "member-5",
       "path": "/api/v1/unknown-entrant-profiles/{unknown_entrant_profile_id}/publish",
       "permission": "fr-05:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     }
   ],
   "FR-06": [
@@ -2515,1046 +2515,1046 @@
   ],
   "FR-12": [
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "append_consent_withdrawal",
       "owner": "member-5",
       "path": "/api/v1/consent-withdrawals",
       "permission": "fr-12:append",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_cross_border_assessments",
       "owner": "member-5",
       "path": "/api/v1/cross-border-assessments",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_cross_border_assessment",
       "owner": "member-5",
       "path": "/api/v1/cross-border-assessments",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_cross_border_assessment",
       "owner": "member-5",
       "path": "/api/v1/cross-border-assessments/{cross_border_assessment_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "approve_cross_border_assessment",
       "owner": "member-5",
       "path": "/api/v1/cross-border-assessments/{cross_border_assessment_id}/approve",
-      "permission": "fr-12:approve",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:approve+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "expire_cross_border_assessment",
       "owner": "member-5",
       "path": "/api/v1/cross-border-assessments/{cross_border_assessment_id}/expire",
-      "permission": "fr-12:expire",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:expire+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "mark_not_required_cross_border_assessment",
       "owner": "member-5",
       "path": "/api/v1/cross-border-assessments/{cross_border_assessment_id}/mark-not-required",
-      "permission": "fr-12:mark",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:mark+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "revoke_cross_border_assessment",
       "owner": "member-5",
       "path": "/api/v1/cross-border-assessments/{cross_border_assessment_id}/revoke",
-      "permission": "fr-12:revoke",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:revoke+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_data_subject_requests",
       "owner": "member-5",
       "path": "/api/v1/data-subject-requests",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_data_subject_request",
       "owner": "member-5",
       "path": "/api/v1/data-subject-requests",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_data_subject_request",
       "owner": "member-5",
       "path": "/api/v1/data-subject-requests/{data_subject_request_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "complete_data_subject_request",
       "owner": "member-5",
       "path": "/api/v1/data-subject-requests/{data_subject_request_id}/complete",
-      "permission": "fr-12:complete",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:complete+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "transition_data_subject_request",
       "owner": "member-5",
       "path": "/api/v1/data-subject-requests/{data_subject_request_id}/transition",
-      "permission": "fr-12:transition",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:transition+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "verify_identity_data_subject_request",
       "owner": "member-5",
       "path": "/api/v1/data-subject-requests/{data_subject_request_id}/verify-identity",
-      "permission": "fr-12:verify",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:verify+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_dsr_policies",
       "owner": "member-5",
       "path": "/api/v1/dsr-policies",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_dsr_policie",
       "owner": "member-5",
       "path": "/api/v1/dsr-policies",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_dsr_policie",
       "owner": "member-5",
       "path": "/api/v1/dsr-policies/{dsr_policie_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "archive_dsr_policy",
       "owner": "member-5",
       "path": "/api/v1/dsr-policies/{dsr_policy_id}/archive",
-      "permission": "fr-12:archive",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:archive+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_dsr_policy",
       "owner": "member-5",
       "path": "/api/v1/dsr-policies/{dsr_policy_id}/publish",
-      "permission": "fr-12:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:publish+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_incident_policies",
       "owner": "member-5",
       "path": "/api/v1/incident-policies",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_incident_policie",
       "owner": "member-5",
       "path": "/api/v1/incident-policies",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_incident_policie",
       "owner": "member-5",
       "path": "/api/v1/incident-policies/{incident_policie_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "approve_incident_policy",
       "owner": "member-5",
       "path": "/api/v1/incident-policies/{incident_policy_id}/approve",
-      "permission": "fr-12:approve",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:approve+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_incidents",
       "owner": "member-5",
       "path": "/api/v1/incidents",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_incident",
       "owner": "member-5",
       "path": "/api/v1/incidents",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_incident",
       "owner": "member-5",
       "path": "/api/v1/incidents/{incident_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "close_incident",
       "owner": "member-5",
       "path": "/api/v1/incidents/{incident_id}/close",
-      "permission": "fr-12:close",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:close+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "transition_incident",
       "owner": "member-5",
       "path": "/api/v1/incidents/{incident_id}/transition",
-      "permission": "fr-12:transition",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:transition+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_legal_basis_evidence",
       "owner": "member-5",
       "path": "/api/v1/legal-basis-evidence",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_legal_basis_evidence",
       "owner": "member-5",
       "path": "/api/v1/legal-basis-evidence",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_legal_basis_evidence",
       "owner": "member-5",
       "path": "/api/v1/legal-basis-evidence/{legal_basis_evidence_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_load_profiles",
       "owner": "member-5",
       "path": "/api/v1/load-profiles",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_load_profile",
       "owner": "member-5",
       "path": "/api/v1/load-profiles",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_load_profile",
       "owner": "member-5",
       "path": "/api/v1/load-profiles/{load_profile_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "freeze_load_profile",
       "owner": "member-5",
       "path": "/api/v1/load-profiles/{load_profile_id}/freeze",
-      "permission": "fr-12:freeze",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:freeze+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_notice_consent_records",
       "owner": "member-5",
       "path": "/api/v1/notice-consent-records",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_notice_consent_record",
       "owner": "member-5",
       "path": "/api/v1/notice-consent-records",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_notice_consent_record",
       "owner": "member-5",
       "path": "/api/v1/notice-consent-records/{notice_consent_record_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_pia_records",
       "owner": "member-5",
       "path": "/api/v1/pia-records",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_pia_record",
       "owner": "member-5",
       "path": "/api/v1/pia-records",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_pia_record",
       "owner": "member-5",
       "path": "/api/v1/pia-records/{pia_record_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "approve_pia_record",
       "owner": "member-5",
       "path": "/api/v1/pia-records/{pia_record_id}/approve",
-      "permission": "fr-12:approve",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:approve+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "revoke_pia_record",
       "owner": "member-5",
       "path": "/api/v1/pia-records/{pia_record_id}/revoke",
-      "permission": "fr-12:revoke",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:revoke+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_processing_records",
       "owner": "member-5",
       "path": "/api/v1/processing-records",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_processing_record",
       "owner": "member-5",
       "path": "/api/v1/processing-records",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_processing_record",
       "owner": "member-5",
       "path": "/api/v1/processing-records/{processing_record_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_provider_policies",
       "owner": "member-5",
       "path": "/api/v1/provider-policies",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_provider_policie",
       "owner": "member-5",
       "path": "/api/v1/provider-policies",
       "permission": "fr-12:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_provider_policie",
       "owner": "member-5",
       "path": "/api/v1/provider-policies/{provider_policie_id}",
       "permission": "fr-12:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "approve_provider_policy",
       "owner": "member-5",
       "path": "/api/v1/provider-policies/{provider_policy_id}/approve",
-      "permission": "fr-12:approve",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:approve+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "expire_provider_policy",
       "owner": "member-5",
       "path": "/api/v1/provider-policies/{provider_policy_id}/expire",
-      "permission": "fr-12:expire",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:expire+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "mark_not_required_provider_policy",
       "owner": "member-5",
       "path": "/api/v1/provider-policies/{provider_policy_id}/mark-not-required",
-      "permission": "fr-12:mark",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:mark+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "revoke_provider_policy",
       "owner": "member-5",
       "path": "/api/v1/provider-policies/{provider_policy_id}/revoke",
-      "permission": "fr-12:revoke",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-12:revoke+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     }
   ],
   "FR-13": [
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_ai_provider_catalog",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-catalog",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_ai_provider_configurations",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations",
-      "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "tenant-provider:read",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_ai_provider_configuration",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations",
-      "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "tenant-ai-admin:mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_ai_provider_configuration",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}",
-      "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "tenant-provider:read",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "PATCH",
       "operation_id": "update_ai_provider_configuration",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}",
-      "permission": "fr-13:update",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "tenant-ai-admin:mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "activate_ai_provider_configuration",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}/activate",
       "permission": "tenant-ai-admin:mfa",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "DELETE",
       "operation_id": "revoke_ai_provider_credential",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}/credential",
       "permission": "tenant-ai-admin:mfa",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "PUT",
       "operation_id": "set_ai_provider_credential",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}/credential",
       "permission": "tenant-ai-admin:mfa",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "revoke_ai_provider_configuration",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}/revoke",
       "permission": "tenant-ai-admin:mfa",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_ai_provider_configuration_successor",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}/successors",
       "permission": "tenant-ai-admin:mfa",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "suspend_ai_provider_configuration",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}/suspend",
       "permission": "tenant-ai-admin:mfa",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "test_ai_provider_connection",
       "owner": "member-5",
       "path": "/api/v1/ai-provider-configurations/{config_id}/test-connection",
       "permission": "tenant-ai-admin:mfa",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_calibration_artifacts",
       "owner": "member-5",
       "path": "/api/v1/calibration-artifacts",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_calibration_artifact",
       "owner": "member-5",
       "path": "/api/v1/calibration-artifacts",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_calibration_artifact",
       "owner": "member-5",
       "path": "/api/v1/calibration-artifacts/{calibration_artifact_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_datasets",
       "owner": "member-5",
       "path": "/api/v1/datasets",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_dataset",
       "owner": "member-5",
       "path": "/api/v1/datasets",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_dataset",
       "owner": "member-5",
       "path": "/api/v1/datasets/{dataset_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_dataset",
       "owner": "member-5",
       "path": "/api/v1/datasets/{dataset_id}/publish",
       "permission": "fr-13:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_evaluation_protocols",
       "owner": "member-5",
       "path": "/api/v1/evaluation-protocols",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_evaluation_protocol",
       "owner": "member-5",
       "path": "/api/v1/evaluation-protocols",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_evaluation_protocol",
       "owner": "member-5",
       "path": "/api/v1/evaluation-protocols/{evaluation_protocol_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_evaluation_protocol",
       "owner": "member-5",
       "path": "/api/v1/evaluation-protocols/{evaluation_protocol_id}/publish",
       "permission": "fr-13:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_feature_schemas",
       "owner": "member-5",
       "path": "/api/v1/feature-schemas",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_feature_schema",
       "owner": "member-5",
       "path": "/api/v1/feature-schemas",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_feature_schema",
       "owner": "member-5",
       "path": "/api/v1/feature-schemas/{feature_schema_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_feature_schema",
       "owner": "member-5",
       "path": "/api/v1/feature-schemas/{feature_schema_id}/publish",
       "permission": "fr-13:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_model_approval",
       "owner": "member-5",
       "path": "/api/v1/model-approvals",
-      "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-13:create+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "decide_model_approval",
       "owner": "member-5",
       "path": "/api/v1/model-approvals/{model_approval_id}/decide",
-      "permission": "fr-13:decide",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-13:decide+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_model_artifacts",
       "owner": "member-5",
       "path": "/api/v1/model-artifacts",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_model_artifact",
       "owner": "member-5",
       "path": "/api/v1/model-artifacts",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_model_artifact",
       "owner": "member-5",
       "path": "/api/v1/model-artifacts/{model_artifact_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_model_artifact",
       "owner": "member-5",
       "path": "/api/v1/model-artifacts/{model_artifact_id}/publish",
       "permission": "fr-13:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_model_deployment",
       "owner": "member-5",
       "path": "/api/v1/model-deployments",
-      "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-13:create+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "activate_model_deployment",
       "owner": "member-5",
       "path": "/api/v1/model-deployments/{model_deployment_id}/activate",
-      "permission": "fr-13:activate",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-13:activate+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "rollback_model_deployment",
       "owner": "member-5",
       "path": "/api/v1/model-deployments/{model_deployment_id}/rollback",
-      "permission": "fr-13:rollback",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "fr-13:rollback+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_model_incidents",
       "owner": "member-5",
       "path": "/api/v1/model-incidents",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_model_incident",
       "owner": "member-5",
       "path": "/api/v1/model-incidents",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_model_incident",
       "owner": "member-5",
       "path": "/api/v1/model-incidents/{model_incident_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_monitoring_snapshots",
       "owner": "member-5",
       "path": "/api/v1/monitoring-snapshots",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_monitoring_snapshot",
       "owner": "member-5",
       "path": "/api/v1/monitoring-snapshots",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_monitoring_snapshot",
       "owner": "member-5",
       "path": "/api/v1/monitoring-snapshots/{monitoring_snapshot_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_ai_provider_catalog_version",
       "owner": "member-5",
       "path": "/api/v1/platform/ai-provider-catalog-versions",
-      "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "platform-provider-catalog:create+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_ai_provider_catalog_version",
       "owner": "member-5",
       "path": "/api/v1/platform/ai-provider-catalog-versions/{catalog_id}",
-      "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "platform-provider-catalog:read",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "publish_ai_provider_catalog_version",
       "owner": "member-5",
       "path": "/api/v1/platform/ai-provider-catalog-versions/{catalog_id}/publish",
-      "permission": "fr-13:publish",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "platform-provider-catalog:publish+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "revoke_ai_provider_catalog_version",
       "owner": "member-5",
       "path": "/api/v1/platform/ai-provider-catalog-versions/{catalog_id}/revoke",
-      "permission": "fr-13:revoke",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "platform-provider-catalog:revoke+mfa",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_provider_invocations",
       "owner": "member-5",
       "path": "/api/v1/provider-invocations",
-      "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "tenant-provider:read",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_provider_invocation",
       "owner": "member-5",
       "path": "/api/v1/provider-invocations/{invocation_id}",
-      "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "permission": "tenant-provider:read",
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "list_rollback_events",
       "owner": "member-5",
       "path": "/api/v1/rollback-events",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "POST",
       "operation_id": "create_rollback_event",
       "owner": "member-5",
       "path": "/api/v1/rollback-events",
       "permission": "fr-13:create",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     },
     {
-      "contract_only": true,
+      "contract_only": false,
       "method": "GET",
       "operation_id": "get_rollback_event",
       "owner": "member-5",
       "path": "/api/v1/rollback-events/{rollback_event_id}",
       "permission": "fr-13:read",
-      "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE",
-      "test_status": "M0_CONTRACT_TEST_ONLY"
+      "schema_status": "FROZEN",
+      "test_status": "FOUNDATION_TESTED"
     }
   ],
   "PUBLIC": [

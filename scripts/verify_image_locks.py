@@ -6,7 +6,6 @@ import json
 import re
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 LOCK_PATH = ROOT / "infra" / "versions.lock.json"
 IMAGE_PATTERN = re.compile(r"^\s*image:\s*([^\s#]+)", re.MULTILINE)

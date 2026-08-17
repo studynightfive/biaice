@@ -13,7 +13,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-
 ROOT = Path(__file__).resolve().parents[2]
 PROXY_PATH = ROOT / "infra" / "provider-egress" / "proxy.py"
 SPEC = importlib.util.spec_from_file_location("biaice_provider_egress_proxy", PROXY_PATH)
@@ -68,9 +67,10 @@ class SignedGateEvidenceTests(unittest.TestCase):
             gate = json.loads(gate_path.read_text(encoding="utf-8"))
             gate["assessment_id"] = "tampered"
             gate_path.write_text(json.dumps(gate), encoding="utf-8")
-            with patch.dict(os.environ, environment, clear=False):
-                with self.assertRaisesRegex(PROXY.Denied, "BYOK_GATE_SIGNATURE_INVALID"):
-                    PROXY.load_gate_state()
+            with patch.dict(os.environ, environment, clear=False), self.assertRaisesRegex(
+                PROXY.Denied, "BYOK_GATE_SIGNATURE_INVALID"
+            ):
+                PROXY.load_gate_state()
 
 
 if __name__ == "__main__":

@@ -55,6 +55,10 @@ class SecretStorePort(Protocol):
         self, *, scope: TenantScope, reference: SecretReference
     ) -> SecretReference: ...
 
+    def authorize_business(
+        self, *, scope: TenantScope, reference: SecretReference
+    ) -> SecretReference: ...
+
     def destroy(self, *, scope: TenantScope, reference: SecretReference) -> None: ...
 
 
