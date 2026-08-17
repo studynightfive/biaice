@@ -71,6 +71,15 @@ class Permission(StrEnum):
     DOCUMENTS_RESOLVE = "fr-02:resolve"
     DOCUMENTS_DETACH = "fr-02:detach"
     DOCUMENTS_RETRY = "fr-02:retry"
+    SIMULATION_BASELINE_FREEZE = "simulation:baseline:freeze"
+    SIMULATION_BASELINE_READ = "simulation:baseline:read"
+    SIMULATION_BATCH_RUN = "simulation:batch:run"
+    SIMULATION_BATCH_READ = "simulation:batch:read"
+    SIMULATION_OPTIMIZATION_RUN = "simulation:optimization:run"
+    SIMULATION_PLAN_PUBLISH = "simulation:plan:publish"
+    SIMULATION_ELIGIBILITY_ASSESS = "simulation:eligibility:assess"
+    SIMULATION_SNAPSHOT_CREATE = "simulation:snapshot:create"
+    SIMULATION_AUDIT_READ = "simulation:audit:read"
 
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
@@ -176,7 +185,20 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
         }
     ),
     Role.SIMULATION_ANALYST: frozenset(
-        {Permission.PROFILE_READ, Permission.JOB_READ, Permission.JOB_COMMAND}
+        {
+            Permission.PROFILE_READ,
+            Permission.JOB_READ,
+            Permission.JOB_COMMAND,
+            Permission.SIMULATION_BASELINE_READ,
+            Permission.SIMULATION_BASELINE_FREEZE,
+            Permission.SIMULATION_BATCH_RUN,
+            Permission.SIMULATION_BATCH_READ,
+            Permission.SIMULATION_OPTIMIZATION_RUN,
+            Permission.SIMULATION_PLAN_PUBLISH,
+            Permission.SIMULATION_ELIGIBILITY_ASSESS,
+            Permission.SIMULATION_SNAPSHOT_CREATE,
+            Permission.SIMULATION_AUDIT_READ,
+        }
     ),
     Role.REPORT_MANAGER: frozenset(
         {
@@ -200,6 +222,12 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.APPROVALS_RISK_READ,
             Permission.APPROVALS_RISK_REVOKE,
             Permission.DOCUMENTS_READ,
+            Permission.SIMULATION_BASELINE_READ,
+            Permission.SIMULATION_BATCH_READ,
+            Permission.SIMULATION_OPTIMIZATION_RUN,
+            Permission.SIMULATION_PLAN_PUBLISH,
+            Permission.SIMULATION_ELIGIBILITY_ASSESS,
+            Permission.SIMULATION_AUDIT_READ,
         }
     ),
     Role.DOCUMENT_SPECIALIST: frozenset(
