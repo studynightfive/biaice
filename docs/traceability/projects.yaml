@@ -1,0 +1,104 @@
+# M0 member-2 (FR-01 projects, rules, lifecycle) traceability matrix.
+traceability:
+  owner: member-2
+  status: IMPLEMENTED_SLICE
+  contract_only: false
+  handler_module: biaice.modules.projects.http
+  rules_handler_module: biaice.modules.rules.http
+  service_module: biaice.modules.projects.application.services
+  rules_service_module: biaice.modules.rules.application.services
+  domain_module: biaice.modules.projects.domain
+  repository_module: biaice.modules.projects.application.repository
+  persistence_module: biaice.modules.projects.infrastructure.sql_repository
+  migration_revision: m2_projects_rules_0001
+  items:
+    - fr: FR-01
+      use_case: List tenant projects with signed cursor pagination
+      operation_id: list_projects
+      path: /api/v1/projects
+      method: GET
+      permission: fr-01:read
+      service: ProjectService.list
+      tests:
+        - apps/backend/tests/unit/test_fr01_gold.py::test_list_projects_uses_signed_cursor
+        - apps/backend/tests/unit/test_fr01_projects.py::test_empty_lists_and_unauthorized_unit_look_missing
+    - fr: FR-01
+      use_case: Create a procurement project draft
+      operation_id: create_project
+      path: /api/v1/projects
+      method: POST
+      permission: fr-01:write+mfa
+      idempotency: true
+      service: ProjectService.create
+      tests:
+        - apps/backend/tests/unit/test_fr01_projects.py::test_create_project_and_unit_then_list
+    - fr: FR-01
+      use_case: Submit DecisionUnit lifecycle transition command
+      operation_id: submit_decision_unit_transition_command
+      path: /api/v1/decision-units/{unit_id}/transition-commands
+      method: POST
+      permission: fr-01:write+mfa
+      idempotency: true
+      service: LifecycleService.submit
+      event: rules.decision_unit_lifecycle_advanced.v1
+      tests:
+        - apps/backend/tests/unit/test_fr01_projects.py::test_lifecycle_append_only_and_cancel
+        - apps/backend/tests/unit/test_fr01_projects.py::test_reopened_is_event_not_state
+    - fr: FR-01
+      use_case: Publish scope assessment with maker-checker and multi-round block
+      operation_id: publish_scope_assessment
+      path: /api/v1/scope-assessments/{scope_assessment_id}/publish
+      method: POST
+      permission: fr-01:publish+mfa
+      idempotency: true
+      service: ScopeAssessmentService.publish
+      event: rules.scope_assessment_published.v1
+      tests:
+        - apps/backend/tests/unit/test_fr01_projects.py::test_scope_publish_requires_independent_publisher_and_blocks_multi_round
+    - fr: FR-01
+      use_case: Resolve project inheritance versus unit override without last-write-wins
+      operation_id: list_rule_resolutions
+      path: /api/v1/decision-units/{unit_id}/rule-resolutions
+      method: GET
+      permission: fr-01:read
+      service: RuleClauseService.resolve_unit
+      tests:
+        - apps/backend/tests/unit/test_fr01_gold.py::test_three_synthetic_projects_resolve_as_specified
+        - apps/backend/tests/unit/test_fr01_projects.py::test_rule_conflict_does_not_use_last_write_wins
+    - fr: FR-01
+      use_case: Persist FR-01 aggregates through SQLAlchemy adapter
+      service: SqlAlchemyFr01Repository
+      tests:
+        - apps/backend/tests/unit/test_fr01_gold.py::test_sqlalchemy_repository_round_trips_a_project
+    - fr: FR-01
+      use_case: Consume member-3 public document events without entering documents/**
+      service: DocumentEventConsumer.consume
+      events:
+        - documents.source_document_released.v1
+        - documents.parse_completed.v1
+        - documents.document_quarantined.v1
+      tests:
+        - apps/backend/tests/unit/test_fr01_gold.py::test_document_event_consumer_is_idempotent_and_quarantine_unusable
+    - fr: FR-01
+      use_case: Gold formula, rounding and tie evaluation
+      service: biaice.modules.projects.domain.gold
+      tests:
+        - apps/backend/tests/unit/test_fr01_gold.py::test_gold_formula_rounding_and_tie_are_100_percent
+  tables:
+    - procurement_project
+    - decision_unit
+    - decision_unit_lifecycle_event
+    - scope_assessment
+    - applicable_regime
+    - rule_set
+    - rule_clause
+    - compliance_review
+    - cross_lot_constraint
+    - document_intake_ref
+  invariants:
+    - lifecycle_unique_writer: only member 2 appends DecisionUnitLifecycleEvent; callers submit transition-commands.
+    - no_last_write_wins: disagreeing project inheritance and unit override enter CONFLICT_REQUIRES_CONFIRMATION.
+    - formal_resolution: drafts and future-dated rule sets do not participate in formal resolution.
+    - maker_checker: publisher must differ from drafter.
+    - cursor_pagination: list endpoints use member-1 signed CursorCodec bound to tenant/data-domain.
+    - document_events: consume public FR-02 event names only; never import documents internals.
