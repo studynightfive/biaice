@@ -1,0 +1,9 @@
+# 成员 4 商业模块追踪（FR-04）
+
+见 `modules/evidence/traceability.yaml` 中的 FR-04 行。本文件只登记商业对象，避免跨模块复制判断。
+
+| 对象 | 正式准入 | 下游 |
+|---|---|---|
+| CostBaselineVersion | FormalInputAllowed 且已批准 | 成员 6 基线冻结；未批准仅探索 |
+| CommercialPolicyVersion | FormalInputAllowed | 成员 6；失败=公司政策不可推荐 |
+| StrategyReadinessAssessmentVersion | 分项 READY/CONDITIONAL/NOT_READY/UNKNOWN | 成员 6；市场项消费成员 5 port |

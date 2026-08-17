@@ -1,6 +1,686 @@
 {
   "components": {
     "schemas": {
+      "BlockingStage": {
+        "enum": [
+          "COMPUTE",
+          "FREEZE",
+          "APPROVAL",
+          "AUTHORIZATION",
+          "SUBMISSION"
+        ],
+        "title": "BlockingStage",
+        "type": "string"
+      },
+      "CommercialPolicy": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Capacity Constraint",
+            "type": "string"
+          },
+          "cashflow_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Cashflow Constraint",
+            "type": "string"
+          },
+          "coverage_ratio": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Coverage Ratio",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "exception_authority": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Exception Authority",
+            "type": "string"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/LifecycleState"
+          },
+          "merge_tolerance": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Merge Tolerance",
+            "type": "string"
+          },
+          "min_award_quality": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Min Award Quality",
+            "type": "string"
+          },
+          "objective_weights": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Objective Weights",
+            "type": "object"
+          },
+          "policy_id": {
+            "format": "uuid",
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "profit_floor": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Profit Floor",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "retention_state": {
+            "$ref": "#/components/schemas/RetentionState",
+            "default": "RETAIN"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "risk_threshold": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Risk Threshold",
+            "type": "string"
+          },
+          "superseded_by_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Id"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "profit_floor",
+          "cashflow_constraint",
+          "capacity_constraint",
+          "risk_threshold",
+          "coverage_ratio",
+          "min_award_quality",
+          "merge_tolerance",
+          "exception_authority",
+          "lifecycle_state",
+          "review_state",
+          "validity_state",
+          "created_at",
+          "created_by"
+        ],
+        "title": "CommercialPolicy",
+        "type": "object"
+      },
+      "CompanyEvidence": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/EvidenceCategory"
+          },
+          "content_hash": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Hash"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "evidence_id": {
+            "format": "uuid",
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "fragment_ref": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fragment Ref"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/LifecycleState"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "retention_state": {
+            "$ref": "#/components/schemas/RetentionState",
+            "default": "RETAIN"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "revocation_reason": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revocation Reason"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "revoked_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked By"
+          },
+          "source": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "source_document_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Document Id"
+          },
+          "subject": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject",
+            "type": "string"
+          },
+          "summary": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Summary",
+            "type": "string"
+          },
+          "superseded_by_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Id"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_to": {
+            "format": "date-time",
+            "title": "Valid To",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lifecycle_state",
+          "review_state",
+          "validity_state",
+          "evidence_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "category",
+          "subject",
+          "summary",
+          "source",
+          "valid_from",
+          "valid_to",
+          "created_at",
+          "created_by"
+        ],
+        "title": "CompanyEvidence",
+        "type": "object"
+      },
+      "CompanyResponseProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/LifecycleState"
+          },
+          "objective_non_price_inputs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Objective Non Price Inputs",
+            "type": "object"
+          },
+          "profile_id": {
+            "format": "uuid",
+            "title": "Profile Id",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "qualification_preparation": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Qualification Preparation",
+            "type": "string"
+          },
+          "retention_state": {
+            "$ref": "#/components/schemas/RetentionState",
+            "default": "RETAIN"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "service_response": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Service Response",
+            "type": "string"
+          },
+          "subjective_variable_intervals": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Subjective Variable Intervals",
+            "type": "object"
+          },
+          "superseded_by_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Id"
+          },
+          "technical_response": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Technical Response",
+            "type": "string"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_to": {
+            "format": "date-time",
+            "title": "Valid To",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lifecycle_state",
+          "review_state",
+          "validity_state",
+          "profile_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "qualification_preparation",
+          "technical_response",
+          "service_response",
+          "valid_from",
+          "valid_to",
+          "created_at",
+          "created_by"
+        ],
+        "title": "CompanyResponseProfile",
+        "type": "object"
+      },
       "ComponentHealth": {
         "additionalProperties": false,
         "properties": {
@@ -36,6 +716,201 @@
         ],
         "title": "ComponentHealth",
         "type": "object"
+      },
+      "ConditionCommandRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "ConditionCommandRequest",
+        "type": "object"
+      },
+      "ConditionListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionRequirement"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ConditionListResponse",
+        "type": "object"
+      },
+      "ConditionRequirement": {
+        "additionalProperties": false,
+        "properties": {
+          "blocking_stage": {
+            "$ref": "#/components/schemas/BlockingStage"
+          },
+          "close_reason": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Close Reason"
+          },
+          "closed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closed At"
+          },
+          "closed_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closed By"
+          },
+          "condition_id": {
+            "format": "uuid",
+            "title": "Condition Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "independent_reviewer_id": {
+            "format": "uuid",
+            "title": "Independent Reviewer Id",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "state": {
+            "$ref": "#/components/schemas/ConditionState"
+          },
+          "statement": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "condition_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "title",
+          "statement",
+          "state",
+          "owner_id",
+          "independent_reviewer_id",
+          "due_at",
+          "blocking_stage",
+          "created_at",
+          "created_by"
+        ],
+        "title": "ConditionRequirement",
+        "type": "object"
+      },
+      "ConditionState": {
+        "enum": [
+          "OPEN",
+          "SATISFIED",
+          "WAIVED",
+          "FAILED",
+          "EXPIRED"
+        ],
+        "title": "ConditionState",
+        "type": "string"
       },
       "ContractOnlyCommand": {
         "additionalProperties": false,
@@ -91,6 +966,660 @@
         "title": "ContractOnlyResource",
         "type": "object"
       },
+      "CostBaseline": {
+        "additionalProperties": false,
+        "properties": {
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "bid_preparation_cost": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "cashflow_in": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "cashflow_out": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "cost_baseline_id": {
+            "format": "uuid",
+            "title": "Cost Baseline Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "cycle": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Cycle",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "delivery_cost": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "exploration_only": {
+            "title": "Exploration Only",
+            "type": "boolean"
+          },
+          "input_vat": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/LifecycleState"
+          },
+          "post_award_cost": {
+            "$ref": "#/components/schemas/Money-Output"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "retention_state": {
+            "$ref": "#/components/schemas/RetentionState",
+            "default": "RETAIN"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "superseded_by_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Id"
+          },
+          "tax_mode": {
+            "$ref": "#/components/schemas/TaxMode"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cost_baseline_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "currency",
+          "tax_mode",
+          "input_vat",
+          "cycle",
+          "delivery_cost",
+          "post_award_cost",
+          "bid_preparation_cost",
+          "cashflow_in",
+          "cashflow_out",
+          "lifecycle_state",
+          "review_state",
+          "validity_state",
+          "created_at",
+          "created_by",
+          "exploration_only"
+        ],
+        "title": "CostBaseline",
+        "type": "object"
+      },
+      "CostListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CostBaseline"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "CostListResponse",
+        "type": "object"
+      },
+      "CreateConditionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "blocking_stage": {
+            "$ref": "#/components/schemas/BlockingStage"
+          },
+          "due_at": {
+            "format": "date-time",
+            "title": "Due At",
+            "type": "string"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "independent_reviewer_id": {
+            "format": "uuid",
+            "title": "Independent Reviewer Id",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "statement": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "statement",
+          "owner_id",
+          "independent_reviewer_id",
+          "due_at",
+          "blocking_stage"
+        ],
+        "title": "CreateConditionRequest",
+        "type": "object"
+      },
+      "CreateCostRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bid_preparation_cost": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "cashflow_in": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "cashflow_out": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "cycle": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Cycle",
+            "type": "string"
+          },
+          "delivery_cost": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "input_vat": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "post_award_cost": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "tax_mode": {
+            "$ref": "#/components/schemas/TaxMode"
+          }
+        },
+        "required": [
+          "currency",
+          "tax_mode",
+          "input_vat",
+          "cycle",
+          "delivery_cost",
+          "post_award_cost",
+          "bid_preparation_cost",
+          "cashflow_in",
+          "cashflow_out"
+        ],
+        "title": "CreateCostRequest",
+        "type": "object"
+      },
+      "CreateEvidenceRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/EvidenceCategory"
+          },
+          "fragment_ref": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fragment Ref"
+          },
+          "source": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "source_document_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Document Id"
+          },
+          "subject": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject",
+            "type": "string"
+          },
+          "summary": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Summary",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_to": {
+            "format": "date-time",
+            "title": "Valid To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "category",
+          "subject",
+          "summary",
+          "source",
+          "valid_from",
+          "valid_to"
+        ],
+        "title": "CreateEvidenceRequest",
+        "type": "object"
+      },
+      "CreateMatchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "rationale": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "requirement_id": {
+            "format": "uuid",
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/MatchState",
+            "default": "UNKNOWN"
+          }
+        },
+        "required": [
+          "requirement_id",
+          "rationale"
+        ],
+        "title": "CreateMatchRequest",
+        "type": "object"
+      },
+      "CreatePolicyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Capacity Constraint",
+            "type": "string"
+          },
+          "cashflow_constraint": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Cashflow Constraint",
+            "type": "string"
+          },
+          "coverage_ratio": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Coverage Ratio",
+            "type": "string"
+          },
+          "exception_authority": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Exception Authority",
+            "type": "string"
+          },
+          "merge_tolerance": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Merge Tolerance",
+            "type": "string"
+          },
+          "min_award_quality": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Min Award Quality",
+            "type": "string"
+          },
+          "objective_weights": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Objective Weights",
+            "type": "object"
+          },
+          "profit_floor": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Profit Floor",
+            "type": "string"
+          },
+          "risk_threshold": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Risk Threshold",
+            "type": "string"
+          }
+        },
+        "required": [
+          "profit_floor",
+          "cashflow_constraint",
+          "capacity_constraint",
+          "risk_threshold",
+          "coverage_ratio",
+          "min_award_quality",
+          "merge_tolerance",
+          "exception_authority"
+        ],
+        "title": "CreatePolicyRequest",
+        "type": "object"
+      },
+      "CreateProfileRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_ids": {
+            "default": [],
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "objective_non_price_inputs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Objective Non Price Inputs",
+            "type": "object"
+          },
+          "qualification_preparation": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Qualification Preparation",
+            "type": "string"
+          },
+          "service_response": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Service Response",
+            "type": "string"
+          },
+          "subjective_variable_intervals": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Subjective Variable Intervals",
+            "type": "object"
+          },
+          "technical_response": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Technical Response",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_to": {
+            "format": "date-time",
+            "title": "Valid To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "qualification_preparation",
+          "technical_response",
+          "service_response",
+          "valid_from",
+          "valid_to"
+        ],
+        "title": "CreateProfileRequest",
+        "type": "object"
+      },
+      "CreateRequirementRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "mandatory": {
+            "default": true,
+            "title": "Mandatory",
+            "type": "boolean"
+          },
+          "rule_clause_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Clause Id"
+          },
+          "source_document_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Document Id"
+          },
+          "source_page": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Page"
+          },
+          "source_section": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Section"
+          },
+          "statement": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "statement"
+        ],
+        "title": "CreateRequirementRequest",
+        "type": "object"
+      },
       "CreateRiskAcceptanceRequest": {
         "additionalProperties": false,
         "properties": {
@@ -144,6 +1673,167 @@
           "valid_until"
         ],
         "title": "CreateRiskAcceptanceRequest",
+        "type": "object"
+      },
+      "EvidenceCategory": {
+        "enum": [
+          "QUALIFICATION",
+          "CASE",
+          "PERSONNEL",
+          "TECHNICAL",
+          "SERVICE",
+          "COMMITMENT"
+        ],
+        "title": "EvidenceCategory",
+        "type": "string"
+      },
+      "EvidenceListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CompanyEvidence"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "EvidenceListResponse",
+        "type": "object"
+      },
+      "EvidenceMatch": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "match_id": {
+            "format": "uuid",
+            "title": "Match Id",
+            "type": "string"
+          },
+          "original_etag": {
+            "anyOf": [
+              {
+                "maxLength": 66,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Etag"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "rationale": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "requirement_id": {
+            "format": "uuid",
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "state": {
+            "$ref": "#/components/schemas/MatchState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState",
+            "default": "CURRENT"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "match_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "requirement_id",
+          "state",
+          "rationale",
+          "created_at",
+          "created_by"
+        ],
+        "title": "EvidenceMatch",
         "type": "object"
       },
       "EvidenceStatus": {
@@ -552,6 +2242,16 @@
         "title": "JobView",
         "type": "object"
       },
+      "LifecycleState": {
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "ARCHIVED",
+          "DELETED"
+        ],
+        "title": "LifecycleState",
+        "type": "string"
+      },
       "ManualOverrideRequest": {
         "additionalProperties": false,
         "properties": {
@@ -594,6 +2294,33 @@
         ],
         "title": "ManualOverrideRequest",
         "type": "object"
+      },
+      "MatchListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceMatch"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "MatchListResponse",
+        "type": "object"
+      },
+      "MatchState": {
+        "enum": [
+          "SATISFIED",
+          "PARTIAL",
+          "UNSATISFIED",
+          "UNKNOWN"
+        ],
+        "title": "MatchState",
+        "type": "string"
       },
       "MeResponse": {
         "additionalProperties": false,
@@ -664,6 +2391,263 @@
           "authenticated_at"
         ],
         "title": "MeResponse",
+        "type": "object"
+      },
+      "Money-Input": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "description": "Decimal fixed-point value, serialized as a string",
+            "title": "Amount"
+          },
+          "currency": {
+            "description": "ISO 4217 currency code",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "Money-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "description": "Decimal fixed-point value, serialized as a string",
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "description": "ISO 4217 currency code",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "PolicyListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CommercialPolicy"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "PolicyListResponse",
+        "type": "object"
+      },
+      "PrecheckAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "checks": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PrecheckCheck"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "condition_ids": {
+            "default": [],
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Condition Ids",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "deadline_closure": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deadline Closure"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/PrecheckDecision"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "evidence_coverage": {
+            "$ref": "#/components/schemas/MatchState"
+          },
+          "precheck_id": {
+            "format": "uuid",
+            "title": "Precheck Id",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "rules_available": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules Available"
+          },
+          "subject_qualification": {
+            "$ref": "#/components/schemas/MatchState"
+          },
+          "substantive_response": {
+            "$ref": "#/components/schemas/MatchState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "unmapped_mandatory_count": {
+            "minimum": 0.0,
+            "title": "Unmapped Mandatory Count",
+            "type": "integer"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "precheck_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "decision",
+          "validity_state",
+          "rules_available",
+          "subject_qualification",
+          "substantive_response",
+          "evidence_coverage",
+          "deadline_closure",
+          "unmapped_mandatory_count",
+          "created_at",
+          "created_by"
+        ],
+        "title": "PrecheckAssessment",
+        "type": "object"
+      },
+      "PrecheckCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "reason_code": {
+            "title": "Reason Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "passed",
+          "reason_code"
+        ],
+        "title": "PrecheckCheck",
+        "type": "object"
+      },
+      "PrecheckDecision": {
+        "enum": [
+          "PASS",
+          "CONDITIONAL",
+          "BLOCKED",
+          "UNKNOWN"
+        ],
+        "title": "PrecheckDecision",
+        "type": "string"
+      },
+      "PrecheckListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PrecheckAssessment"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "PrecheckListResponse",
         "type": "object"
       },
       "ProblemDetails": {
@@ -738,6 +2722,365 @@
           "request_id"
         ],
         "title": "ProblemDetails",
+        "type": "object"
+      },
+      "ProfileListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CompanyResponseProfile"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ProfileListResponse",
+        "type": "object"
+      },
+      "ReadinessDecision": {
+        "enum": [
+          "READY",
+          "CONDITIONAL",
+          "NOT_READY",
+          "UNKNOWN"
+        ],
+        "title": "ReadinessDecision",
+        "type": "string"
+      },
+      "ReadinessItem": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "commercial_not_procurement": {
+            "default": false,
+            "title": "Commercial Not Procurement",
+            "type": "boolean"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReadinessDecision"
+          },
+          "reason_code": {
+            "title": "Reason Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "decision",
+          "reason_code"
+        ],
+        "title": "ReadinessItem",
+        "type": "object"
+      },
+      "ReadinessListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StrategyReadinessAssessment"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ReadinessListResponse",
+        "type": "object"
+      },
+      "Requirement": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "etag": {
+            "maxLength": 66,
+            "minLength": 66,
+            "title": "Etag",
+            "type": "string"
+          },
+          "lifecycle_state": {
+            "$ref": "#/components/schemas/LifecycleState"
+          },
+          "mandatory": {
+            "title": "Mandatory",
+            "type": "boolean"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "requirement_id": {
+            "format": "uuid",
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "retention_state": {
+            "$ref": "#/components/schemas/RetentionState",
+            "default": "RETAIN"
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "rule_clause_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Clause Id"
+          },
+          "source_document_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Document Id"
+          },
+          "source_page": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Page"
+          },
+          "source_section": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Section"
+          },
+          "statement": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          },
+          "superseded_by_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Id"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lifecycle_state",
+          "review_state",
+          "validity_state",
+          "requirement_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "title",
+          "statement",
+          "mandatory",
+          "etag",
+          "created_at",
+          "created_by"
+        ],
+        "title": "Requirement",
+        "type": "object"
+      },
+      "RequirementListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Requirement"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "RequirementListResponse",
+        "type": "object"
+      },
+      "RetentionState": {
+        "enum": [
+          "RETAIN",
+          "DISPOSITION_DUE",
+          "DISPOSITION_RUNNING",
+          "DISPOSED"
+        ],
+        "title": "RetentionState",
+        "type": "string"
+      },
+      "ReviewMatchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "rationale": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/MatchState"
+          }
+        },
+        "required": [
+          "state",
+          "rationale"
+        ],
+        "title": "ReviewMatchRequest",
+        "type": "object"
+      },
+      "ReviewState": {
+        "enum": [
+          "PENDING",
+          "APPROVED",
+          "NOT_REQUIRED",
+          "REJECTED",
+          "QUARANTINED"
+        ],
+        "title": "ReviewState",
+        "type": "string"
+      },
+      "RevokeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "RevokeRequest",
         "type": "object"
       },
       "RevokeRiskAcceptanceRequest": {
@@ -955,6 +3298,135 @@
           "INVALIDATED"
         ],
         "title": "RiskAcceptanceValidity",
+        "type": "string"
+      },
+      "StrategyReadinessAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReadinessDecision"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "exploration_watermark": {
+            "title": "Exploration Watermark",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReadinessItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "readiness_id": {
+            "format": "uuid",
+            "title": "Readiness Id",
+            "type": "string"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validity_state": {
+            "$ref": "#/components/schemas/ValidityState"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "readiness_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "decision_unit_id",
+          "decision",
+          "validity_state",
+          "items",
+          "created_at",
+          "created_by",
+          "exploration_watermark"
+        ],
+        "title": "StrategyReadinessAssessment",
+        "type": "object"
+      },
+      "TaxMode": {
+        "enum": [
+          "INCLUSIVE",
+          "EXCLUSIVE"
+        ],
+        "title": "TaxMode",
+        "type": "string"
+      },
+      "UpdateRequirementRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "mandatory": {
+            "default": true,
+            "title": "Mandatory",
+            "type": "boolean"
+          },
+          "statement": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "statement"
+        ],
+        "title": "UpdateRequirementRequest",
+        "type": "object"
+      },
+      "ValidityState": {
+        "enum": [
+          "CURRENT",
+          "STALE",
+          "INVALIDATED"
+        ],
+        "title": "ValidityState",
         "type": "string"
       },
       "WaiverPolicy": {
@@ -6661,7 +9133,6 @@
     },
     "/api/v1/commercial-policies/{commercial_policie_id}": {
       "get": {
-        "description": "Get commercial policie",
         "operationId": "get_commercial_policie",
         "parameters": [
           {
@@ -6680,7 +9151,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CommercialPolicy"
                 }
               }
             },
@@ -6784,7 +9255,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -6802,23 +9273,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get commercial policie",
+        "summary": "Get Commercial Policie",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/commercial-policies/{commercial_policy_id}/publish": {
       "post": {
-        "description": "Publish commercial policy",
         "operationId": "publish_commercial_policy",
         "parameters": [
           {
@@ -6848,29 +9315,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CommercialPolicy"
                 }
               }
             },
@@ -6974,7 +9424,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -6992,18 +9442,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Publish commercial policy",
+        "summary": "Publish Commercial Policy",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:publish",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/competitor-profiles/{competitor_profile_id}": {
@@ -9789,7 +12237,6 @@
     },
     "/api/v1/conditions/{condition_id}": {
       "get": {
-        "description": "Get condition",
         "operationId": "get_condition",
         "parameters": [
           {
@@ -9808,7 +12255,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ConditionRequirement"
                 }
               }
             },
@@ -9912,7 +12359,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -9930,23 +12377,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get condition",
+        "summary": "Get Condition",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/conditions/{condition_id}/expire": {
       "post": {
-        "description": "Expire condition",
         "operationId": "expire_condition",
         "parameters": [
           {
@@ -9980,25 +12423,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/ConditionCommandRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ConditionRequirement"
                 }
               }
             },
@@ -10102,7 +12538,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -10120,23 +12556,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Expire condition",
+        "summary": "Expire Condition",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:expire",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/conditions/{condition_id}/fail": {
       "post": {
-        "description": "Fail condition",
         "operationId": "fail_condition",
         "parameters": [
           {
@@ -10170,25 +12603,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/ConditionCommandRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ConditionRequirement"
                 }
               }
             },
@@ -10292,7 +12718,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -10310,23 +12736,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Fail condition",
+        "summary": "Fail Condition",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:fail",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/conditions/{condition_id}/satisfy": {
       "post": {
-        "description": "Satisfy condition",
         "operationId": "satisfy_condition",
         "parameters": [
           {
@@ -10360,25 +12783,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/ConditionCommandRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ConditionRequirement"
                 }
               }
             },
@@ -10482,7 +12898,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -10500,23 +12916,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Satisfy condition",
+        "summary": "Satisfy Condition",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:satisfy",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/conditions/{condition_id}/waive": {
       "post": {
-        "description": "Waive condition",
         "operationId": "waive_condition",
         "parameters": [
           {
@@ -10550,25 +12963,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/ConditionCommandRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ConditionRequirement"
                 }
               }
             },
@@ -10672,7 +13078,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -10690,18 +13096,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Waive condition",
+        "summary": "Waive Condition",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:waive",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/consent-withdrawals": {
@@ -10886,7 +13290,6 @@
     },
     "/api/v1/cost-baselines/{cost_baseline_id}": {
       "get": {
-        "description": "Get cost baseline",
         "operationId": "get_cost_baseline",
         "parameters": [
           {
@@ -10905,7 +13308,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CostBaseline"
                 }
               }
             },
@@ -11009,7 +13412,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -11027,23 +13430,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get cost baseline",
+        "summary": "Get Cost Baseline",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/cost-baselines/{cost_baseline_id}/approve": {
       "post": {
-        "description": "Approve cost baseline",
         "operationId": "approve_cost_baseline",
         "parameters": [
           {
@@ -11073,29 +13472,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CostBaseline"
                 }
               }
             },
@@ -11199,7 +13581,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -11217,23 +13599,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Approve cost baseline",
+        "summary": "Approve Cost Baseline",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:approve",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/cost-baselines/{cost_baseline_id}/publish": {
       "post": {
-        "description": "Publish cost baseline",
         "operationId": "publish_cost_baseline",
         "parameters": [
           {
@@ -11263,29 +13642,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CostBaseline"
                 }
               }
             },
@@ -11389,7 +13751,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -11407,18 +13769,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Publish cost baseline",
+        "summary": "Publish Cost Baseline",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:publish",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/cross-border-assessments": {
@@ -16583,7 +18943,6 @@
     },
     "/api/v1/decision-units/{unit_id}/commercial-policies": {
       "get": {
-        "description": "List commercial policies",
         "operationId": "list_commercial_policies",
         "parameters": [
           {
@@ -16602,7 +18961,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/PolicyListResponse"
                 }
               }
             },
@@ -16706,7 +19065,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -16724,21 +19083,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List commercial policies",
+        "summary": "List Commercial Policies",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create commercial policie",
         "operationId": "create_commercial_policie",
         "parameters": [
           {
@@ -16772,25 +19127,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreatePolicyRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CommercialPolicy"
                 }
               }
             },
@@ -16894,7 +19242,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -16912,18 +19260,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create commercial policie",
+        "summary": "Create Commercial Policie",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/compliance-reviews": {
@@ -17273,7 +19619,6 @@
     },
     "/api/v1/decision-units/{unit_id}/conditions": {
       "get": {
-        "description": "List conditions",
         "operationId": "list_conditions",
         "parameters": [
           {
@@ -17292,7 +19637,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ConditionListResponse"
                 }
               }
             },
@@ -17396,7 +19741,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -17414,21 +19759,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List conditions",
+        "summary": "List Conditions",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create condition",
         "operationId": "create_condition",
         "parameters": [
           {
@@ -17462,25 +19803,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateConditionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ConditionRequirement"
                 }
               }
             },
@@ -17584,7 +19918,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -17602,23 +19936,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create condition",
+        "summary": "Create Condition",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/cost-baselines": {
       "get": {
-        "description": "List cost baselines",
         "operationId": "list_cost_baselines",
         "parameters": [
           {
@@ -17637,7 +19968,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CostListResponse"
                 }
               }
             },
@@ -17741,7 +20072,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -17759,21 +20090,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List cost baselines",
+        "summary": "List Cost Baselines",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create cost baseline",
         "operationId": "create_cost_baseline",
         "parameters": [
           {
@@ -17807,25 +20134,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateCostRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CostBaseline"
                 }
               }
             },
@@ -17929,7 +20249,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -17947,18 +20267,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create cost baseline",
+        "summary": "Create Cost Baseline",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/cross-lot-constraints": {
@@ -19347,7 +21665,6 @@
     },
     "/api/v1/decision-units/{unit_id}/evidence": {
       "get": {
-        "description": "List evidence",
         "operationId": "list_evidence",
         "parameters": [
           {
@@ -19366,7 +21683,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/EvidenceListResponse"
                 }
               }
             },
@@ -19470,7 +21787,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -19488,21 +21805,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List evidence",
+        "summary": "List Evidence",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create evidence",
         "operationId": "create_evidence",
         "parameters": [
           {
@@ -19536,25 +21849,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateEvidenceRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyEvidence"
                 }
               }
             },
@@ -19658,7 +21964,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -19676,23 +21982,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create evidence",
+        "summary": "Create Evidence",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/evidence-matches": {
       "get": {
-        "description": "List evidence matches",
         "operationId": "list_evidence_matches",
         "parameters": [
           {
@@ -19711,7 +22014,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/MatchListResponse"
                 }
               }
             },
@@ -19815,7 +22118,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -19833,21 +22136,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List evidence matches",
+        "summary": "List Evidence Matches",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create evidence matche",
         "operationId": "create_evidence_matche",
         "parameters": [
           {
@@ -19881,25 +22180,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateMatchRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/EvidenceMatch"
                 }
               }
             },
@@ -20003,7 +22295,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -20021,18 +22313,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create evidence matche",
+        "summary": "Create Evidence Matche",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/lifecycle-events": {
@@ -20729,7 +23019,6 @@
     },
     "/api/v1/decision-units/{unit_id}/precheck-assessments": {
       "get": {
-        "description": "List precheck assessments",
         "operationId": "list_precheck_assessments",
         "parameters": [
           {
@@ -20748,7 +23037,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/PrecheckListResponse"
                 }
               }
             },
@@ -20852,7 +23141,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -20870,21 +23159,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List precheck assessments",
+        "summary": "List Precheck Assessments",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create precheck assessment",
         "operationId": "create_precheck_assessment",
         "parameters": [
           {
@@ -20914,29 +23199,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/PrecheckAssessment"
                 }
               }
             },
@@ -21040,7 +23308,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -21058,18 +23326,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create precheck assessment",
+        "summary": "Create Precheck Assessment",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/precheck-reports": {
@@ -21764,7 +24030,6 @@
     },
     "/api/v1/decision-units/{unit_id}/readiness-assessments": {
       "get": {
-        "description": "List readiness assessments",
         "operationId": "list_readiness_assessments",
         "parameters": [
           {
@@ -21783,7 +24048,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ReadinessListResponse"
                 }
               }
             },
@@ -21887,7 +24152,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -21905,21 +24170,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List readiness assessments",
+        "summary": "List Readiness Assessments",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create readiness assessment",
         "operationId": "create_readiness_assessment",
         "parameters": [
           {
@@ -21949,29 +24210,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/StrategyReadinessAssessment"
                 }
               }
             },
@@ -22075,7 +24319,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -22093,18 +24337,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create readiness assessment",
+        "summary": "Create Readiness Assessment",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/recommendation-eligibilities": {
@@ -22454,7 +24696,6 @@
     },
     "/api/v1/decision-units/{unit_id}/requirements": {
       "get": {
-        "description": "List requirements",
         "operationId": "list_requirements",
         "parameters": [
           {
@@ -22473,7 +24714,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/RequirementListResponse"
                 }
               }
             },
@@ -22577,7 +24818,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -22595,21 +24836,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List requirements",
+        "summary": "List Requirements",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create requirement",
         "operationId": "create_requirement",
         "parameters": [
           {
@@ -22643,25 +24880,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateRequirementRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/Requirement"
                 }
               }
             },
@@ -22765,7 +24995,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -22783,23 +25013,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create requirement",
+        "summary": "Create Requirement",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/response-profiles": {
       "get": {
-        "description": "List response profiles",
         "operationId": "list_response_profiles",
         "parameters": [
           {
@@ -22818,7 +25045,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ProfileListResponse"
                 }
               }
             },
@@ -22922,7 +25149,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -22940,21 +25167,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List response profiles",
+        "summary": "List Response Profiles",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "post": {
-        "description": "Create response profile",
         "operationId": "create_response_profile",
         "parameters": [
           {
@@ -22988,25 +25211,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateProfileRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyResponseProfile"
                 }
               }
             },
@@ -23110,7 +25326,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -23128,18 +25344,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create response profile",
+        "summary": "Create Response Profile",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/risk-acceptances": {
@@ -31780,7 +33994,6 @@
     },
     "/api/v1/evidence-matches/{evidence_match_id}/review": {
       "post": {
-        "description": "Review evidence match",
         "operationId": "review_evidence_match",
         "parameters": [
           {
@@ -31814,25 +34027,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/ReviewMatchRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/EvidenceMatch"
                 }
               }
             },
@@ -31936,7 +34142,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -31954,23 +34160,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Review evidence match",
+        "summary": "Review Evidence Match",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:review",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/evidence-matches/{evidence_matche_id}": {
       "get": {
-        "description": "Get evidence matche",
         "operationId": "get_evidence_matche",
         "parameters": [
           {
@@ -31989,7 +34192,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/EvidenceMatch"
                 }
               }
             },
@@ -32093,7 +34296,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -32111,23 +34314,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get evidence matche",
+        "summary": "Get Evidence Matche",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/evidence/{evidence_id}": {
       "get": {
-        "description": "Get evidence",
         "operationId": "get_evidence",
         "parameters": [
           {
@@ -32146,7 +34345,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyEvidence"
                 }
               }
             },
@@ -32250,7 +34449,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -32268,23 +34467,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get evidence",
+        "summary": "Get Evidence",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/evidence/{evidence_id}/publish": {
       "post": {
-        "description": "Publish evidence",
         "operationId": "publish_evidence",
         "parameters": [
           {
@@ -32314,29 +34509,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyEvidence"
                 }
               }
             },
@@ -32440,7 +34618,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -32458,23 +34636,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Publish evidence",
+        "summary": "Publish Evidence",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:publish",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/evidence/{evidence_id}/review": {
       "post": {
-        "description": "Review evidence",
         "operationId": "review_evidence",
         "parameters": [
           {
@@ -32504,29 +34679,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyEvidence"
                 }
               }
             },
@@ -32630,7 +34788,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -32648,23 +34806,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Review evidence",
+        "summary": "Review Evidence",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:review",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/evidence/{evidence_id}/revoke": {
       "post": {
-        "description": "Revoke evidence",
         "operationId": "revoke_evidence",
         "parameters": [
           {
@@ -32698,25 +34853,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/RevokeRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyEvidence"
                 }
               }
             },
@@ -32820,7 +34968,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -32838,18 +34986,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Revoke evidence",
+        "summary": "Revoke Evidence",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:revoke",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/feature-schemas": {
@@ -46363,7 +48509,6 @@
     },
     "/api/v1/precheck-assessments/{precheck_assessment_id}": {
       "get": {
-        "description": "Get precheck assessment",
         "operationId": "get_precheck_assessment",
         "parameters": [
           {
@@ -46382,7 +48527,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/PrecheckAssessment"
                 }
               }
             },
@@ -46486,7 +48631,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -46504,18 +48649,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get precheck assessment",
+        "summary": "Get Precheck Assessment",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/precheck-reports/{report_id}": {
@@ -50596,7 +52738,6 @@
     },
     "/api/v1/readiness-assessments/{readiness_assessment_id}": {
       "get": {
-        "description": "Get readiness assessment",
         "operationId": "get_readiness_assessment",
         "parameters": [
           {
@@ -50615,7 +52756,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/StrategyReadinessAssessment"
                 }
               }
             },
@@ -50719,7 +52860,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -50737,18 +52878,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get readiness assessment",
+        "summary": "Get Readiness Assessment",
         "tags": [
-          "FR-04",
-          "contract-only"
+          "commercial"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-04",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-04:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/recommendation-eligibilities/{recommendation_eligibilitie_id}": {
@@ -51745,7 +53883,6 @@
     },
     "/api/v1/requirements/{requirement_id}": {
       "get": {
-        "description": "Get requirement",
         "operationId": "get_requirement",
         "parameters": [
           {
@@ -51764,7 +53901,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/Requirement"
                 }
               }
             },
@@ -51868,7 +54005,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -51886,21 +54023,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get requirement",
+        "summary": "Get Requirement",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       },
       "patch": {
-        "description": "Update draft requirement",
         "operationId": "update_requirement_draft",
         "parameters": [
           {
@@ -51934,25 +54067,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/UpdateRequirementRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/Requirement"
                 }
               }
             },
@@ -52056,7 +54182,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52074,23 +54200,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Update draft requirement",
+        "summary": "Update Requirement Draft",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
+        "x-contract-only": false,
         "x-etag-required": true,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:update",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/requirements/{requirement_id}/publish": {
       "post": {
-        "description": "Publish requirement",
         "operationId": "publish_requirement",
         "parameters": [
           {
@@ -52120,29 +54243,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/Requirement"
                 }
               }
             },
@@ -52246,7 +54352,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52264,23 +54370,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Publish requirement",
+        "summary": "Publish Requirement",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:publish",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/requirements/{requirement_id}/supersede": {
       "post": {
-        "description": "Supersede requirement",
         "operationId": "supersede_requirement",
         "parameters": [
           {
@@ -52310,29 +54413,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/Requirement"
                 }
               }
             },
@@ -52436,7 +54522,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52454,23 +54540,20 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Supersede requirement",
+        "summary": "Supersede Requirement",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:supersede",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/response-profiles/{response_profile_id}": {
       "get": {
-        "description": "Get response profile",
         "operationId": "get_response_profile",
         "parameters": [
           {
@@ -52489,7 +54572,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyResponseProfile"
                 }
               }
             },
@@ -52593,7 +54676,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52611,23 +54694,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get response profile",
+        "summary": "Get Response Profile",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
-        "x-idempotency-required": false,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/response-profiles/{response_profile_id}/publish": {
       "post": {
-        "description": "Publish response profile",
         "operationId": "publish_response_profile",
         "parameters": [
           {
@@ -52657,29 +54736,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CompanyResponseProfile"
                 }
               }
             },
@@ -52783,7 +54845,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52801,18 +54863,16 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Publish response profile",
+        "summary": "Publish Response Profile",
         "tags": [
-          "FR-03",
-          "contract-only"
+          "evidence"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-03",
         "x-idempotency-required": true,
         "x-owner": "member-4",
         "x-required-permission": "fr-03:publish",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-schema-status": "OWNER_FROZEN"
       }
     },
     "/api/v1/retention-jobs": {

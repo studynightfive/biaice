@@ -140,12 +140,19 @@ MEMBER7_IMPLEMENTED_OPERATIONS = frozenset(
         "revoke_risk_acceptance",
     }
 )
+MEMBER4_IMPLEMENTED_OPERATIONS = frozenset(
+    operation.operation_id
+    for operation in OPERATION_CATALOG
+    if operation.owner == "member-4"
+)
 
 for operation in OPERATION_CATALOG:
     if (
         operation.owner == "member-7"
         and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATIONS
     ):
+        continue
+    if operation.operation_id in MEMBER4_IMPLEMENTED_OPERATIONS:
         continue
     responses = dict(PROBLEM_RESPONSES)
     responses[501] = {

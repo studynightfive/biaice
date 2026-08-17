@@ -29,6 +29,24 @@
     "status": 503,
     "title": "BYOK secret gate required"
   },
+  "CONDITION_NOT_OPEN": {
+    "recoverable": false,
+    "remediation": "Open conditions are append-only; create a new condition if needed.",
+    "status": 409,
+    "title": "Condition is no longer open"
+  },
+  "COST_ALREADY_APPROVED": {
+    "recoverable": false,
+    "remediation": "Keep the append-only approval; create a new baseline to change figures.",
+    "status": 409,
+    "title": "Cost baseline is already approved"
+  },
+  "COST_NOT_APPROVED": {
+    "recoverable": true,
+    "remediation": "An independent finance approver must approve before publish; unapproved cost is exploration-only.",
+    "status": 409,
+    "title": "Cost baseline is not approved"
+  },
   "CURSOR_SCOPE_MISMATCH": {
     "recoverable": false,
     "remediation": "Do not reuse cursors across scopes.",
@@ -70,6 +88,24 @@
     "remediation": "Refresh the draft before retrying.",
     "status": 412,
     "title": "ETag mismatch"
+  },
+  "EVIDENCE_DOCUMENT_NOT_RELEASED": {
+    "recoverable": true,
+    "remediation": "Wait for member-3 scan/review/release before citing the document.",
+    "status": 409,
+    "title": "Cited document is not released"
+  },
+  "EVIDENCE_REVIEW_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Ask a checker different from the evidence author to review it.",
+    "status": 409,
+    "title": "Independent evidence review is required"
+  },
+  "EVIDENCE_SATISFIED_WITHOUT_PROOF": {
+    "recoverable": false,
+    "remediation": "Attach a current published evidence version; unknown is the fail-closed default.",
+    "status": 409,
+    "title": "Evidence cannot be marked satisfied without current proof"
   },
   "GATE_ASSESSMENT_NOT_FOUND": {
     "recoverable": false,
@@ -179,6 +215,12 @@
     "status": 403,
     "title": "Permission denied"
   },
+  "PUBLISHED_VERSION_IMMUTABLE": {
+    "recoverable": false,
+    "remediation": "Create a successor version or append an event.",
+    "status": 409,
+    "title": "Published versions cannot be patched"
+  },
   "REAL_DATA_MODE_REQUIRED": {
     "recoverable": true,
     "remediation": "Use synthetic data or pass REAL_DATA_MODE.",
@@ -191,11 +233,23 @@
     "status": 422,
     "title": "Request validation failed"
   },
+  "REQUIREMENT_NOT_PUBLISHED": {
+    "recoverable": true,
+    "remediation": "Publish the draft before superseding it.",
+    "status": 409,
+    "title": "Requirement is not published"
+  },
   "RESOURCE_NOT_FOUND": {
     "recoverable": false,
     "remediation": "Check the resource identifier.",
     "status": 404,
     "title": "Resource not found"
+  },
+  "RESPONSE_PROFILE_EVIDENCE_NOT_CURRENT": {
+    "recoverable": true,
+    "remediation": "Cite published, in-window evidence only.",
+    "status": 409,
+    "title": "Response profile evidence is not current"
   },
   "RETENTION_EXPIRED": {
     "recoverable": false,

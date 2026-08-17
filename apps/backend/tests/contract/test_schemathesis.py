@@ -116,6 +116,14 @@ MEMBER7_IMPLEMENTED_OPERATION_IDS = frozenset(
         "revoke_risk_acceptance",
     }
 )
+MEMBER4_IMPLEMENTED_OPERATION_IDS = frozenset(
+    operation.operation_id
+    for operation in OPERATION_CATALOG
+    if operation.owner == "member-4"
+)
+CATALOG_IMPLEMENTED_OPERATION_IDS = (
+    MEMBER7_IMPLEMENTED_OPERATION_IDS | MEMBER4_IMPLEMENTED_OPERATION_IDS
+)
 
 
 def _operation_partitions() -> tuple[frozenset[str], frozenset[str]]:
@@ -154,6 +162,22 @@ EXPECTED_FOUNDATION_UNAVAILABLE: dict[str, frozenset[int]] = {
 EXPECTED_BUSINESS_RULE_422: frozenset[str] = frozenset(
     {
         "create_risk_acceptance",
+        "create_evidence",
+        "create_requirement",
+        "create_evidence_matche",
+        "create_response_profile",
+        "create_condition",
+        "create_cost_baseline",
+        "create_commercial_policie",
+        "create_precheck_assessment",
+        "create_readiness_assessment",
+        "update_requirement_draft",
+        "review_evidence_match",
+        "satisfy_condition",
+        "waive_condition",
+        "fail_condition",
+        "expire_condition",
+        "revoke_evidence",
     }
 )
 
@@ -166,9 +190,9 @@ def test_schemathesis_version_and_openapi_partition_are_explicit() -> None:
     implemented_in_catalog = IMPLEMENTED_OPERATION_IDS & frozenset(
         operation.operation_id for operation in OPERATION_CATALOG
     )
-    assert implemented_in_catalog == MEMBER7_IMPLEMENTED_OPERATION_IDS
+    assert implemented_in_catalog == CATALOG_IMPLEMENTED_OPERATION_IDS
     assert len(CONTRACT_ONLY_OPERATION_IDS) == (
-        len(OPERATION_CATALOG) - len(MEMBER7_IMPLEMENTED_OPERATION_IDS)
+        len(OPERATION_CATALOG) - len(CATALOG_IMPLEMENTED_OPERATION_IDS)
     )
 
 

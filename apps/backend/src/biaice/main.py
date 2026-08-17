@@ -26,6 +26,8 @@ from biaice.core.telemetry import (
     RequestContextMiddleware,
     ScopeOverrideMiddleware,
 )
+from biaice.modules.commercial.api import router as commercial_router
+from biaice.modules.evidence.api import router as evidence_router
 
 
 def _build_authenticator(settings: Settings) -> Authenticator:
@@ -98,6 +100,11 @@ def create_app(
     )
 
     configure_approvals_reports(app)
+    from biaice.modules.commercial.application.services import configure_commercial
+    from biaice.modules.evidence.application.services import configure_evidence
+
+    configure_evidence(app)
+    configure_commercial(app)
     app.state.readiness_checks = tuple(
         readiness_checks
         if readiness_checks is not None
@@ -118,6 +125,8 @@ def create_app(
     # member-7 approvals/reports router MUST be registered before contract_stubs
     # so FastAPI first-match-wins routes FR-09b operations to the real handler.
     app.include_router(approvals_reports.router)
+    app.include_router(evidence_router)
+    app.include_router(commercial_router)
     app.include_router(contract_stubs.router)
     app.include_router(internal.router)
 

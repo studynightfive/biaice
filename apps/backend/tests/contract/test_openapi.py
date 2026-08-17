@@ -13,6 +13,14 @@ MEMBER7_IMPLEMENTED_OPERATION_IDS = frozenset(
         "revoke_risk_acceptance",
     }
 )
+MEMBER4_IMPLEMENTED_OPERATION_IDS = frozenset(
+    operation.operation_id
+    for operation in OPERATION_CATALOG
+    if operation.owner == "member-4"
+)
+IMPLEMENTED_CATALOG_OPERATION_IDS = (
+    MEMBER7_IMPLEMENTED_OPERATION_IDS | MEMBER4_IMPLEMENTED_OPERATION_IDS
+)
 
 
 def operations(schema):
@@ -32,8 +40,7 @@ def test_openapi_has_unique_operations_all_p0_groups_and_explicit_contract_only_
     implemented = [
         operation
         for operation in OPERATION_CATALOG
-        if operation.owner == "member-7"
-        and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATION_IDS
+        if operation.operation_id in IMPLEMENTED_CATALOG_OPERATION_IDS
     ]
     assert len([item for item in items if item[2].get("x-contract-only")]) == (
         len(OPERATION_CATALOG) - len(implemented)
