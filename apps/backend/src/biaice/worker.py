@@ -33,5 +33,5 @@ celery_app.conf.update(
             "schedule": 60.0,
         },
     },
-    imports=("biaice.workers.governance.tasks",),
+    imports=("biaice.workers.governance.tasks", "biaice.workers.ingest.tasks"),
 )
