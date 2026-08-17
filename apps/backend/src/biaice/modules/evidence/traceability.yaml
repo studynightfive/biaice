@@ -1,0 +1,15 @@
+# 成员 4 追踪矩阵（FR-03 / FR-04）
+
+状态：`IMPLEMENTED / HUMAN_GATES_PENDING`
+
+| 需求 | 用例 | 路由/组件 | operationId | 权限 | 审计 | 测试 |
+|---|---|---|---|---|---|---|
+| FR-03 | 创建/发布 Requirement | `/evidence-precheck` | list/create/get/update/publish/supersede_requirement | fr-03:read/create/update/publish/supersede | evidence.requirement.* | test_evidence.py |
+| FR-03 | 证据不可变版本 | `/evidence-precheck` | list/create/get/review/publish/revoke_evidence | fr-03:read/create/review/publish/revoke | evidence.evidence.* | test_evidence.py |
+| FR-03 | 双向匹配失败关闭 | `/evidence-precheck` | list/create/get_evidence_matche, review_evidence_match | fr-03:read/create/review | evidence.match.* | test_evidence.py |
+| FR-03 | 固定响应画像 | `/evidence-precheck` | list/create/get/publish_response_profile | fr-03:read/create/publish | evidence.profile.* | test_evidence.py |
+| FR-03 | 预审不读成本市场 | `/evidence-precheck` | list/create/get_precheck_assessment | fr-03:read/create | evidence.precheck.* | test_evidence.py, test_evidence_commercial_api.py |
+| FR-03 | 条件唯一 writer | command port | list/create/get_condition, satisfy/waive/fail/expire | fr-03:satisfy/waive/fail/expire | evidence.condition.* | test_evidence.py |
+| FR-04 | 成本 maker-checker | `/commercial-readiness` | list/create/get/approve/publish_cost_baseline | fr-04:create/approve/publish | commercial.cost.* | test_commercial.py |
+| FR-04 | 商业政策 | `/commercial-readiness` | list/create/get_commercial_policie, publish_commercial_policy | fr-04:create/publish | commercial.policy.* | test_commercial.py |
+| FR-04 | 就绪分项 | `/commercial-readiness` | list/create/get_readiness_assessment | fr-04:read/create | commercial.readiness.* | test_commercial.py |
