@@ -19,7 +19,11 @@ from biaice.modules.projects.application.services import (
     require_unit,
 )
 from biaice.modules.projects.domain.lifecycle import DecisionUnitLifecycleState
-from biaice.modules.projects.domain.models import ResourceLifecycle, ResourceValidity, canonical_hash
+from biaice.modules.projects.domain.models import (
+    ResourceLifecycle,
+    ResourceValidity,
+    canonical_hash,
+)
 from biaice.modules.projects.domain.resolution import resolve_inherited_clauses
 from biaice.modules.rules.domain.models import (
     ApplicableRegime,

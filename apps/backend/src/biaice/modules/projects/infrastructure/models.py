@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import DateTime, Integer, JSON, String, UniqueConstraint, Uuid
+from sqlalchemy import JSON, DateTime, Integer, String, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from biaice.core.db import Base, TenantScopedMixin

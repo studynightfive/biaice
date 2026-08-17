@@ -94,23 +94,6 @@ class DecisionUnit(FrozenModel):
         return value
 
 
-class DocumentIntakeRef(FrozenModel):
-    """Locator-only projection of a member-3 public document event."""
-
-    event_id: UUID
-    event_type: str
-    tenant_id: UUID
-    data_domain_id: UUID
-    project_id: UUID | None = None
-    decision_unit_id: UUID | None = None
-    document_id: UUID | None = None
-    parse_job_id: UUID | None = None
-    usable_for_formal_rules: bool
-    validity_state: ResourceValidity
-    occurred_at: datetime
-    request_id: str = Field(min_length=1, max_length=128)
-
-
 class DecisionUnitLifecycleEvent(FrozenModel):
     event_id: UUID
     decision_unit_id: UUID

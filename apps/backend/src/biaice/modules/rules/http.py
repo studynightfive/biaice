@@ -14,14 +14,18 @@ from biaice.core.errors import PROBLEM_RESPONSES
 from biaice.core.http import CursorCodec, require_if_match
 from biaice.core.idempotency import require_idempotency_key
 from biaice.modules.projects.application.authz import Fr01Guard
-from biaice.modules.projects.application.pagination import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, paginate
+from biaice.modules.projects.application.pagination import (
+    DEFAULT_PAGE_SIZE,
+    MAX_PAGE_SIZE,
+    paginate,
+)
 from biaice.modules.rules.application.services import (
     ApplicableRegimeService,
     ComplianceReviewService,
     CrossLotConstraintService,
     RuleClauseService,
-    RulesServices,
     RuleSetService,
+    RulesServices,
     ScopeAssessmentService,
 )
 from biaice.modules.rules.domain.models import (
@@ -34,12 +38,12 @@ from biaice.modules.rules.domain.models import (
     RoundKind,
     RuleClause,
     RuleClauseKind,
+    RuleResolution,
     RuleScopeLevel,
     RuleSet,
     ScopeAssessment,
     ScopeSupport,
     SourceLocator,
-    RuleResolution,
 )
 
 router = APIRouter(prefix="/api/v1", tags=["rules"])

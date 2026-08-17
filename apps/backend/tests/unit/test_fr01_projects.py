@@ -211,9 +211,7 @@ def test_scope_publish_requires_independent_publisher_and_blocks_multi_round() -
     assert same_person.status_code == 409
     assert same_person.json()["code"] == "MAKER_CHECKER_REQUIRED"
 
-    publisher = _client(_identity(subject_id=PUBLISHER))
-    # Publisher uses a new in-memory store unless we share repository. Isolated apps
-    # do not share state, so publish against the maker app with a swapped identity.
+    # Isolated apps do not share state, so publish against the maker app with a swapped identity.
     app = maker.app
     app.state.authenticator = StaticAuthenticator(_identity(subject_id=PUBLISHER))
     published = TestClient(app)

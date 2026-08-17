@@ -9,9 +9,9 @@ from biaice.modules.projects.domain.models import ResourceLifecycle, ResourceVal
 from biaice.modules.rules.domain.models import (
     ResolutionStatus,
     RuleClause,
+    RuleResolution,
     RuleScopeLevel,
     RuleSet,
-    RuleResolution,
 )
 
 

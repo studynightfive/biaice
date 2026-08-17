@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 from biaice.core.auth import TenantScope
 from biaice.core.versioning import VersionMetadata
 from biaice.modules.projects.application.repository import Fr01Repository
+from biaice.modules.projects.domain.lifecycle import DecisionUnitLifecycleState
 from biaice.modules.projects.domain.models import (
     DecisionUnit,
     ProcurementProject,
@@ -16,15 +17,14 @@ from biaice.modules.projects.domain.models import (
     ResourceValidity,
     canonical_hash,
 )
-from biaice.modules.projects.domain.lifecycle import DecisionUnitLifecycleState
 from biaice.modules.rules.domain.models import (
+    RoundKind,
     RuleClause,
     RuleClauseKind,
     RuleScopeLevel,
     RuleSet,
     ScopeAssessment,
     ScopeSupport,
-    RoundKind,
 )
 
 NOW = datetime(2026, 8, 17, tzinfo=timezone.utc)
