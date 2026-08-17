@@ -41,7 +41,7 @@ describe("formatMoney", () => {
 
 describe("formatPercent", () => {
   it("renders a partial identification interval with MC CI", () => {
-    var out = formatPercent("0.3", "0.6", { lower: ["0.28", "0.32"], upper: ["0.58", "0.62"] });
+    const out = formatPercent("0.3", "0.6", { lower: ["0.28", "0.32"], upper: ["0.58", "0.62"] });
     expect(out).toContain("[0.3000, 0.6000]");
     expect(out).toContain("P- MC CI [0.2800, 0.3200]");
     expect(out).toContain("P+ MC CI [0.5800, 0.6200]");
@@ -68,8 +68,8 @@ describe("formatDecimalString", () => {
 
 describe("formatHash", () => {
   it("returns a compact SHA-256 representation", () => {
-    var sample = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789";
-    var expected = "abcdef01…" + "23456789";
+    const sample = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789";
+    const expected = "abcdef01…" + "23456789";
     expect(formatHash(sample)).toBe(expected);
     expect(formatHash(sample).length).toBeLessThan(sample.length);
     expect(formatHash(sample)).toMatch(/^.{8}….{8}$/);

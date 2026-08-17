@@ -19,16 +19,16 @@ export interface SnapshotDownloadClientProps {
  * the MVP-B SHADOW watermark remains the only authoritative read.
  */
 export function SnapshotDownloadClient({ snapshotId, payloadUrl }: SnapshotDownloadClientProps) {
-  var [pending, setPending] = useState(false);
-  var [error, setError] = useState<string | null>(null);
-  var [payload, setPayload] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [payload, setPayload] = useState<string | null>(null);
 
-  var onDownload = async () => {
+  const onDownload = async () => {
     setPending(true);
     setError(null);
     try {
-      var body = await downloadSnapshot(snapshotId);
-      var text = typeof body === "string" ? body : JSON.stringify(body, null, 2);
+      const body = await downloadSnapshot(snapshotId);
+      const text = typeof body === "string" ? body : JSON.stringify(body, null, 2);
       setPayload(text);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Download failed");

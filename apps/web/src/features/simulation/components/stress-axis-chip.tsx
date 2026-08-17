@@ -28,9 +28,9 @@ const AXIS_ICONS: Record<StressAxisKind, string> = {
 };
 
 export function StressAxisChip({ axis, currency }: StressAxisChipProps) {
-  var label = AXIS_LABELS[axis.axis] ?? axis.axis;
-  var icon = AXIS_ICONS[axis.axis] ?? "·";
-  var worstValue = axis.worst_value
+  const label = AXIS_LABELS[axis.axis] ?? axis.axis;
+  const icon = AXIS_ICONS[axis.axis] ?? "·";
+  const worstValue = axis.worst_value
     ? currency
       ? currency + " " + axis.worst_value.value
       : axis.worst_value.value
@@ -56,7 +56,7 @@ export function StressAxisChip({ axis, currency }: StressAxisChipProps) {
 }
 
 export function StressAxisGrid({ axes, currency }: { axes: StressTestAssessment[]; currency?: string }) {
-  var allAxes: StressAxisKind[] = [
+  const allAxes: StressAxisKind[] = [
     "COST_INFLATION",
     "COMPETITOR_PRICE_CUT",
     "RESPONSE_QUALITY_BOOST",
@@ -64,15 +64,15 @@ export function StressAxisGrid({ axes, currency }: { axes: StressTestAssessment[
     "EVIDENCE_WITHDRAWN",
     "RULE_BOUNDARY",
   ];
-  var byKind: Partial<Record<StressAxisKind, StressTestAssessment>> = {};
-  for (var i = 0; i < axes.length; i += 1) {
-    var axis = axes[i];
+  const byKind: Partial<Record<StressAxisKind, StressTestAssessment>> = {};
+  for (let i = 0; i < axes.length; i += 1) {
+    const axis = axes[i];
     byKind[axis.axis] = axis;
   }
   return (
     <div className={styles.stressGrid}>
       {allAxes.map((kind) => {
-        var assessment = byKind[kind] ?? { axis: kind, outcome: "INDETERMINATE" as const, affected_candidate_count: 0 };
+        const assessment = byKind[kind] ?? { axis: kind, outcome: "INDETERMINATE" as const, affected_candidate_count: 0 };
         return <StressAxisChip key={kind} axis={assessment} currency={currency} />;
       })}
     </div>

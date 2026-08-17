@@ -79,9 +79,9 @@ const ASSESSMENT_TONE: Record<ScenarioAssessmentState, StatusTone> = {
 };
 
 export default async function SimulationBlock({ unitId, mfaVerified }: SimulationProps) {
-  var eligibilities = await listEligibilities(unitId);
-  var latestEligibility = eligibilities[0] ?? null;
-  var bundle = await loadSimulationBundle(unitId, latestEligibility);
+  const eligibilities = await listEligibilities(unitId);
+  const latestEligibility = eligibilities[0] ?? null;
+  const bundle = await loadSimulationBundle(unitId, latestEligibility);
 
   return (
     <PageFrame title="Simulation & strategy" eyebrow="member 6" description="Read-only view of the backend-owned batch, optimisation, stress and merge pipeline.">
@@ -113,10 +113,10 @@ export default async function SimulationBlock({ unitId, mfaVerified }: Simulatio
 }
 
 function StatusBar({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>> }) {
-  var batchState = bundle.latestBatch?.state ?? "NONE";
-  var runState = bundle.latestRun?.state ?? "NONE";
-  var planState = bundle.plans[0]?.state ?? "NONE";
-  var assessmentState =
+  const batchState = bundle.latestBatch?.state ?? "NONE";
+  const runState = bundle.latestRun?.state ?? "NONE";
+  const planState = bundle.plans[0]?.state ?? "NONE";
+  const assessmentState =
     bundle.latestBatch && bundle.latestBatch.scenario_assessments.length > 0
       ? "ASSESSED"
       : "INDETERMINATE";
@@ -171,7 +171,7 @@ function StatusBar({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulatio
 }
 
 function BatchSection({ bundle, unitId, mfaVerified }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>>; unitId: string; mfaVerified: boolean }) {
-  var hasRunning = bundle.batches.some((b) => b.state === "RUNNING" || b.state === "PENDING");
+  const hasRunning = bundle.batches.some((b) => b.state === "RUNNING" || b.state === "PENDING");
   return (
     <section className={styles.block} aria-label="batch-control">
       <h2 className={styles.blockTitle}>Batch control</h2>
@@ -226,7 +226,7 @@ function BatchTable({ batches, batchChildren }: { batches: SimulationBatchVersio
 }
 
 function StaticValidationSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>> }) {
-  var rows = bundle.latestBatchChildren?.static_validations ?? [];
+  const rows = bundle.latestBatchChildren?.static_validations ?? [];
   if (rows.length === 0) {
     return (
       <section className={styles.block} aria-label="static-validation">
@@ -276,7 +276,7 @@ function StaticValidationSection({ bundle }: { bundle: Awaited<ReturnType<typeof
 }
 
 function ScenarioOutcomeSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>> }) {
-  var outcomes = bundle.latestBatchChildren?.scenario_outcomes ?? [];
+  const outcomes = bundle.latestBatchChildren?.scenario_outcomes ?? [];
   if (outcomes.length === 0) {
     return (
       <section className={styles.block} aria-label="scenario-outcomes">
@@ -342,8 +342,8 @@ function CoverageSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSim
 }
 
 function PlanSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>> }) {
-  var plans = bundle.plans;
-  var runId = bundle.latestRun?.id ?? "unknown";
+  const plans = bundle.plans;
+  const runId = bundle.latestRun?.id ?? "unknown";
   return (
     <section className={styles.block} aria-label="plan-objectives">
       <h2 className={styles.blockTitle}>Multi-objective plans</h2>
@@ -364,8 +364,8 @@ function PlanSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulat
 }
 
 function StressSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>> }) {
-  var axes: StressTestAssessment[] = bundle.stress;
-  var currency = bundle.latestBatch?.candidates?.[0]?.bid_value.currency;
+  const axes: StressTestAssessment[] = bundle.stress;
+  const currency = bundle.latestBatch?.candidates?.[0]?.bid_value.currency;
   return (
     <section className={styles.block} aria-label="stress-axes">
       <h2 className={styles.blockTitle}>Mandatory stress axes</h2>
@@ -376,8 +376,8 @@ function StressSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimul
 }
 
 function MergeSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimulationBundle>> }) {
-  var merges: MergeAssessment[] = bundle.merges;
-  var blocked = merges.filter((m) => !m.merge_passed);
+  const merges: MergeAssessment[] = bundle.merges;
+  const blocked = merges.filter((m) => !m.merge_passed);
   return (
     <section className={styles.block} aria-label="merge-assessment">
       <h2 className={styles.blockTitle}>Merge assessment</h2>
@@ -424,6 +424,6 @@ function MergeSection({ bundle }: { bundle: Awaited<ReturnType<typeof loadSimula
 }
 
 async function CreateBatchIsland({ unitId, disabled }: { unitId: string; disabled: boolean }) {
-  var mod = await import("./simulation.client");
+  const mod = await import("./simulation.client");
   return <mod.CreateBatchButtonClient unitId={unitId} disabled={disabled} />;
 }

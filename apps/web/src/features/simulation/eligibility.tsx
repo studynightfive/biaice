@@ -35,10 +35,10 @@ const VALIDITY_TONE: Record<ValidityState, StatusTone> = {
 };
 
 export default async function EligibilityBlock({ unitId, mfaVerified }: EligibilityProps) {
-  var eligibilities = await listEligibilities(unitId);
-  var snapshots = await listSnapshots(unitId);
-  var latest = eligibilities[0] ?? null;
-  var latestSnapshot = snapshots[0] ?? null;
+  const eligibilities = await listEligibilities(unitId);
+  const snapshots = await listSnapshots(unitId);
+  const latest = eligibilities[0] ?? null;
+  const latestSnapshot = snapshots[0] ?? null;
 
   return (
     <PageFrame
@@ -72,7 +72,7 @@ export default async function EligibilityBlock({ unitId, mfaVerified }: Eligibil
 }
 
 function InputsAggregate({ latest }: { latest: RecommendationEligibilityVersion }) {
-  var entries: Array<[string, ValidityState]> = [
+  const entries: Array<[string, ValidityState]> = [
     ["precheck_state", latest.inputs.precheck_state],
     ["readiness_state", latest.inputs.readiness_state],
     ["static_validation_state", latest.inputs.static_validation_state],
@@ -193,6 +193,6 @@ function SnapshotSection({ snapshot }: { snapshot: SimulationAssessmentSnapshot 
 }
 
 async function SnapshotDownloadIsland({ snapshotId, payloadUrl }: { snapshotId: string; payloadUrl: string }) {
-  var mod = await import("./eligibility.client");
+  const mod = await import("./eligibility.client");
   return <mod.SnapshotDownloadClient snapshotId={snapshotId} payloadUrl={payloadUrl} />;
 }

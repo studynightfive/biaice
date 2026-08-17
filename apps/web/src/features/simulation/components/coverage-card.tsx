@@ -27,7 +27,7 @@ export function CoverageCard({ coverage, runId, basis }: CoverageCardProps) {
     );
   }
 
-  var altText = describeCoverage(coverage, runId, basis);
+  const altText = describeCoverage(coverage, runId, basis);
 
   return (
     <Card title="Coverage & N_eff">
@@ -68,12 +68,12 @@ export function CoverageCard({ coverage, runId, basis }: CoverageCardProps) {
 }
 
 function describeCoverage(coverage: CoverageInterval, runId?: string, basis?: string): string {
-  var lower = String(coverage.lower);
-  var upper = String(coverage.upper);
-  var cov = coverage.coverage === "UNDEFINED" ? "undefined" : String(coverage.coverage);
-  var nEff = coverage.n_eff === "UNDEFINED" ? "undefined" : String(coverage.n_eff);
-  var runSuffix = runId ? " run " + runId : "";
-  var basisSuffix = basis ? " basis " + basis : "";
+  const lower = String(coverage.lower);
+  const upper = String(coverage.upper);
+  const cov = coverage.coverage === "UNDEFINED" ? "undefined" : String(coverage.coverage);
+  const nEff = coverage.n_eff === "UNDEFINED" ? "undefined" : String(coverage.n_eff);
+  const runSuffix = runId ? " run " + runId : "";
+  const basisSuffix = basis ? " basis " + basis : "";
   return "Partial identification interval [" + lower + ", " + upper + "], coverage " + cov + ", N_eff " + nEff + runSuffix + basisSuffix + ".";
 }
 

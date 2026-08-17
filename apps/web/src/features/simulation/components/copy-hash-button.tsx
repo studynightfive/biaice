@@ -15,9 +15,9 @@ export interface CopyHashButtonProps {
  * the Clipboard API is unavailable; in that case the user can copy by hand.
  */
 export function CopyHashButton({ value, label = "copy-hash" }: CopyHashButtonProps) {
-  var [feedback, setFeedback] = useState<"idle" | "copied" | "fallback">("idle");
+  const [feedback, setFeedback] = useState<"idle" | "copied" | "fallback">("idle");
 
-  var onClick = useCallback(async () => {
+  const onClick = useCallback(async () => {
     try {
       if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
         await navigator.clipboard.writeText(value);

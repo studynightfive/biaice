@@ -416,7 +416,7 @@ export function isProblem(value: unknown): value is BiaiceProblem {
 
 export function isProblemDetails(value: unknown): value is ProblemDetails {
   if (typeof value !== "object" || value === null) return false;
-  var candidate = value as Record<string, unknown>;
+  const candidate = value as Record<string, unknown>;
   return (
     typeof candidate.status === "number" ||
     typeof candidate.type === "string" ||

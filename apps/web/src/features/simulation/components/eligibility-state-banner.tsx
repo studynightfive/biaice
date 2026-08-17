@@ -61,8 +61,8 @@ export function EligibilityStateBanner({
   evaluatedAt,
   excludesCommercialApproval = true,
 }: EligibilityStateBannerProps) {
-  var copy = STATE_COPY[state] ?? STATE_COPY.INDETERMINATE;
-  var tone: StatusTone = state === "NONE" ? "neutral" : STATE_TONE[state] ?? "neutral";
+  const copy = STATE_COPY[state] ?? STATE_COPY.INDETERMINATE;
+  const tone: StatusTone = state === "NONE" ? "neutral" : STATE_TONE[state] ?? "neutral";
   return (
     <section className={styles.eligibilityBanner} data-state={state} aria-label="eligibility-state">
       <StatusBadge tone={tone} label={copy.title} />
@@ -75,7 +75,7 @@ export function EligibilityStateBanner({
         </p>
         <p className={styles.caption}>
           {excludesCommercialApproval
-            ? "This verdict excludes any commercial approval.",
+            ? "This verdict excludes any commercial approval."
             : "Commercial approval was included — out of scope for FR-09a."}
         </p>
       </div>

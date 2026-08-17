@@ -46,7 +46,7 @@ const NEXT_REVALIDATE = { revalidate: 0 } as const;
 
 /** Builds a stable idempotency key from a logical action + caller. */
 export function newIdempotencyKey(action: string, hint?: string): string {
-  var suffix = hint ? ":" + hint : "";
+  const suffix = hint ? ":" + hint : "";
   return action + ":" + randomUUID() + suffix;
 }
 
@@ -191,7 +191,7 @@ export interface BatchChildren {
 }
 
 export async function listBatchChildren(batchId: Uuid): Promise<BatchChildren> {
-  var [candidates, staticValidations, scenarioOutcomes, scenarioAssessments] = await Promise.all([
+  const [candidates, staticValidations, scenarioOutcomes, scenarioAssessments] = await Promise.all([
     client().request<unknown[]>("GET", `/api/v1/simulation-batches/${batchId}/candidates`, readOnly()),
     client().request<BatchChildren["static_validations"]>("GET", `/api/v1/simulation-batches/${batchId}/static-validations`, readOnly()),
     client().request<ScenarioOutcome[]>("GET", `/api/v1/simulation-batches/${batchId}/scenario-outcomes`, readOnly()),
@@ -337,9 +337,9 @@ export interface BaselineBundle {
 }
 
 export async function loadBaselineBundle(unitId: Uuid): Promise<BaselineBundle> {
-  var [baselines, spaces, sets] = await Promise.all([listDecisionBaselines(unitId), listSearchSpaces(unitId), listScenarioSets(unitId)]);
-  var current = baselines.find((b) => b.validity_state === "CURRENT") ?? null;
-  var superseded = baselines.filter((b) => b.validity_state !== "CURRENT");
+  const [baselines, spaces, sets] = await Promise.all([listDecisionBaselines(unitId), listSearchSpaces(unitId), listScenarioSets(unitId)]);
+  const current = baselines.find((b) => b.validity_state === "CURRENT") ?? null;
+  const superseded = baselines.filter((b) => b.validity_state !== "CURRENT");
   return { current, superseded, searchSpaces: spaces, scenarioSets: sets };
 }
 
@@ -358,19 +358,19 @@ export async function loadSimulationBundle(
   unitId: Uuid,
   eligibility?: RecommendationEligibilityVersion | null,
 ): Promise<SimulationBundle> {
-  var batches = await listBatches(unitId);
-  var latestBatch = batches.find((b) => b.state === "SUCCEEDED") ?? batches[0] ?? null;
-  var latestBatchChildren: BatchChildren | null = null;
-  var latestRun: OptimizationRunVersion | null = null;
-  var plans: StrategyPlanVersion[] = [];
-  var stress: StressTestAssessment[] = [];
-  var merges: MergeAssessment[] = [];
+  const batches = await listBatches(unitId);
+  const latestBatch = batches.find((b) => b.state === "SUCCEEDED") ?? batches[0] ?? null;
+  let latestBatchChildren: BatchChildren | null = null;
+  let latestRun: OptimizationRunVersion | null = null;
+  let plans: StrategyPlanVersion[] = [];
+  let stress: StressTestAssessment[] = [];
+  let merges: MergeAssessment[] = [];
   if (latestBatch) {
     latestBatchChildren = await listBatchChildren(latestBatch.id);
-    var runs = await listOptimizationRuns(latestBatch.id);
+    const runs = await listOptimizationRuns(latestBatch.id);
     latestRun = runs.find((r) => r.state === "SUCCEEDED") ?? runs[0] ?? null;
     if (latestRun) {
-      var [planList, stressList, mergeList] = await Promise.all([
+      const [planList, stressList, mergeList] = await Promise.all([
         listStrategyPlans(latestRun.id),
         listStressAssessments(latestRun.id),
         listMergeAssessments(latestRun.id),
@@ -380,7 +380,7 @@ export async function loadSimulationBundle(
       merges = mergeList;
     }
   }
-  var coverage: CoverageInterval | null = null;
+  let coverage: CoverageInterval | null = null;
   if (latestRun) {
     coverage = extractCoverage(latestBatch, latestRun);
   }
@@ -408,7 +408,7 @@ function extractCoverage(
   _batch: SimulationBatchVersion | null,
   run: OptimizationRunVersion,
 ): CoverageInterval | null {
-  var augmented = run as RunWithCoverage;
+  const augmented = run as RunWithCoverage;
   return augmented.coverage ?? null;
 }
 

@@ -35,25 +35,25 @@ export function formatMoney(value: Decimal | string, currency: CurrencyCode): st
   if (typeof value !== "string") {
     return currency + " <invalid amount>";
   }
-  var trimmed = value.trim();
+  const trimmed = value.trim();
   if (trimmed.length === 0) {
     return currency + " <empty>";
   }
-  var sign = "";
-  var body = trimmed;
+  let sign = "";
+  let body = trimmed;
   if (body.startsWith("-")) {
     sign = "-";
     body = body.slice(1);
   }
-  var dotIndex = body.indexOf(".");
-  var intPart = dotIndex === -1 ? body : body.slice(0, dotIndex);
-  var fracPart = dotIndex === -1 ? "" : body.slice(dotIndex + 1);
-  var intCleaned = intPart.replace(/[^0-9]/g, "");
+  const dotIndex = body.indexOf(".");
+  const intPart = dotIndex === -1 ? body : body.slice(0, dotIndex);
+  const fracPart = dotIndex === -1 ? "" : body.slice(dotIndex + 1);
+  const intCleaned = intPart.replace(/[^0-9]/g, "");
   if (intCleaned.length === 0) {
     return currency + " " + sign + "<unparseable: " + value + ">";
   }
-  var grouped = intCleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  var combined = fracPart.length > 0 ? grouped + "." + fracPart : grouped;
+  const grouped = intCleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const combined = fracPart.length > 0 ? grouped + "." + fracPart : grouped;
   return currency + " " + sign + combined;
 }
 
@@ -74,11 +74,11 @@ export function formatPercent(
   upper: Decimal | string,
   ci?: { lower?: [Decimal, Decimal]; upper?: [Decimal, Decimal] } | null,
 ): string {
-  var lo = formatDecimalString(lower, 4);
-  var hi = formatDecimalString(upper, 4);
-  var ciTail = "";
+  const lo = formatDecimalString(lower, 4);
+  const hi = formatDecimalString(upper, 4);
+  let ciTail = "";
   if (ci) {
-    var parts: string[] = [];
+    const parts: string[] = [];
     if (ci.lower) {
       parts.push(
         "P- MC CI [" + formatDecimalString(ci.lower[0], 4) + ", " + formatDecimalString(ci.lower[1], 4) + "]",
@@ -103,13 +103,13 @@ export function formatPercent(
  */
 export function formatDecimalString(value: string, fractionDigits: number): string {
   if (typeof value !== "string") return String(value);
-  var dot = value.indexOf(".");
+  const dot = value.indexOf(".");
   if (dot === -1) {
     if (fractionDigits <= 0) return value;
     return fractionDigits > 0 ? value + "." + "0".repeat(fractionDigits) : value;
   }
-  var intPart = value.slice(0, dot);
-  var fracPart = value.slice(dot + 1);
+  const intPart = value.slice(0, dot);
+  let fracPart = value.slice(dot + 1);
   if (fracPart.length > fractionDigits) {
     fracPart = fracPart.slice(0, fractionDigits);
   } else if (fracPart.length < fractionDigits) {
@@ -170,21 +170,21 @@ function stringify(node: unknown): string {
   if (typeof node === "boolean") return node ? "true" : "false";
   if (typeof node === "string") return JSON.stringify(node);
   if (Array.isArray(node)) {
-    var parts: string[] = [];
-    for (var i = 0; i < node.length; i += 1) {
-      var item = node[i];
+    const parts: string[] = [];
+    for (let i = 0; i < node.length; i += 1) {
+      const item = node[i];
       if (item === undefined) continue;
       parts.push(stringify(item));
     }
     return "[" + parts.join(",") + "]";
   }
   if (typeof node === "object") {
-    var obj = node as Record<string, unknown>;
-    var keys = Object.keys(obj).sort();
-    var fields: string[] = [];
-    for (var k = 0; k < keys.length; k += 1) {
-      var key = keys[k];
-      var v = obj[key];
+    const obj = node as Record<string, unknown>;
+    const keys = Object.keys(obj).sort();
+    const fields: string[] = [];
+    for (let k = 0; k < keys.length; k += 1) {
+      const key = keys[k];
+      const v = obj[key];
       if (v === undefined) continue;
       fields.push(JSON.stringify(key) + ":" + stringify(v));
     }
@@ -206,12 +206,12 @@ function stringify(node: unknown): string {
  * can display "UNDEFINED" instead of dividing by zero.
  */
 export function zScore(value: Decimal | string, mean: Decimal | string, stddev: Decimal | string): Decimal | null {
-  var v = Number(value);
-  var m = Number(mean);
-  var s = Number(stddev);
+  const v = Number(value);
+  const m = Number(mean);
+  const s = Number(stddev);
   if (!Number.isFinite(v) || !Number.isFinite(m) || !Number.isFinite(s)) return null;
   if (s <= 0) return null;
-  var z = (v - m) / s;
+  const z = (v - m) / s;
   if (!Number.isFinite(z)) return null;
   return z.toFixed(6);
 }

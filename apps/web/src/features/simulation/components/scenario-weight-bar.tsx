@@ -11,11 +11,11 @@ export interface ScenarioWeightBarProps {
 }
 
 export function ScenarioWeightBar({ probability, stress, totalProbabilityWeight }: ScenarioWeightBarProps) {
-  var probTotal = sumWeights(probability);
-  var stressTotal = sumWeights(stress);
-  var combined = probTotal + stressTotal;
-  var probRatio = combined === 0 ? 0 : (probTotal / combined) * 100;
-  var stressRatio = combined === 0 ? 0 : (stressTotal / combined) * 100;
+  const probTotal = sumWeights(probability);
+  const stressTotal = sumWeights(stress);
+  const combined = probTotal + stressTotal;
+  const probRatio = combined === 0 ? 0 : (probTotal / combined) * 100;
+  const stressRatio = combined === 0 ? 0 : (stressTotal / combined) * 100;
 
   return (
     <div aria-label="scenario-weight-distribution" role="group">
@@ -38,10 +38,10 @@ export function ScenarioWeightBar({ probability, stress, totalProbabilityWeight 
 }
 
 function sumWeights(scenarios: ReadonlyArray<ScenarioSpec>): number {
-  var total = 0;
-  for (var i = 0; i < scenarios.length; i += 1) {
-    var raw = scenarios[i].weight;
-    var value = Number(raw);
+  let total = 0;
+  for (let i = 0; i < scenarios.length; i += 1) {
+    const raw = scenarios[i].weight;
+    const value = Number(raw);
     if (Number.isFinite(value)) total += value;
   }
   return total;

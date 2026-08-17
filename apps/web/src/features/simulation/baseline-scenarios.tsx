@@ -73,8 +73,8 @@ const VALIDITY_TONE: Record<ValidityState, StatusTone> = {
 };
 
 export default async function BaselineScenariosBlock({ unitId, mfaVerified }: BaselineScenariosProps) {
-  var bundle = await loadBaselineBundle(unitId);
-  var readiness = deriveBaselineReadiness(bundle.current, bundle.superseded);
+  const bundle = await loadBaselineBundle(unitId);
+  const readiness = deriveBaselineReadiness(bundle.current, bundle.superseded);
   return (
     <PageFrame title="Decision baseline & scenario set" eyebrow="member 6" description="Freeze the search/evaluation scenario set so the simulation batch can run on stable inputs.">
       <ReadinessBar readiness={readiness} bundle={bundle} />
@@ -96,8 +96,8 @@ export default async function BaselineScenariosBlock({ unitId, mfaVerified }: Ba
 }
 
 function ReadinessBar({ readiness, bundle }: { readiness: { status: Readiness; reason_codes: string[] }; bundle: BaselineBundle }) {
-  var readinessTone = READINESS_TONE[readiness.status];
-  var readinessClass =
+  const readinessTone = READINESS_TONE[readiness.status];
+  const readinessClass =
     readinessTone === "success" ? styles.statusIsOk
       : readinessTone === "warning" ? styles.statusIsWarn
         : readinessTone === "critical" ? styles.statusIsFail
@@ -161,8 +161,8 @@ function BaselineSection({ current, superseded }: { current: DecisionBaselineVer
             </thead>
             <tbody>
               {superseded.map((b) => {
-                var tone = VALIDITY_TONE[b.validity_state];
-                var cls =
+                const tone = VALIDITY_TONE[b.validity_state];
+                const cls =
                   tone === "success" ? styles.statusIsOk
                     : tone === "warning" ? styles.statusIsWarn
                       : tone === "critical" ? styles.statusIsFail
@@ -221,7 +221,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function SearchSpaceSection({ unitId, spaces, canRequest }: { unitId: string; spaces: CandidateSearchSpaceVersion[]; canRequest: boolean }) {
-  var latest = spaces[0] ?? null;
+  const latest = spaces[0] ?? null;
   return (
     <section className={styles.block} aria-label="candidate-search-space">
       <h2 className={styles.blockTitle}>
@@ -262,7 +262,7 @@ function SearchSpaceSection({ unitId, spaces, canRequest }: { unitId: string; sp
 }
 
 function ScenarioSetSection({ sets, canFreeze }: { sets: ScenarioSetVersion[]; canFreeze: boolean }) {
-  var latest = sets[0] ?? null;
+  const latest = sets[0] ?? null;
   return (
     <section className={styles.block} aria-label="scenario-set">
       <h2 className={styles.blockTitle}>
@@ -328,6 +328,6 @@ function ScenarioTable({ scenarios }: { scenarios: ScenarioSetVersion["probabili
 
 // Freeze action is implemented in a small client island; see baseline-scenarios.client.tsx
 async function RequestSearchSpaceButton({ unitId, disabled }: { unitId: string; disabled: boolean }) {
-  var mod = await import("./baseline-scenarios.client");
+  const mod = await import("./baseline-scenarios.client");
   return <mod.RequestSearchSpaceButtonClient unitId={unitId} disabled={disabled} />;
 }

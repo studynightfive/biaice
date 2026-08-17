@@ -38,11 +38,11 @@ const OBJECTIVE_RISK_HINTS: Record<ObjectiveKind, string> = {
  * has been promoted.
  */
 export function PlanObjectiveCard({ plan, runId, currency }: PlanObjectiveCardProps) {
-  var isProxy = plan.proxy_mode;
-  var isCvar = plan.objective === "CVAR_TAIL";
-  var cardClass = styles.planCard + (isProxy || isCvar ? " " + styles.planCardProxy : "");
-  var title = OBJECTIVE_TITLES[plan.objective] ?? plan.objective;
-  var risk = OBJECTIVE_RISK_HINTS[plan.objective] ?? "Objective kind " + plan.objective + ".";
+  const isProxy = plan.proxy_mode;
+  const isCvar = plan.objective === "CVAR_TAIL";
+  const cardClass = styles.planCard + (isProxy || isCvar ? " " + styles.planCardProxy : "");
+  const title = OBJECTIVE_TITLES[plan.objective] ?? plan.objective;
+  const risk = OBJECTIVE_RISK_HINTS[plan.objective] ?? "Objective kind " + plan.objective + ".";
 
   return (
     <div

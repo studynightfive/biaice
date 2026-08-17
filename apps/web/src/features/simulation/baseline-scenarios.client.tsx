@@ -14,21 +14,21 @@ export interface RequestSearchSpaceButtonClientProps {
 }
 
 export function RequestSearchSpaceButtonClient({ unitId, disabled }: RequestSearchSpaceButtonClientProps) {
-  var [open, setOpen] = useState(false);
-  var [pending, setPending] = useState(false);
-  var [error, setError] = useState<string | null>(null);
-  var [lower, setLower] = useState("0");
-  var [upper, setUpper] = useState("0");
-  var [step, setStep] = useState("0.01");
-  var [currency, setCurrency] = useState("CNY");
-  var [precision, setPrecision] = useState(2);
+  const [open, setOpen] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lower, setLower] = useState("0");
+  const [upper, setUpper] = useState("0");
+  const [step, setStep] = useState("0.01");
+  const [currency, setCurrency] = useState("CNY");
+  const [precision, setPrecision] = useState(2);
 
-  var onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setPending(true);
     setError(null);
     try {
-      var result: CandidateSearchSpaceVersion = await createSearchSpace(
+      const result: CandidateSearchSpaceVersion = await createSearchSpace(
         unitId,
         {
           baseline_version_id: unitId,
@@ -48,7 +48,7 @@ export function RequestSearchSpaceButtonClient({ unitId, disabled }: RequestSear
         window.location.reload();
       }
     } catch (caught) {
-      var message = caught instanceof Error ? caught.message : "Request failed";
+      const message = caught instanceof Error ? caught.message : "Request failed";
       setError(message);
     } finally {
       setPending(false);

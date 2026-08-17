@@ -20,11 +20,11 @@ export interface BatchActionsClientProps {
  * clicks or retries never produce duplicate state.
  */
 export function BatchActionsClient({ unitId, latestBatch, disabled }: BatchActionsClientProps) {
-  var [pending, setPending] = useState<"create" | "cancel" | "retry" | null>(null);
-  var [error, setError] = useState<string | null>(null);
-  var [info, setInfo] = useState<string | null>(null);
+  const [pending, setPending] = useState<"create" | "cancel" | "retry" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
 
-  var onCreate = async () => {
+  const onCreate = async () => {
     setPending("create");
     setError(null);
     setInfo(null);
@@ -47,7 +47,7 @@ export function BatchActionsClient({ unitId, latestBatch, disabled }: BatchActio
     }
   };
 
-  var onCancel = async () => {
+  const onCancel = async () => {
     if (!latestBatch) return;
     setPending("cancel");
     setError(null);
@@ -62,7 +62,7 @@ export function BatchActionsClient({ unitId, latestBatch, disabled }: BatchActio
     }
   };
 
-  var onRetry = async () => {
+  const onRetry = async () => {
     if (!latestBatch) return;
     setPending("retry");
     setError(null);
