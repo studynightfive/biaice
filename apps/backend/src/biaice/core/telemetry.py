@@ -118,8 +118,6 @@ class ScopeOverrideMiddleware(BaseHTTPMiddleware):
 class BYOKPreBodyGuardMiddleware(BaseHTTPMiddleware):
     """Reject credential/test bodies before FastAPI reads or validates them."""
 
-    GUARDED_SUFFIXES = ("/credential", "/test-connection", "/activate")
-
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
@@ -127,11 +125,28 @@ class BYOKPreBodyGuardMiddleware(BaseHTTPMiddleware):
         from biaice.core.security.gates import GateName
 
         path = request.url.path.rstrip("/")
-        guarded = path.startswith(
+        provider_configuration = path.startswith(
             "/api/v1/ai-provider-configurations/"
-        ) and path.endswith(self.GUARDED_SUFFIXES)
+        )
+        guarded = provider_configuration and (
+            (request.method == "PUT" and path.endswith("/credential"))
+            or (
+                request.method == "POST"
+                and path.endswith(("/test-connection", "/activate"))
+            )
+        )
         if not guarded:
             return await call_next(request)
+        authorization = request.headers.get("authorization", "")
+        scheme, separator, token = authorization.partition(" ")
+        if not separator or scheme.lower() != "bearer" or not token:
+            return problem_response(request, BiaiceError("AUTH_REQUIRED"))
+        try:
+            request.state.pre_authenticated_identity = (
+                request.app.state.authenticator.authenticate(token)
+            )
+        except BiaiceError as error:
+            return problem_response(request, error)
         settings = request.app.state.settings
         forwarded_scheme = (
             request.headers.get("x-forwarded-proto")

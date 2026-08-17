@@ -61,6 +61,12 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         False,
         "Use the same payload or a new idempotency key.",
     ),
+    "INVALID_STATE_TRANSITION": ErrorDefinition(
+        409,
+        "Invalid state transition",
+        False,
+        "Refresh the resource and use an action allowed from its current state.",
+    ),
     "IF_MATCH_REQUIRED": ErrorDefinition(
         428, "If-Match required", True, "Refresh the draft and send its current ETag."
     ),
@@ -130,6 +136,87 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         "BYOK secret gate required",
         True,
         "Pass BYOK_SECRET_GATE before submitting a credential.",
+    ),
+    "SECRET_STORE_UNAVAILABLE": ErrorDefinition(
+        503,
+        "Secret store unavailable",
+        True,
+        "Keep credential operations blocked until the approved write-only store recovers.",
+    ),
+    "PROVIDER_CATALOG_NOT_CURRENT": ErrorDefinition(
+        409,
+        "Provider catalog is not current",
+        True,
+        "Refresh the published Provider catalog and use its exact version and hash.",
+    ),
+    "PROVIDER_REAL_DATA_MODE_REQUIRED": ErrorDefinition(
+        503,
+        "Provider real-data gate required",
+        True,
+        "Use verified synthetic data or pass REAL_DATA_MODE before Provider processing.",
+    ),
+    "PROVIDER_CONFIG_NOT_ACTIVE": ErrorDefinition(
+        409, "Provider configuration is not active", True, "Activate a current configuration."
+    ),
+    "PROVIDER_CREDENTIAL_MISSING": ErrorDefinition(
+        409, "Provider credential is missing", True, "Write a credential to a draft configuration."
+    ),
+    "PROVIDER_CREDENTIAL_UNVERIFIED": ErrorDefinition(
+        409, "Provider credential is unverified", True, "Run the fixed connection test."
+    ),
+    "PROVIDER_CREDENTIAL_INVALID": ErrorDefinition(
+        409, "Provider credential is invalid", True, "Rotate the credential and test it again."
+    ),
+    "PROVIDER_CREDENTIAL_REVOKED": ErrorDefinition(
+        409, "Provider credential is revoked", False, "Create a successor with a new credential."
+    ),
+    "PROVIDER_CREDENTIAL_USAGE_NOT_ALLOWED": ErrorDefinition(
+        409,
+        "Provider credential usage is not allowed",
+        False,
+        "Use the credential only within its TEST, BUSINESS or DELETION scope.",
+    ),
+    "PROVIDER_CREDENTIAL_ROTATION_REQUIRES_SUCCESSOR": ErrorDefinition(
+        409,
+        "Provider credential rotation requires a successor",
+        True,
+        "Create and verify a draft successor instead of changing the active configuration.",
+    ),
+    "PROVIDER_ROTATION_CONFLICT": ErrorDefinition(
+        409,
+        "Provider rotation conflict",
+        True,
+        "Finish or revoke the existing successor before starting another rotation.",
+    ),
+    "PROVIDER_POLICY_NOT_CURRENT": ErrorDefinition(
+        409,
+        "Provider policy is not current",
+        True,
+        "Refresh Provider policy, legal basis, PIA and cross-border evidence.",
+    ),
+    "PROVIDER_CALL_NOT_AUTHORIZED": ErrorDefinition(
+        403, "Provider call is not authorized", False, "Use an approved purpose and data scope."
+    ),
+    "PROVIDER_EGRESS_BLOCKED": ErrorDefinition(
+        503,
+        "Provider egress is blocked",
+        True,
+        "Synchronize the approved catalog hash and restore the restricted egress adapter.",
+    ),
+    "PROVIDER_RATE_LIMITED": ErrorDefinition(
+        429, "Provider rate limit reached", True, "Retry after the approved backoff interval."
+    ),
+    "PROVIDER_TIMEOUT": ErrorDefinition(
+        504, "Provider request timed out", True, "Retry or use the documented manual path."
+    ),
+    "PROVIDER_UPSTREAM_ERROR": ErrorDefinition(
+        502, "Provider upstream error", True, "Retry after the Provider recovers."
+    ),
+    "PROVIDER_RESPONSE_INVALID": ErrorDefinition(
+        502, "Provider response is invalid", False, "Keep the response blocked and inspect the adapter."
+    ),
+    "PROVIDER_BUDGET_EXCEEDED": ErrorDefinition(
+        409, "Provider budget exceeded", True, "Wait for budget reset or obtain an approved budget change."
     ),
     "WAIVER_PROHIBITED": ErrorDefinition(
         409, "Waiver prohibited", False, "Resolve the mandatory gate evidence."

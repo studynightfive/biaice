@@ -7,7 +7,6 @@ import re
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 REALM = json.loads((ROOT / "infra/keycloak/biaice-realm.json").read_text(encoding="utf-8"))
 USER_PROFILE = json.loads(

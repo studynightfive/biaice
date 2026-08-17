@@ -12,9 +12,9 @@ import argparse
 import json
 import subprocess
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Literal, Sequence
-
+from typing import Any, Literal
 
 ROOT = Path(__file__).resolve().parents[2]
 OPENAPI_PATH = "packages/contracts/openapi.generated.json"
@@ -119,12 +119,18 @@ def _visible_properties(
     result: dict[str, Any] = {}
     for name, property_schema in properties.items():
         resolved = _resolve(document, property_schema)
-        if direction == "request" and isinstance(resolved, dict):
-            if resolved.get("readOnly") is True:
-                continue
-        if direction == "response" and isinstance(resolved, dict):
-            if resolved.get("writeOnly") is True:
-                continue
+        if (
+            direction == "request"
+            and isinstance(resolved, dict)
+            and resolved.get("readOnly") is True
+        ):
+            continue
+        if (
+            direction == "response"
+            and isinstance(resolved, dict)
+            and resolved.get("writeOnly") is True
+        ):
+            continue
         result[name] = property_schema
     return result
 
@@ -585,7 +591,7 @@ def load_baseline(ref: str) -> JsonObject | None:
         return None
     parsed = json.loads(result.stdout)
     if not isinstance(parsed, dict):
-        raise ValueError("OpenAPI baseline is not a JSON object")
+        raise TypeError("OpenAPI baseline is not a JSON object")
     return parsed
 
 
@@ -604,7 +610,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     try:
         baseline = load_baseline(args.ref)
-    except (json.JSONDecodeError, ValueError) as exc:
+    except (json.JSONDecodeError, TypeError, ValueError) as exc:
         print(f"Unable to parse OpenAPI baseline at {args.ref}:{OPENAPI_PATH}: {exc}")
         return 2
     if baseline is None:

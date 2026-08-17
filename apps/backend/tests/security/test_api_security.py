@@ -146,6 +146,24 @@ def test_byok_guard_rejects_before_malformed_secret_body_is_parsed(identity, aut
     assert "SHOULD_NEVER_APPEAR" not in response.text
 
 
+def test_byok_guard_authenticates_before_gate_without_reading_secret_body() -> None:
+    app = create_app(
+        settings=Settings(environment="test", deployment_profile="synthetic_http")
+    )
+    with TestClient(app) as client:
+        response = client.put(
+            "/api/v1/ai-provider-configurations/00000000-0000-4000-8000-000000000099/credential",
+            headers={
+                "Idempotency-Key": "credential-write-no-auth-0001",
+                "Content-Type": "application/json",
+            },
+            content=b'{"api_key":"MUST_NOT_BE_PARSED_OR_ECHOED",',
+        )
+    assert response.status_code == 401
+    assert response.json()["code"] == "AUTH_REQUIRED"
+    assert "MUST_NOT_BE_PARSED_OR_ECHOED" not in response.text
+
+
 def test_internal_provider_egress_authorizer_is_hidden_and_always_fails_closed() -> None:
     app = create_app(settings=Settings(environment="test"))
     assert "/internal/provider-egress/authorize" not in app.openapi()["paths"]
