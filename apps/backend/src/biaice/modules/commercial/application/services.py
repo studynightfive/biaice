@@ -10,7 +10,6 @@ from biaice.core.audit import AuditWriter, require_audit
 from biaice.core.auth import IdentityContext
 from biaice.core.clock import Clock, SystemClock
 from biaice.core.errors import BiaiceError
-from biaice.modules.evidence.application.errors import m4_error
 from biaice.core.money import Money
 from biaice.core.outbox import EventEnvelope, OutboxPort
 from biaice.modules.commercial.application.ports import (
@@ -29,6 +28,7 @@ from biaice.modules.commercial.domain.models import (
     StrategyReadinessAssessment,
     TaxMode,
 )
+from biaice.modules.evidence.application.errors import m4_error
 from biaice.modules.evidence.application.ports import (
     EvidenceReadinessPort,
     EvidenceReadinessView,

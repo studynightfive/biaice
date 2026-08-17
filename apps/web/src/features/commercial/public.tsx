@@ -43,8 +43,6 @@ export function CommercialReadinessMount() {
 
   useEffect(() => {
     if (!unitId) {
-      setState("error");
-      setMessage("缺少决策单元上下文。");
       return;
     }
     let cancelled = false;
@@ -82,6 +80,16 @@ export function CommercialReadinessMount() {
       cancelled = true;
     };
   }, [unitId]);
+
+  if (!unitId) {
+    return (
+      <div className={styles.page}>
+        <Notice title="缺少决策单元" tone="danger">
+          缺少决策单元上下文。
+        </Notice>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>

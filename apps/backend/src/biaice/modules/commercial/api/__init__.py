@@ -12,13 +12,6 @@ from biaice.core.auth import IdentityContext
 from biaice.core.errors import PROBLEM_RESPONSES, BiaiceError
 from biaice.core.idempotency import require_idempotency_key
 from biaice.core.money import Money
-from biaice.modules.evidence.application.access import (
-    FR04_APPROVE,
-    FR04_CREATE,
-    FR04_PUBLISH,
-    FR04_READ,
-    RoleGuard,
-)
 from biaice.modules.commercial.application.services import (
     CommercialService,
     CommercialServices,
@@ -28,6 +21,13 @@ from biaice.modules.commercial.domain.models import (
     CostBaseline,
     StrategyReadinessAssessment,
     TaxMode,
+)
+from biaice.modules.evidence.application.access import (
+    FR04_APPROVE,
+    FR04_CREATE,
+    FR04_PUBLISH,
+    FR04_READ,
+    RoleGuard,
 )
 
 router = APIRouter(prefix="/api/v1", tags=["commercial"])

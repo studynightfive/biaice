@@ -52,8 +52,6 @@ export function EvidencePrecheckMount() {
 
   useEffect(() => {
     if (!unitId) {
-      setState("error");
-      setMessage("缺少决策单元上下文，无法恢复证据工作区。");
       return;
     }
     let cancelled = false;
@@ -97,6 +95,16 @@ export function EvidencePrecheckMount() {
       cancelled = true;
     };
   }, [unitId]);
+
+  if (!unitId) {
+    return (
+      <div className={styles.page}>
+        <Notice title="缺少决策单元" tone="danger">
+          缺少决策单元上下文，无法恢复证据工作区。
+        </Notice>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>

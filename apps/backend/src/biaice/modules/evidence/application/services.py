@@ -10,9 +10,9 @@ from biaice.core.audit import AuditWriter, require_audit
 from biaice.core.auth import IdentityContext
 from biaice.core.clock import Clock, SystemClock
 from biaice.core.errors import BiaiceError
-from biaice.modules.evidence.application.errors import m4_error
 from biaice.core.http import assert_etag, compute_etag
 from biaice.core.outbox import EventEnvelope, OutboxPort
+from biaice.modules.evidence.application.errors import m4_error
 from biaice.modules.evidence.application.ports import (
     DocumentReadPort,
     EvidenceReadinessView,
