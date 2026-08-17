@@ -9,10 +9,24 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
-from biaice.core.auth import IdentityContext, Permission, PermissionGuard
+from biaice.core.auth import IdentityContext
 from biaice.core.errors import PROBLEM_RESPONSES, BiaiceError
 from biaice.core.http import require_if_match
 from biaice.core.idempotency import require_idempotency_key
+from biaice.modules.evidence.application.access import (
+    FR03_CREATE,
+    FR03_EXPIRE,
+    FR03_FAIL,
+    FR03_PUBLISH,
+    FR03_READ,
+    FR03_REVIEW,
+    FR03_REVOKE,
+    FR03_SATISFY,
+    FR03_SUPERSEDE,
+    FR03_UPDATE,
+    FR03_WAIVE,
+    RoleGuard,
+)
 from biaice.modules.evidence.application.services import EvidenceService, EvidenceServices
 from biaice.modules.evidence.domain.models import (
     BlockingStage,
@@ -173,7 +187,7 @@ def _extras(fr: str, permission: str) -> dict[str, Any]:
 )
 def list_requirements(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> RequirementListResponse:
     return RequirementListResponse(items=service.list_requirements(identity=identity, decision_unit_id=unit_id))
@@ -190,7 +204,7 @@ def create_requirement(
     body: CreateRequirementRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> Requirement:
@@ -218,7 +232,7 @@ def create_requirement(
 )
 def get_requirement(
     requirement_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> Requirement:
     return service.get_requirement(identity=identity, requirement_id=requirement_id)
@@ -235,7 +249,7 @@ def update_requirement_draft(
     body: UpdateRequirementRequest,
     request: Request,
     requirement_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_UPDATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_UPDATE)),
     if_match: str = Depends(require_if_match),
     service: EvidenceService = Depends(get_service),
 ) -> Requirement:
@@ -260,7 +274,7 @@ def update_requirement_draft(
 def publish_requirement(
     request: Request,
     requirement_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_PUBLISH, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_PUBLISH, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> Requirement:
@@ -280,7 +294,7 @@ def publish_requirement(
 def supersede_requirement(
     request: Request,
     requirement_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_SUPERSEDE, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_SUPERSEDE, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> Requirement:
@@ -299,7 +313,7 @@ def supersede_requirement(
 )
 def list_evidence(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> EvidenceListResponse:
     return EvidenceListResponse(items=service.list_evidence(identity=identity, decision_unit_id=unit_id))
@@ -316,7 +330,7 @@ def create_evidence(
     body: CreateEvidenceRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyEvidence:
@@ -345,7 +359,7 @@ def create_evidence(
 )
 def get_evidence(
     evidence_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyEvidence:
     return service.get_evidence(identity=identity, evidence_id=evidence_id)
@@ -361,7 +375,7 @@ def get_evidence(
 def review_evidence(
     request: Request,
     evidence_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_REVIEW, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_REVIEW, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyEvidence:
@@ -381,7 +395,7 @@ def review_evidence(
 def publish_evidence(
     request: Request,
     evidence_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_PUBLISH, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_PUBLISH, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyEvidence:
@@ -402,7 +416,7 @@ def revoke_evidence(
     body: RevokeRequest,
     request: Request,
     evidence_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_REVOKE, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_REVOKE, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyEvidence:
@@ -424,7 +438,7 @@ def revoke_evidence(
 )
 def list_evidence_matches(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> MatchListResponse:
     return MatchListResponse(items=service.list_matches(identity=identity, decision_unit_id=unit_id))
@@ -441,7 +455,7 @@ def create_evidence_matche(
     body: CreateMatchRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> EvidenceMatch:
@@ -466,7 +480,7 @@ def create_evidence_matche(
 )
 def get_evidence_matche(
     evidence_matche_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> EvidenceMatch:
     return service.get_match(identity=identity, match_id=evidence_matche_id)
@@ -483,7 +497,7 @@ def review_evidence_match(
     body: ReviewMatchRequest,
     request: Request,
     evidence_match_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_REVIEW, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_REVIEW, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> EvidenceMatch:
@@ -506,7 +520,7 @@ def review_evidence_match(
 )
 def list_response_profiles(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> ProfileListResponse:
     return ProfileListResponse(items=service.list_profiles(identity=identity, decision_unit_id=unit_id))
@@ -523,7 +537,7 @@ def create_response_profile(
     body: CreateProfileRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyResponseProfile:
@@ -552,7 +566,7 @@ def create_response_profile(
 )
 def get_response_profile(
     response_profile_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyResponseProfile:
     return service.get_profile(identity=identity, profile_id=response_profile_id)
@@ -568,7 +582,7 @@ def get_response_profile(
 def publish_response_profile(
     request: Request,
     response_profile_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_PUBLISH, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_PUBLISH, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> CompanyResponseProfile:
@@ -587,7 +601,7 @@ def publish_response_profile(
 )
 def list_precheck_assessments(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> PrecheckListResponse:
     return PrecheckListResponse(items=service.list_prechecks(identity=identity, decision_unit_id=unit_id))
@@ -603,7 +617,7 @@ def list_precheck_assessments(
 def create_precheck_assessment(
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> PrecheckAssessment:
@@ -622,7 +636,7 @@ def create_precheck_assessment(
 )
 def get_precheck_assessment(
     precheck_assessment_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> PrecheckAssessment:
     return service.get_precheck(identity=identity, precheck_id=precheck_assessment_id)
@@ -637,7 +651,7 @@ def get_precheck_assessment(
 )
 def list_conditions(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionListResponse:
     return ConditionListResponse(items=service.list_conditions(identity=identity, decision_unit_id=unit_id))
@@ -654,7 +668,7 @@ def create_condition(
     body: CreateConditionRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionRequirement:
@@ -682,14 +696,14 @@ def create_condition(
 )
 def get_condition(
     condition_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR03_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionRequirement:
     return service.get_condition(identity=identity, condition_id=condition_id)
 
 
-def _condition_command(permission: Permission):
-    return Depends(PermissionGuard(permission, mfa=True))
+def _condition_command(allowed) -> IdentityContext:
+    return Depends(RoleGuard(allowed, mfa=True))
 
 
 @router.post(
@@ -703,7 +717,7 @@ def satisfy_condition(
     body: ConditionCommandRequest,
     request: Request,
     condition_id: UUID,
-    identity: IdentityContext = _condition_command(Permission.FR03_SATISFY),
+    identity: IdentityContext = _condition_command(FR03_SATISFY),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionRequirement:
@@ -727,7 +741,7 @@ def waive_condition(
     body: ConditionCommandRequest,
     request: Request,
     condition_id: UUID,
-    identity: IdentityContext = _condition_command(Permission.FR03_WAIVE),
+    identity: IdentityContext = _condition_command(FR03_WAIVE),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionRequirement:
@@ -751,7 +765,7 @@ def fail_condition(
     body: ConditionCommandRequest,
     request: Request,
     condition_id: UUID,
-    identity: IdentityContext = _condition_command(Permission.FR03_FAIL),
+    identity: IdentityContext = _condition_command(FR03_FAIL),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionRequirement:
@@ -775,7 +789,7 @@ def expire_condition(
     body: ConditionCommandRequest,
     request: Request,
     condition_id: UUID,
-    identity: IdentityContext = _condition_command(Permission.FR03_EXPIRE),
+    identity: IdentityContext = _condition_command(FR03_EXPIRE),
     idempotency_key: str = Depends(require_idempotency_key),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionRequirement:

@@ -11,7 +11,8 @@
 - `biaice.modules.evidence`：Requirement、CompanyEvidence、EvidenceMatch、
   ResponseProfile、Precheck、Condition（唯一 writer）。
 - `biaice.modules.commercial`：CostBaseline、CommercialPolicy、StrategyReadiness。
-- 路由注册于 `contract_stubs` 之前；权限 `fr-03:*` / `fr-04:*`。
+- 模块路由与服务已实现；平台 `main.py` / `contract_stubs.py` / `core/auth.py` /
+  `core/errors.py` 保持 `origin/main` 初始定义，避免与成员 3/7 合入冲突。
 - 文档对接：消费 `app.state.document_read_port`（成员 3 刷新后的
   `get_released_document`）。未接线或未 RELEASED 时禁止引用，匹配不得自动满足。
 - 条件命令端口：`app.state.condition_command_port`（satisfy/waive/fail/expire），
@@ -28,11 +29,23 @@
 4. 商业不通过使用 `commercial_not_procurement=true`，文案不得写成投标无效。
 5. 不进入 documents/projects/simulation/approvals 目录。
 
-## 平台接线（请组长合并时确认）
+## 平台接线（请组长 / 成员 1 合并后接线）
 
-`core/auth.py`、`core/errors.py`、`main.py`、`contract_stubs.py` 以及
-`tests/contract/test_openapi.py` / `test_schemathesis.py` 有最小接线。
-契约导出需成员 1 运行 `python packages/contracts/scripts/generate_contracts.py`。
+为避免 PR 冲突，本分支已把下列已有定义文件恢复为 `origin/main`：
+
+`core/auth.py`、`core/errors.py`、`main.py`、`contract_stubs.py`、
+`tests/contract/test_openapi.py` / `test_schemathesis.py`、
+`packages/contracts/*generated*`。
+
+合入后请成员 1：
+
+1. 注册 `fr-03:*` / `fr-04:*` 权限（SYSTEM_ADMIN 仍不得读写成本/证据）。
+2. 登记 FR-03/04 稳定错误码。
+3. 在 `create_app` 中 `configure_evidence` → `configure_commercial`，并在
+   `contract_stubs` 之前 `include_router`。
+4. 运行 `python packages/contracts/scripts/generate_contracts.py`。
+
+接线前，平台 `create_app()` 对 member-4 catalog 路由仍返回 501 CONTRACT_ONLY。
 
 ## 验证命令
 
@@ -44,7 +57,7 @@ npm --prefix apps/web test -- tests/components/evidence.test.tsx tests/component
 ## 交叉待确认（最终同步）
 
 1. 成员 2 的 `rule_availability_port` 未接线，预审 `rules_available=null`，不能 PASS。
-2. 成员 3 分支未合入 main 时 `document_read_port` 不可用，带文档引用的证据创建失败关闭。
+2. 成员 3 已合入 main 后，`document_read_port` 仍需成员 1 在 `create_app` 接线；未接线时带文档引用的证据创建失败关闭。
 3. 成员 5 市场/模型 port 未接线，就绪市场/用途/模型为 UNKNOWN。
 4. 成员 6 场景协议项固定 UNKNOWN。
 5. 成员 7 应从 `app.state.condition_command_port` 关闭条件。

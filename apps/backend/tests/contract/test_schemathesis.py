@@ -116,13 +116,37 @@ MEMBER7_IMPLEMENTED_OPERATION_IDS = frozenset(
         "revoke_risk_acceptance",
     }
 )
-MEMBER4_IMPLEMENTED_OPERATION_IDS = frozenset(
-    operation.operation_id
-    for operation in OPERATION_CATALOG
-    if operation.owner == "member-4"
+MEMBER3_IMPLEMENTED_OPERATION_IDS = frozenset(
+    {
+        "create_project_document_upload_session",
+        "create_unit_document_upload_session",
+        "get_document_upload_session",
+        "put_document_upload_chunk",
+        "complete_document_upload_session",
+        "cancel_document_upload_session",
+        "list_project_documents",
+        "list_unit_documents",
+        "get_document",
+        "review_document",
+        "release_from_quarantine_document",
+        "quarantine_document",
+        "download_document",
+        "inherit_to_unit_document_link",
+        "override_document_link",
+        "resolve_conflict_document_link",
+        "detach_document_link",
+        "create_project_parse_job",
+        "create_unit_parse_job",
+        "get_parse_job",
+        "retry_parse_job",
+        "cancel_parse_job",
+        "list_document_derived_assets",
+        "get_derived_asset",
+        "list_replicas",
+    }
 )
-CATALOG_IMPLEMENTED_OPERATION_IDS = (
-    MEMBER7_IMPLEMENTED_OPERATION_IDS | MEMBER4_IMPLEMENTED_OPERATION_IDS
+IMPLEMENTED_CATALOG_OPERATION_IDS = (
+    MEMBER7_IMPLEMENTED_OPERATION_IDS | MEMBER3_IMPLEMENTED_OPERATION_IDS
 )
 
 
@@ -162,22 +186,46 @@ EXPECTED_FOUNDATION_UNAVAILABLE: dict[str, frozenset[int]] = {
 EXPECTED_BUSINESS_RULE_422: frozenset[str] = frozenset(
     {
         "create_risk_acceptance",
-        "create_evidence",
-        "create_requirement",
-        "create_evidence_matche",
-        "create_response_profile",
-        "create_condition",
-        "create_cost_baseline",
-        "create_commercial_policie",
-        "create_precheck_assessment",
-        "create_readiness_assessment",
-        "update_requirement_draft",
-        "review_evidence_match",
-        "satisfy_condition",
-        "waive_condition",
-        "fail_condition",
-        "expire_condition",
-        "revoke_evidence",
+        "create_project_document_upload_session",
+        "create_unit_document_upload_session",
+        "put_document_upload_chunk",
+        "complete_document_upload_session",
+        "cancel_document_upload_session",
+        "review_document",
+        "release_from_quarantine_document",
+        "quarantine_document",
+        "create_project_parse_job",
+        "create_unit_parse_job",
+        "retry_parse_job",
+        "cancel_parse_job",
+        "inherit_to_unit_document_link",
+        "override_document_link",
+        "resolve_conflict_document_link",
+        "detach_document_link",
+    }
+)
+EXPECTED_MISSING_RESOURCE: frozenset[str] = frozenset(
+    {
+        "get_document_upload_session",
+        "put_document_upload_chunk",
+        "complete_document_upload_session",
+        "cancel_document_upload_session",
+        "get_document",
+        "review_document",
+        "release_from_quarantine_document",
+        "quarantine_document",
+        "download_document",
+        "create_project_parse_job",
+        "create_unit_parse_job",
+        "get_parse_job",
+        "retry_parse_job",
+        "cancel_parse_job",
+        "list_document_derived_assets",
+        "get_derived_asset",
+        "inherit_to_unit_document_link",
+        "override_document_link",
+        "resolve_conflict_document_link",
+        "detach_document_link",
     }
 )
 
@@ -190,9 +238,9 @@ def test_schemathesis_version_and_openapi_partition_are_explicit() -> None:
     implemented_in_catalog = IMPLEMENTED_OPERATION_IDS & frozenset(
         operation.operation_id for operation in OPERATION_CATALOG
     )
-    assert implemented_in_catalog == CATALOG_IMPLEMENTED_OPERATION_IDS
+    assert implemented_in_catalog == IMPLEMENTED_CATALOG_OPERATION_IDS
     assert len(CONTRACT_ONLY_OPERATION_IDS) == (
-        len(OPERATION_CATALOG) - len(CATALOG_IMPLEMENTED_OPERATION_IDS)
+        len(OPERATION_CATALOG) - len(IMPLEMENTED_CATALOG_OPERATION_IDS)
     )
 
 
@@ -225,6 +273,11 @@ def test_implemented_operations_conform_to_openapi(case: schemathesis.Case) -> N
     if response.status_code in allowed_server_errors:
         excluded_checks.append(schemathesis.checks.not_a_server_error)
     if response.status_code == 422 and operation_id in EXPECTED_BUSINESS_RULE_422:
+        excluded_checks.append(positive_data_acceptance)
+    if (
+        response.status_code in {404, 409, 410}
+        and operation_id in EXPECTED_MISSING_RESOURCE | EXPECTED_BUSINESS_RULE_422
+    ):
         excluded_checks.append(positive_data_acceptance)
     case.validate_response(
         response,

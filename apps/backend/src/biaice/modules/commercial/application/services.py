@@ -10,6 +10,7 @@ from biaice.core.audit import AuditWriter, require_audit
 from biaice.core.auth import IdentityContext
 from biaice.core.clock import Clock, SystemClock
 from biaice.core.errors import BiaiceError
+from biaice.modules.evidence.application.errors import m4_error
 from biaice.core.money import Money
 from biaice.core.outbox import EventEnvelope, OutboxPort
 from biaice.modules.commercial.application.ports import (
@@ -194,7 +195,7 @@ class CommercialService:
         if identity.subject_id == item.created_by:
             raise BiaiceError("MAKER_CHECKER_REQUIRED")
         if item.approved_by is not None:
-            raise BiaiceError("COST_ALREADY_APPROVED")
+            raise m4_error("COST_ALREADY_APPROVED")
         approved = item.model_copy(
             update={
                 "review_state": ReviewState.APPROVED,
@@ -220,9 +221,9 @@ class CommercialService:
     ) -> CostBaseline:
         item = self.get_cost_baseline(identity=identity, cost_baseline_id=cost_baseline_id)
         if item.review_state is not ReviewState.APPROVED or item.approved_by is None:
-            raise BiaiceError("COST_NOT_APPROVED")
+            raise m4_error("COST_NOT_APPROVED")
         if item.lifecycle_state is not LifecycleState.DRAFT:
-            raise BiaiceError("PUBLISHED_VERSION_IMMUTABLE")
+            raise m4_error("PUBLISHED_VERSION_IMMUTABLE")
         now = self.clock.now()
         published = item.model_copy(
             update={
@@ -327,7 +328,7 @@ class CommercialService:
     ) -> CommercialPolicy:
         item = self.get_policy(identity=identity, policy_id=policy_id)
         if item.lifecycle_state is not LifecycleState.DRAFT:
-            raise BiaiceError("PUBLISHED_VERSION_IMMUTABLE")
+            raise m4_error("PUBLISHED_VERSION_IMMUTABLE")
         now = self.clock.now()
         published = item.model_copy(
             update={

@@ -58,21 +58,19 @@ class Permission(StrEnum):
     APPROVALS_RISK_READ = "fr-09b:read"
     APPROVALS_RISK_CREATE = "fr-09b:create"
     APPROVALS_RISK_REVOKE = "fr-09b:revoke"
-    FR03_READ = "fr-03:read"
-    FR03_CREATE = "fr-03:create"
-    FR03_UPDATE = "fr-03:update"
-    FR03_PUBLISH = "fr-03:publish"
-    FR03_SUPERSEDE = "fr-03:supersede"
-    FR03_REVIEW = "fr-03:review"
-    FR03_REVOKE = "fr-03:revoke"
-    FR03_SATISFY = "fr-03:satisfy"
-    FR03_WAIVE = "fr-03:waive"
-    FR03_FAIL = "fr-03:fail"
-    FR03_EXPIRE = "fr-03:expire"
-    FR04_READ = "fr-04:read"
-    FR04_CREATE = "fr-04:create"
-    FR04_APPROVE = "fr-04:approve"
-    FR04_PUBLISH = "fr-04:publish"
+    DOCUMENTS_READ = "fr-02:read"
+    DOCUMENTS_CREATE = "fr-02:create"
+    DOCUMENTS_PUT = "fr-02:put"
+    DOCUMENTS_COMPLETE = "fr-02:complete"
+    DOCUMENTS_CANCEL = "fr-02:cancel"
+    DOCUMENTS_REVIEW = "fr-02:review"
+    DOCUMENTS_RELEASE = "fr-02:release"
+    DOCUMENTS_QUARANTINE = "fr-02:quarantine"
+    DOCUMENTS_INHERIT = "fr-02:inherit"
+    DOCUMENTS_OVERRIDE = "fr-02:override"
+    DOCUMENTS_RESOLVE = "fr-02:resolve"
+    DOCUMENTS_DETACH = "fr-02:detach"
+    DOCUMENTS_RETRY = "fr-02:retry"
 
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
@@ -101,8 +99,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.GATE_READ,
             Permission.GATE_WAIVER_REQUEST,
             Permission.GOVERNANCE_READ,
-            Permission.FR03_READ,
-            Permission.FR04_READ,
+            Permission.DOCUMENTS_READ,
         }
     ),
     Role.RULE_EDITOR: frozenset(
@@ -119,9 +116,19 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.JOB_READ,
             Permission.JOB_COMMAND,
             Permission.GOVERNANCE_READ,
-            Permission.FR03_READ,
-            Permission.FR03_REVIEW,
-            Permission.FR03_REVOKE,
+            Permission.DOCUMENTS_READ,
+            Permission.DOCUMENTS_CREATE,
+            Permission.DOCUMENTS_PUT,
+            Permission.DOCUMENTS_COMPLETE,
+            Permission.DOCUMENTS_CANCEL,
+            Permission.DOCUMENTS_REVIEW,
+            Permission.DOCUMENTS_RELEASE,
+            Permission.DOCUMENTS_QUARANTINE,
+            Permission.DOCUMENTS_INHERIT,
+            Permission.DOCUMENTS_OVERRIDE,
+            Permission.DOCUMENTS_RESOLVE,
+            Permission.DOCUMENTS_DETACH,
+            Permission.DOCUMENTS_RETRY,
         }
     ),
     Role.COMMERCIAL_ANALYST: frozenset(
@@ -130,9 +137,6 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.JOB_READ,
             Permission.JOB_COMMAND,
             Permission.COST_READ,
-            Permission.FR03_READ,
-            Permission.FR04_READ,
-            Permission.FR04_CREATE,
         }
     ),
     Role.TENANT_ADMIN: frozenset(
@@ -164,6 +168,11 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.LEGAL_HOLD_RELEASE,
             Permission.AUDIT_READ,
             Permission.SENSITIVE_CONTENT_READ,
+            Permission.DOCUMENTS_READ,
+            Permission.DOCUMENTS_REVIEW,
+            Permission.DOCUMENTS_RELEASE,
+            Permission.DOCUMENTS_QUARANTINE,
+            Permission.DOCUMENTS_RESOLVE,
         }
     ),
     Role.SIMULATION_ANALYST: frozenset(
@@ -178,12 +187,6 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.APPROVALS_RISK_READ,
             Permission.APPROVALS_RISK_CREATE,
             Permission.APPROVALS_RISK_REVOKE,
-            Permission.FR03_READ,
-            Permission.FR03_SATISFY,
-            Permission.FR03_WAIVE,
-            Permission.FR03_FAIL,
-            Permission.FR03_EXPIRE,
-            Permission.FR04_READ,
         }
     ),
     Role.BID_MANAGER: frozenset(
@@ -196,12 +199,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.GOVERNANCE_READ,
             Permission.APPROVALS_RISK_READ,
             Permission.APPROVALS_RISK_REVOKE,
-            Permission.FR03_READ,
-            Permission.FR03_SATISFY,
-            Permission.FR03_WAIVE,
-            Permission.FR03_FAIL,
-            Permission.FR03_EXPIRE,
-            Permission.FR04_READ,
+            Permission.DOCUMENTS_READ,
         }
     ),
     Role.DOCUMENT_SPECIALIST: frozenset(
@@ -210,11 +208,16 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.JOB_READ,
             Permission.JOB_COMMAND,
             Permission.GOVERNANCE_READ,
-            Permission.FR03_READ,
-            Permission.FR03_CREATE,
-            Permission.FR03_UPDATE,
-            Permission.FR03_PUBLISH,
-            Permission.FR03_SUPERSEDE,
+            Permission.DOCUMENTS_READ,
+            Permission.DOCUMENTS_CREATE,
+            Permission.DOCUMENTS_PUT,
+            Permission.DOCUMENTS_COMPLETE,
+            Permission.DOCUMENTS_CANCEL,
+            Permission.DOCUMENTS_REVIEW,
+            Permission.DOCUMENTS_INHERIT,
+            Permission.DOCUMENTS_OVERRIDE,
+            Permission.DOCUMENTS_DETACH,
+            Permission.DOCUMENTS_RETRY,
         }
     ),
     Role.TECHNICAL_LEAD: frozenset(
@@ -223,21 +226,20 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.JOB_READ,
             Permission.JOB_COMMAND,
             Permission.GOVERNANCE_READ,
-            Permission.FR03_READ,
-            Permission.FR03_CREATE,
-            Permission.FR03_UPDATE,
-            Permission.FR03_PUBLISH,
-            Permission.FR03_SUPERSEDE,
+            Permission.DOCUMENTS_READ,
+            Permission.DOCUMENTS_CREATE,
+            Permission.DOCUMENTS_PUT,
+            Permission.DOCUMENTS_COMPLETE,
+            Permission.DOCUMENTS_CANCEL,
+            Permission.DOCUMENTS_REVIEW,
+            Permission.DOCUMENTS_INHERIT,
+            Permission.DOCUMENTS_OVERRIDE,
+            Permission.DOCUMENTS_DETACH,
+            Permission.DOCUMENTS_RETRY,
         }
     ),
     Role.FINANCE_AUTHOR: frozenset(
-        {
-            Permission.PROFILE_READ,
-            Permission.JOB_READ,
-            Permission.COST_READ,
-            Permission.FR04_READ,
-            Permission.FR04_CREATE,
-        }
+        {Permission.PROFILE_READ, Permission.JOB_READ, Permission.COST_READ}
     ),
     Role.FINANCE_APPROVER: frozenset(
         {
@@ -245,9 +247,6 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.JOB_READ,
             Permission.COST_READ,
             Permission.GATE_WAIVER_DECIDE,
-            Permission.FR04_READ,
-            Permission.FR04_APPROVE,
-            Permission.FR04_PUBLISH,
         }
     ),
     Role.LEGAL_PRIVACY: frozenset(
@@ -274,11 +273,6 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.GATE_READ,
             Permission.APPROVALS_RISK_READ,
             Permission.APPROVALS_RISK_REVOKE,
-            Permission.FR03_READ,
-            Permission.FR03_SATISFY,
-            Permission.FR03_WAIVE,
-            Permission.FR03_FAIL,
-            Permission.FR03_EXPIRE,
         }
     ),
     Role.AUDITOR: frozenset(

@@ -138,7 +138,8 @@ def test_match_without_evidence_cannot_be_satisfied() -> None:
             rationale="no file but mark satisfied",
             request_id="req-2",
         )
-    assert error.value.code == "EVIDENCE_SATISFIED_WITHOUT_PROOF"
+    assert error.value.code == "WAIVER_PROHIBITED"
+    assert error.value.detail == "EVIDENCE_SATISFIED_WITHOUT_PROOF"
 
 
 def test_unknown_document_citation_is_fail_closed() -> None:
@@ -157,7 +158,8 @@ def test_unknown_document_citation_is_fail_closed() -> None:
             valid_to=NOW + timedelta(days=365),
             request_id="req-1",
         )
-    assert error.value.code == "EVIDENCE_DOCUMENT_NOT_RELEASED"
+    assert error.value.code == "DOCUMENT_NOT_DOWNLOADABLE"
+    assert error.value.detail == "EVIDENCE_DOCUMENT_NOT_RELEASED"
 
 
 def test_released_document_hash_is_copied_and_evidence_can_publish() -> None:
@@ -281,7 +283,8 @@ def test_condition_command_port_is_append_only() -> None:
             reason="again",
             request_id="c3",
         )
-    assert error.value.code == "CONDITION_NOT_OPEN"
+    assert error.value.code == "JOB_NOT_CANCELLABLE"
+    assert error.value.detail == "CONDITION_NOT_OPEN"
 
 
 def test_scope_hides_other_tenant_evidence() -> None:

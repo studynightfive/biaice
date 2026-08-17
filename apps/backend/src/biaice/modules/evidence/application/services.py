@@ -10,6 +10,7 @@ from biaice.core.audit import AuditWriter, require_audit
 from biaice.core.auth import IdentityContext
 from biaice.core.clock import Clock, SystemClock
 from biaice.core.errors import BiaiceError
+from biaice.modules.evidence.application.errors import m4_error
 from biaice.core.http import assert_etag, compute_etag
 from biaice.core.outbox import EventEnvelope, OutboxPort
 from biaice.modules.evidence.application.ports import (
@@ -190,7 +191,7 @@ class EvidenceService:
         if source_document_id is not None and self._released_document(
             identity=identity, document_id=source_document_id
         ) is None:
-            raise BiaiceError(
+            raise m4_error(
                 "EVIDENCE_DOCUMENT_NOT_RELEASED",
                 detail="Requirement citations may only use member-3 released documents.",
             )
@@ -254,7 +255,7 @@ class EvidenceService:
     ) -> Requirement:
         item = self.get_requirement(identity=identity, requirement_id=requirement_id)
         if item.lifecycle_state is not LifecycleState.DRAFT:
-            raise BiaiceError("PUBLISHED_VERSION_IMMUTABLE")
+            raise m4_error("PUBLISHED_VERSION_IMMUTABLE")
         assert_etag(item.etag, if_match)
         updated = item.model_copy(
             update={
@@ -280,7 +281,7 @@ class EvidenceService:
     def publish_requirement(self, *, identity: IdentityContext, requirement_id: UUID, request_id: str) -> Requirement:
         item = self.get_requirement(identity=identity, requirement_id=requirement_id)
         if item.lifecycle_state is not LifecycleState.DRAFT:
-            raise BiaiceError("PUBLISHED_VERSION_IMMUTABLE")
+            raise m4_error("PUBLISHED_VERSION_IMMUTABLE")
         now = self.clock.now()
         published = item.model_copy(
             update={
@@ -311,7 +312,7 @@ class EvidenceService:
     ) -> Requirement:
         item = self.get_requirement(identity=identity, requirement_id=requirement_id)
         if item.lifecycle_state is not LifecycleState.PUBLISHED:
-            raise BiaiceError(
+            raise m4_error(
                 "REQUIREMENT_NOT_PUBLISHED",
                 detail="Only a published requirement can be superseded by a new version.",
             )
@@ -370,7 +371,7 @@ class EvidenceService:
         _assert_unit(identity, decision_unit_id)
         released = self._released_document(identity=identity, document_id=source_document_id)
         if source_document_id is not None and released is None:
-            raise BiaiceError("EVIDENCE_DOCUMENT_NOT_RELEASED")
+            raise m4_error("EVIDENCE_DOCUMENT_NOT_RELEASED")
         item = CompanyEvidence(
             evidence_id=uuid4(),
             version_id=uuid4(),
@@ -447,9 +448,9 @@ class EvidenceService:
     ) -> CompanyEvidence:
         item = self.get_evidence(identity=identity, evidence_id=evidence_id)
         if item.lifecycle_state is not LifecycleState.DRAFT:
-            raise BiaiceError("PUBLISHED_VERSION_IMMUTABLE")
+            raise m4_error("PUBLISHED_VERSION_IMMUTABLE")
         if item.review_state is not ReviewState.APPROVED:
-            raise BiaiceError(
+            raise m4_error(
                 "EVIDENCE_REVIEW_REQUIRED",
                 detail="Evidence must be independently reviewed before publish.",
             )
@@ -559,7 +560,7 @@ class EvidenceService:
         resolved_state = requested_state
         if requested_state is MatchState.SATISFIED:
             if evidence is None or not _evidence_usable(evidence, now=now):
-                raise BiaiceError("EVIDENCE_SATISFIED_WITHOUT_PROOF")
+                raise m4_error("EVIDENCE_SATISFIED_WITHOUT_PROOF")
         if evidence is None or not _evidence_usable(evidence, now=now):
             resolved_state = MatchState.UNKNOWN
         item = EvidenceMatch(
@@ -619,7 +620,7 @@ class EvidenceService:
         if state is MatchState.SATISFIED and (
             evidence is None or not _evidence_usable(evidence, now=now)
         ):
-            raise BiaiceError("EVIDENCE_SATISFIED_WITHOUT_PROOF")
+            raise m4_error("EVIDENCE_SATISFIED_WITHOUT_PROOF")
         reviewed = item.model_copy(
             update={
                 "state": state,
@@ -674,7 +675,7 @@ class EvidenceService:
         for evidence_id in evidence_ids:
             evidence = self.get_evidence(identity=identity, evidence_id=evidence_id)
             if not _evidence_usable(evidence, now=now):
-                raise BiaiceError(
+                raise m4_error(
                     "RESPONSE_PROFILE_EVIDENCE_NOT_CURRENT",
                     detail="Response profiles may only cite current published evidence.",
                 )
@@ -727,7 +728,7 @@ class EvidenceService:
     ) -> CompanyResponseProfile:
         item = self.get_profile(identity=identity, profile_id=profile_id)
         if item.lifecycle_state is not LifecycleState.DRAFT:
-            raise BiaiceError("PUBLISHED_VERSION_IMMUTABLE")
+            raise m4_error("PUBLISHED_VERSION_IMMUTABLE")
         now = self.clock.now()
         published = item.model_copy(
             update={
@@ -850,7 +851,7 @@ class EvidenceService:
             raise BiaiceError("RESOURCE_NOT_FOUND")
         current = self.get_condition(identity=identity, condition_id=condition_id)
         if current.state is not ConditionState.OPEN:
-            raise BiaiceError("CONDITION_NOT_OPEN")
+            raise m4_error("CONDITION_NOT_OPEN")
         closed = item.model_copy(
             update={
                 "state": new_state,

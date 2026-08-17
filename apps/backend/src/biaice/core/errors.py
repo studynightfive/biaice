@@ -158,59 +158,89 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         False,
         "Keep the append-only history; create a new acceptance if needed.",
     ),
-    "EVIDENCE_DOCUMENT_NOT_RELEASED": ErrorDefinition(
-        409,
-        "Cited document is not released",
-        True,
-        "Wait for member-3 scan/review/release before citing the document.",
-    ),
-    "EVIDENCE_SATISFIED_WITHOUT_PROOF": ErrorDefinition(
-        409,
-        "Evidence cannot be marked satisfied without current proof",
+    "DOCUMENT_TYPE_BLOCKED": ErrorDefinition(
+        422,
+        "Document type is blocked",
         False,
-        "Attach a current published evidence version; unknown is the fail-closed default.",
+        "Upload an allowed PDF, DOCX, XLSX, image or controlled archive.",
     ),
-    "EVIDENCE_REVIEW_REQUIRED": ErrorDefinition(
+    "UPLOAD_SESSION_NOT_ACTIVE": ErrorDefinition(
         409,
-        "Independent evidence review is required",
-        True,
-        "Ask a checker different from the evidence author to review it.",
-    ),
-    "RESPONSE_PROFILE_EVIDENCE_NOT_CURRENT": ErrorDefinition(
-        409,
-        "Response profile evidence is not current",
-        True,
-        "Cite published, in-window evidence only.",
-    ),
-    "PUBLISHED_VERSION_IMMUTABLE": ErrorDefinition(
-        409,
-        "Published versions cannot be patched",
+        "Upload session is not active",
         False,
-        "Create a successor version or append an event.",
+        "Create a new upload session.",
     ),
-    "REQUIREMENT_NOT_PUBLISHED": ErrorDefinition(
-        409,
-        "Requirement is not published",
+    "UPLOAD_SESSION_EXPIRED": ErrorDefinition(
+        410,
+        "Upload session has expired",
         True,
-        "Publish the draft before superseding it.",
+        "Create a new upload session and resume with a new file transfer.",
     ),
-    "CONDITION_NOT_OPEN": ErrorDefinition(
-        409,
-        "Condition is no longer open",
-        False,
-        "Open conditions are append-only; create a new condition if needed.",
-    ),
-    "COST_NOT_APPROVED": ErrorDefinition(
-        409,
-        "Cost baseline is not approved",
+    "UPLOAD_CHUNK_HASH_MISMATCH": ErrorDefinition(
+        422,
+        "Upload chunk hash mismatch",
         True,
-        "An independent finance approver must approve before publish; unapproved cost is exploration-only.",
+        "Resend the chunk with a matching SHA-256.",
     ),
-    "COST_ALREADY_APPROVED": ErrorDefinition(
+    "UPLOAD_INCOMPLETE": ErrorDefinition(
         409,
-        "Cost baseline is already approved",
+        "Upload is incomplete",
+        True,
+        "Upload the missing parts before completing the session.",
+    ),
+    "UPLOAD_HASH_MISMATCH": ErrorDefinition(
+        422,
+        "Assembled file hash mismatch",
+        True,
+        "Re-upload the file so the assembled SHA-256 matches the declared hash.",
+    ),
+    "DOCUMENT_NOT_REVIEWABLE": ErrorDefinition(
+        409,
+        "Document is not reviewable",
         False,
-        "Keep the append-only approval; create a new baseline to change figures.",
+        "Wait until the document has passed scan.",
+    ),
+    "DOCUMENT_NOT_RELEASABLE": ErrorDefinition(
+        409,
+        "Document is not releasable",
+        False,
+        "Complete review after a clean scan before release.",
+    ),
+    "DOCUMENT_SCAN_FAILED": ErrorDefinition(
+        409,
+        "Document scan failed",
+        False,
+        "Keep the file quarantined; do not release or parse it.",
+    ),
+    "DOCUMENT_ALREADY_RELEASED": ErrorDefinition(
+        409,
+        "Document is already released",
+        False,
+        "Use the current released document or quarantine it first.",
+    ),
+    "DOCUMENT_NOT_DOWNLOADABLE": ErrorDefinition(
+        409,
+        "Document body is not downloadable",
+        False,
+        "Scan-failed and quarantined documents cannot be viewed.",
+    ),
+    "DOCUMENT_NOT_PARSABLE": ErrorDefinition(
+        409,
+        "Document cannot be parsed",
+        False,
+        "Parse only after a clean scan; infected files stay isolated.",
+    ),
+    "DOCUMENT_LINK_CONFLICT": ErrorDefinition(
+        409,
+        "Document link conflict requires confirmation",
+        True,
+        "Resolve the inherited/override conflict with an explicit reason.",
+    ),
+    "DOCUMENT_LINK_NOT_RESOLVABLE": ErrorDefinition(
+        409,
+        "Document link cannot be resolved",
+        False,
+        "Choose an open conflicting link and confirm the surviving document.",
     ),
     "GOVERNANCE_STORE_UNAVAILABLE": ErrorDefinition(
         503,
@@ -395,6 +425,7 @@ PROBLEM_RESPONSES: Mapping[int | str, dict[str, Any]] = {
     403: {"model": ProblemDetails},
     404: {"model": ProblemDetails},
     409: {"model": ProblemDetails},
+    410: {"model": ProblemDetails},
     412: {"model": ProblemDetails},
     # Python 3.12 calls HTTP 422 "Unprocessable Entity" while Python 3.13+
     # follows RFC 9110's "Unprocessable Content" wording. Keep the code-first

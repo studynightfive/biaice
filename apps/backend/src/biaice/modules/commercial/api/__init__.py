@@ -8,10 +8,17 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, ConfigDict, Field
 
-from biaice.core.auth import IdentityContext, Permission, PermissionGuard
+from biaice.core.auth import IdentityContext
 from biaice.core.errors import PROBLEM_RESPONSES, BiaiceError
 from biaice.core.idempotency import require_idempotency_key
 from biaice.core.money import Money
+from biaice.modules.evidence.application.access import (
+    FR04_APPROVE,
+    FR04_CREATE,
+    FR04_PUBLISH,
+    FR04_READ,
+    RoleGuard,
+)
 from biaice.modules.commercial.application.services import (
     CommercialService,
     CommercialServices,
@@ -97,7 +104,7 @@ def _extras(permission: str) -> dict[str, Any]:
 )
 def list_cost_baselines(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> CostListResponse:
     return CostListResponse(items=service.list_cost_baselines(identity=identity, decision_unit_id=unit_id))
@@ -114,7 +121,7 @@ def create_cost_baseline(
     body: CreateCostRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: CommercialService = Depends(get_service),
 ) -> CostBaseline:
@@ -144,7 +151,7 @@ def create_cost_baseline(
 )
 def get_cost_baseline(
     cost_baseline_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> CostBaseline:
     return service.get_cost_baseline(identity=identity, cost_baseline_id=cost_baseline_id)
@@ -160,7 +167,7 @@ def get_cost_baseline(
 def approve_cost_baseline(
     request: Request,
     cost_baseline_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_APPROVE, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_APPROVE, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: CommercialService = Depends(get_service),
 ) -> CostBaseline:
@@ -182,7 +189,7 @@ def approve_cost_baseline(
 def publish_cost_baseline(
     request: Request,
     cost_baseline_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_PUBLISH, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_PUBLISH, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: CommercialService = Depends(get_service),
 ) -> CostBaseline:
@@ -203,7 +210,7 @@ def publish_cost_baseline(
 )
 def list_commercial_policies(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> PolicyListResponse:
     return PolicyListResponse(items=service.list_policies(identity=identity, decision_unit_id=unit_id))
@@ -220,7 +227,7 @@ def create_commercial_policie(
     body: CreatePolicyRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: CommercialService = Depends(get_service),
 ) -> CommercialPolicy:
@@ -250,7 +257,7 @@ def create_commercial_policie(
 )
 def get_commercial_policie(
     commercial_policie_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> CommercialPolicy:
     return service.get_policy(identity=identity, policy_id=commercial_policie_id)
@@ -266,7 +273,7 @@ def get_commercial_policie(
 def publish_commercial_policy(
     request: Request,
     commercial_policy_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_PUBLISH, mfa=True)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_PUBLISH, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: CommercialService = Depends(get_service),
 ) -> CommercialPolicy:
@@ -285,7 +292,7 @@ def publish_commercial_policy(
 )
 def list_readiness_assessments(
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> ReadinessListResponse:
     return ReadinessListResponse(items=service.list_readiness(identity=identity, decision_unit_id=unit_id))
@@ -301,7 +308,7 @@ def list_readiness_assessments(
 def create_readiness_assessment(
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_CREATE)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: CommercialService = Depends(get_service),
 ) -> StrategyReadinessAssessment:
@@ -320,7 +327,7 @@ def create_readiness_assessment(
 )
 def get_readiness_assessment(
     readiness_assessment_id: UUID,
-    identity: IdentityContext = Depends(PermissionGuard(Permission.FR04_READ)),
+    identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> StrategyReadinessAssessment:
     return service.get_readiness(identity=identity, readiness_id=readiness_assessment_id)

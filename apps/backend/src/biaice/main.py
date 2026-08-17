@@ -8,7 +8,16 @@ from typing import Callable, Sequence
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from biaice.api import approvals_reports, contract_stubs, gates, health, internal, jobs, me
+from biaice.api import (
+    approvals_reports,
+    contract_stubs,
+    documents,
+    gates,
+    health,
+    internal,
+    jobs,
+    me,
+)
 from biaice.core.audit import (
     AuditWriter,
     HashChainAuditWriter,
@@ -26,8 +35,6 @@ from biaice.core.telemetry import (
     RequestContextMiddleware,
     ScopeOverrideMiddleware,
 )
-from biaice.modules.commercial.api import router as commercial_router
-from biaice.modules.evidence.api import router as evidence_router
 
 
 def _build_authenticator(settings: Settings) -> Authenticator:
@@ -100,11 +107,9 @@ def create_app(
     )
 
     configure_approvals_reports(app)
-    from biaice.modules.commercial.application.services import configure_commercial
-    from biaice.modules.evidence.application.services import configure_evidence
+    from biaice.modules.documents.application.services import configure_documents
 
-    configure_evidence(app)
-    configure_commercial(app)
+    configure_documents(app)
     app.state.readiness_checks = tuple(
         readiness_checks
         if readiness_checks is not None
@@ -122,11 +127,10 @@ def create_app(
     app.include_router(me.router)
     app.include_router(jobs.router)
     app.include_router(gates.router)
-    # member-7 approvals/reports router MUST be registered before contract_stubs
-    # so FastAPI first-match-wins routes FR-09b operations to the real handler.
+    # member-7/3 routers MUST be registered before contract_stubs
+    # so FastAPI first-match-wins routes implemented operations to real handlers.
     app.include_router(approvals_reports.router)
-    app.include_router(evidence_router)
-    app.include_router(commercial_router)
+    app.include_router(documents.router)
     app.include_router(contract_stubs.router)
     app.include_router(internal.router)
 
@@ -180,6 +184,39 @@ def create_app(
             "list_risk_acceptances": ("member-7", "FR-09b", "fr-09b:read"),
             "get_risk_acceptance": ("member-7", "FR-09b", "fr-09b:read"),
             "revoke_risk_acceptance": ("member-7", "FR-09b", "fr-09b:revoke+mfa"),
+            "create_project_document_upload_session": (
+                "member-3",
+                "FR-02",
+                "fr-02:create",
+            ),
+            "create_unit_document_upload_session": ("member-3", "FR-02", "fr-02:create"),
+            "get_document_upload_session": ("member-3", "FR-02", "fr-02:read"),
+            "put_document_upload_chunk": ("member-3", "FR-02", "fr-02:put"),
+            "complete_document_upload_session": ("member-3", "FR-02", "fr-02:complete"),
+            "cancel_document_upload_session": ("member-3", "FR-02", "fr-02:cancel"),
+            "list_project_documents": ("member-3", "FR-02", "fr-02:read"),
+            "list_unit_documents": ("member-3", "FR-02", "fr-02:read"),
+            "get_document": ("member-3", "FR-02", "fr-02:read"),
+            "review_document": ("member-3", "FR-02", "fr-02:review"),
+            "release_from_quarantine_document": (
+                "member-3",
+                "FR-02",
+                "fr-02:release+mfa",
+            ),
+            "quarantine_document": ("member-3", "FR-02", "fr-02:quarantine+mfa"),
+            "download_document": ("member-3", "FR-02", "fr-02:read"),
+            "inherit_to_unit_document_link": ("member-3", "FR-02", "fr-02:inherit"),
+            "override_document_link": ("member-3", "FR-02", "fr-02:override"),
+            "resolve_conflict_document_link": ("member-3", "FR-02", "fr-02:resolve"),
+            "detach_document_link": ("member-3", "FR-02", "fr-02:detach"),
+            "create_project_parse_job": ("member-3", "FR-02", "fr-02:create"),
+            "create_unit_parse_job": ("member-3", "FR-02", "fr-02:create"),
+            "get_parse_job": ("member-3", "FR-02", "fr-02:read"),
+            "retry_parse_job": ("member-3", "FR-02", "fr-02:retry"),
+            "cancel_parse_job": ("member-3", "FR-02", "fr-02:cancel"),
+            "list_document_derived_assets": ("member-3", "FR-02", "fr-02:read"),
+            "get_derived_asset": ("member-3", "FR-02", "fr-02:read"),
+            "list_replicas": ("member-3", "FR-02", "fr-02:read"),
             "list_manual_overrides": ("member-1", "PUBLIC", "gate:read"),
             "append_manual_override": (
                 "member-1",

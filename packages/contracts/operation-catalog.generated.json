@@ -396,7 +396,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": false,
@@ -405,10 +405,10 @@
     "owner": "member-4",
     "path": "/api/v1/commercial-policies/{commercial_policie_id}",
     "permission": "fr-04:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": true,
@@ -417,7 +417,7 @@
     "owner": "member-4",
     "path": "/api/v1/commercial-policies/{commercial_policy_id}/publish",
     "permission": "fr-04:publish",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -612,7 +612,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -621,10 +621,10 @@
     "owner": "member-4",
     "path": "/api/v1/conditions/{condition_id}",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -633,10 +633,10 @@
     "owner": "member-4",
     "path": "/api/v1/conditions/{condition_id}/expire",
     "permission": "fr-03:expire",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -645,10 +645,10 @@
     "owner": "member-4",
     "path": "/api/v1/conditions/{condition_id}/fail",
     "permission": "fr-03:fail",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -657,10 +657,10 @@
     "owner": "member-4",
     "path": "/api/v1/conditions/{condition_id}/satisfy",
     "permission": "fr-03:satisfy",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -669,7 +669,7 @@
     "owner": "member-4",
     "path": "/api/v1/conditions/{condition_id}/waive",
     "permission": "fr-03:waive",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -684,7 +684,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": false,
@@ -693,10 +693,10 @@
     "owner": "member-4",
     "path": "/api/v1/cost-baselines/{cost_baseline_id}",
     "permission": "fr-04:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": true,
@@ -705,10 +705,10 @@
     "owner": "member-4",
     "path": "/api/v1/cost-baselines/{cost_baseline_id}/approve",
     "permission": "fr-04:approve",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": true,
@@ -717,7 +717,7 @@
     "owner": "member-4",
     "path": "/api/v1/cost-baselines/{cost_baseline_id}/publish",
     "permission": "fr-04:publish",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -1080,7 +1080,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": false,
@@ -1089,10 +1089,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/commercial-policies",
     "permission": "fr-04:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": true,
@@ -1101,7 +1101,7 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/commercial-policies",
     "permission": "fr-04:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -1128,7 +1128,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -1137,10 +1137,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/conditions",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -1149,10 +1149,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/conditions",
     "permission": "fr-03:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": false,
@@ -1161,10 +1161,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/cost-baselines",
     "permission": "fr-04:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": true,
@@ -1173,7 +1173,7 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/cost-baselines",
     "permission": "fr-04:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -1248,19 +1248,19 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "create_unit_document_upload_session",
     "owner": "member-3",
     "path": "/api/v1/decision-units/{unit_id}/document-upload-sessions",
     "permission": "fr-02:create",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -1269,10 +1269,10 @@
     "owner": "member-3",
     "path": "/api/v1/decision-units/{unit_id}/documents",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -1281,10 +1281,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/evidence",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -1293,10 +1293,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/evidence",
     "permission": "fr-03:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -1305,10 +1305,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/evidence-matches",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -1317,7 +1317,7 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/evidence-matches",
     "permission": "fr-03:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -1356,19 +1356,19 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "create_unit_parse_job",
     "owner": "member-3",
     "path": "/api/v1/decision-units/{unit_id}/parse-jobs",
     "permission": "fr-02:create",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -1377,10 +1377,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/precheck-assessments",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -1389,7 +1389,7 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/precheck-assessments",
     "permission": "fr-03:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -1440,7 +1440,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": false,
@@ -1449,10 +1449,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/readiness-assessments",
     "permission": "fr-04:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": true,
@@ -1461,7 +1461,7 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/readiness-assessments",
     "permission": "fr-04:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -1488,7 +1488,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -1497,10 +1497,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/requirements",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -1509,10 +1509,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/requirements",
     "permission": "fr-03:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -1521,10 +1521,10 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/response-profiles",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -1533,7 +1533,7 @@
     "owner": "member-4",
     "path": "/api/v1/decision-units/{unit_id}/response-profiles",
     "permission": "fr-03:create",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": false,
@@ -1848,7 +1848,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -1857,58 +1857,58 @@
     "owner": "member-3",
     "path": "/api/v1/derived-assets/{derived_asset_id}",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "detach_document_link",
     "owner": "member-3",
     "path": "/api/v1/document-links/detach",
     "permission": "fr-02:detach",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "inherit_to_unit_document_link",
     "owner": "member-3",
     "path": "/api/v1/document-links/inherit-to-unit",
     "permission": "fr-02:inherit",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "override_document_link",
     "owner": "member-3",
     "path": "/api/v1/document-links/override",
     "permission": "fr-02:override",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "resolve_conflict_document_link",
     "owner": "member-3",
     "path": "/api/v1/document-links/resolve-conflict",
     "permission": "fr-02:resolve",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -1917,46 +1917,46 @@
     "owner": "member-3",
     "path": "/api/v1/document-upload-sessions/{session_id}",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "cancel_document_upload_session",
     "owner": "member-3",
     "path": "/api/v1/document-upload-sessions/{session_id}/cancel",
     "permission": "fr-02:cancel",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "PUT",
     "operation_id": "put_document_upload_chunk",
     "owner": "member-3",
     "path": "/api/v1/document-upload-sessions/{session_id}/chunks/{part_number}",
     "permission": "fr-02:put",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "complete_document_upload_session",
     "owner": "member-3",
     "path": "/api/v1/document-upload-sessions/{session_id}/complete",
     "permission": "fr-02:complete",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -1965,10 +1965,10 @@
     "owner": "member-3",
     "path": "/api/v1/documents/{document_id}",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -1977,10 +1977,10 @@
     "owner": "member-3",
     "path": "/api/v1/documents/{document_id}/derived-assets",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -1989,43 +1989,43 @@
     "owner": "member-3",
     "path": "/api/v1/documents/{document_id}/download",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "quarantine_document",
     "owner": "member-3",
     "path": "/api/v1/documents/{document_id}/quarantine",
-    "permission": "fr-02:quarantine",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "permission": "fr-02:quarantine+mfa",
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "release_from_quarantine_document",
     "owner": "member-3",
     "path": "/api/v1/documents/{document_id}/release-from-quarantine",
-    "permission": "fr-02:release",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "permission": "fr-02:release+mfa",
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "review_document",
     "owner": "member-3",
     "path": "/api/v1/documents/{document_id}/review",
     "permission": "fr-02:review",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
     "contract_only": true,
@@ -2136,7 +2136,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -2145,10 +2145,10 @@
     "owner": "member-4",
     "path": "/api/v1/evidence-matches/{evidence_match_id}/review",
     "permission": "fr-03:review",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -2157,10 +2157,10 @@
     "owner": "member-4",
     "path": "/api/v1/evidence-matches/{evidence_matche_id}",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -2169,10 +2169,10 @@
     "owner": "member-4",
     "path": "/api/v1/evidence/{evidence_id}",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -2181,10 +2181,10 @@
     "owner": "member-4",
     "path": "/api/v1/evidence/{evidence_id}/publish",
     "permission": "fr-03:publish",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -2193,10 +2193,10 @@
     "owner": "member-4",
     "path": "/api/v1/evidence/{evidence_id}/review",
     "permission": "fr-03:review",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -2205,7 +2205,7 @@
     "owner": "member-4",
     "path": "/api/v1/evidence/{evidence_id}/revoke",
     "permission": "fr-03:revoke",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -3024,7 +3024,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -3033,31 +3033,31 @@
     "owner": "member-3",
     "path": "/api/v1/parse-jobs/{parse_job_id}",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "cancel_parse_job",
     "owner": "member-3",
     "path": "/api/v1/parse-jobs/{parse_job_id}/cancel",
     "permission": "fr-02:cancel",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "retry_parse_job",
     "owner": "member-3",
     "path": "/api/v1/parse-jobs/{parse_job_id}/retry",
     "permission": "fr-02:retry",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
     "contract_only": true,
@@ -3168,7 +3168,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -3177,7 +3177,7 @@
     "owner": "member-4",
     "path": "/api/v1/precheck-assessments/{precheck_assessment_id}",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -3324,19 +3324,19 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "create_project_document_upload_session",
     "owner": "member-3",
     "path": "/api/v1/projects/{project_id}/document-upload-sessions",
     "permission": "fr-02:create",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -3345,19 +3345,19 @@
     "owner": "member-3",
     "path": "/api/v1/projects/{project_id}/documents",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
-    "idempotency_required": true,
+    "idempotency_required": false,
     "method": "POST",
     "operation_id": "create_project_parse_job",
     "owner": "member-3",
     "path": "/api/v1/projects/{project_id}/parse-jobs",
     "permission": "fr-02:create",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
     "contract_only": true,
@@ -3468,7 +3468,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-04",
     "idempotency_required": false,
@@ -3477,7 +3477,7 @@
     "owner": "member-4",
     "path": "/api/v1/readiness-assessments/{readiness_assessment_id}",
     "permission": "fr-04:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,
@@ -3492,7 +3492,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": true,
+    "contract_only": false,
     "etag_required": false,
     "fr": "FR-02",
     "idempotency_required": false,
@@ -3501,7 +3501,7 @@
     "owner": "member-3",
     "path": "/api/v1/replicas",
     "permission": "fr-02:read",
-    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+    "schema_status": "FROZEN"
   },
   {
     "contract_only": true,
@@ -3552,7 +3552,7 @@
     "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -3561,10 +3561,10 @@
     "owner": "member-4",
     "path": "/api/v1/requirements/{requirement_id}",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": true,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -3573,10 +3573,10 @@
     "owner": "member-4",
     "path": "/api/v1/requirements/{requirement_id}",
     "permission": "fr-03:update",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -3585,10 +3585,10 @@
     "owner": "member-4",
     "path": "/api/v1/requirements/{requirement_id}/publish",
     "permission": "fr-03:publish",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -3597,10 +3597,10 @@
     "owner": "member-4",
     "path": "/api/v1/requirements/{requirement_id}/supersede",
     "permission": "fr-03:supersede",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": false,
@@ -3609,10 +3609,10 @@
     "owner": "member-4",
     "path": "/api/v1/response-profiles/{response_profile_id}",
     "permission": "fr-03:read",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
-    "contract_only": false,
+    "contract_only": true,
     "etag_required": false,
     "fr": "FR-03",
     "idempotency_required": true,
@@ -3621,7 +3621,7 @@
     "owner": "member-4",
     "path": "/api/v1/response-profiles/{response_profile_id}/publish",
     "permission": "fr-03:publish",
-    "schema_status": "OWNER_FROZEN"
+    "schema_status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
   },
   {
     "contract_only": true,

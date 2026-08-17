@@ -6,11 +6,18 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from conftest import StaticAuthenticator
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from biaice.core.auth import IdentityContext, Role, TenantScope
 from biaice.core.config import Settings
+from biaice.core.errors import install_error_handlers
+from biaice.core.telemetry import RequestContextMiddleware
 from biaice.main import create_app
+from biaice.modules.commercial.api import router as commercial_router
+from biaice.modules.commercial.application.services import configure_commercial
+from biaice.modules.evidence.api import router as evidence_router
+from biaice.modules.evidence.application.services import configure_evidence
 
 NOW = datetime(2026, 8, 17, tzinfo=timezone.utc)
 TENANT = uuid4()
@@ -43,11 +50,31 @@ def _identity(*, actor=ACTOR):
     )
 
 
-def _client(identity=None) -> TestClient:
+def _platform_client(identity=None) -> TestClient:
     app = create_app(
         settings=Settings(environment="test"),
         authenticator=StaticAuthenticator(identity or _identity()),
     )
+    return TestClient(app)
+
+
+def _handler_client(identity=None) -> TestClient:
+    """Mount member-4 routers without editing platform `main.py`."""
+    platform = create_app(
+        settings=Settings(environment="test"),
+        authenticator=StaticAuthenticator(identity or _identity()),
+    )
+    app = FastAPI()
+    app.state.settings = platform.state.settings
+    app.state.authenticator = platform.state.authenticator
+    app.state.audit_writer = platform.state.audit_writer
+    app.state.document_read_port = getattr(platform.state, "document_read_port", None)
+    configure_evidence(app)
+    configure_commercial(app)
+    install_error_handlers(app)
+    app.add_middleware(RequestContextMiddleware)
+    app.include_router(evidence_router)
+    app.include_router(commercial_router)
     return TestClient(app)
 
 
@@ -58,8 +85,18 @@ def _headers(idempotency: str) -> dict[str, str]:
     }
 
 
+def test_platform_app_keeps_member4_catalog_routes_as_501() -> None:
+    client = _platform_client()
+    empty = client.get(
+        f"/api/v1/decision-units/{UNIT}/requirements",
+        headers={"Authorization": "Bearer test-token-value"},
+    )
+    assert empty.status_code == 501
+    assert empty.json()["code"] == "NOT_IMPLEMENTED"
+
+
 def test_precheck_and_cost_routes_are_real_handlers_not_501() -> None:
-    client = _client()
+    client = _handler_client()
     empty = client.get(
         f"/api/v1/decision-units/{UNIT}/requirements",
         headers={"Authorization": "Bearer test-token-value"},
@@ -106,13 +143,13 @@ def test_precheck_and_cost_routes_are_real_handlers_not_501() -> None:
 
 
 def test_unauthenticated_evidence_list_is_401() -> None:
-    client = _client()
+    client = _handler_client()
     response = client.get(f"/api/v1/decision-units/{UNIT}/evidence")
     assert response.status_code == 401
 
 
 def test_condition_command_requires_reason_and_idempotency() -> None:
-    client = _client()
+    client = _handler_client()
     created = client.post(
         f"/api/v1/decision-units/{UNIT}/conditions",
         headers=_headers("cond-1"),
