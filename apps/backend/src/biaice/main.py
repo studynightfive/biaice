@@ -41,10 +41,10 @@ from biaice.core.telemetry import (
     RequestContextMiddleware,
     ScopeOverrideMiddleware,
 )
+from biaice.modules.commercial import api as commercial
 from biaice.modules.model_governance.application.provider_management import (
     ProviderRuntimePort,
 )
-from biaice.modules.commercial import api as commercial
 
 
 def _build_authenticator(settings: Settings) -> Authenticator:

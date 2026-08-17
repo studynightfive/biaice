@@ -17,17 +17,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 BACKEND_SRC = REPOSITORY_ROOT / "apps" / "backend" / "src"
 CONTRACT_ROOT = REPOSITORY_ROOT / "packages" / "contracts"
 sys.path.insert(0, str(BACKEND_SRC))
 os.environ.setdefault("BIAICE_ENVIRONMENT", "contract")
 
-from biaice.core.config import Settings  # noqa: E402
-from biaice.core.errors import ERROR_CATALOG  # noqa: E402
-from biaice.core.outbox import EVENT_CATALOG, EventEnvelope  # noqa: E402
-from biaice.main import create_app  # noqa: E402
+from biaice.core.config import Settings
+from biaice.core.errors import ERROR_CATALOG
+from biaice.core.outbox import EVENT_CATALOG, EventEnvelope
+from biaice.main import create_app
 
 
 def json_text(value: Any) -> str:
