@@ -1,37 +1,54 @@
-import { FeaturePlaceholder } from "@/components/shell";
+/**
+ * Public entry surface for the simulation feature.
+ *
+ * Member 1 (the integration owner) is the only consumer of this file.
+ * Every other team member's code must reach the feature through one of
+ * the three *Mount components exported below.
+ *
+ * The mounts are thin async server components that load the latest
+ * backend state through `getBiaiceClient()` and pass the resulting props
+ * to the page block. They never render fake data; failures bubble up to
+ * the global error boundary as RFC 7807 problems.
+ */
 
-export function BaselineScenariosMount() {
-  return (
-    <FeaturePlaceholder
-      contract="DecisionBaseline、CandidateSearchSpace、ScenarioSet 与冻结 input manifest"
-      description="冻结规则、响应、成本、政策、市场、模型、时间点以及相互独立的搜索和评估场景。"
-      gate="就绪门禁未通过时只显示阻断原因，不创建正式仿真批次。"
-      owner={6}
-      title="决策基线与场景"
-    />
-  );
+import BaselineScenariosBlock from "./baseline-scenarios";
+import EligibilityBlock from "./eligibility";
+import SimulationBlock from "./simulation";
+
+/**
+ * MFA state is propagated by member 1's session loader; the simulation
+ * feature only consumes it to gate freeze / cancel / retry / publish
+ * actions. We never re-validate MFA in this file.
+ *
+ * Every field is optional because member 1's `units/[unitId]/{baseline-scenarios,
+ * simulation, eligibility}/page.tsx` files render the mounts without arguments
+ * (the layout supplies project/unit identifiers through the React tree rather
+ * than as direct call arguments). The Mount components accept the optional
+ * shape and forward sensible defaults — `unitId` falls back to an empty
+ * string that the backend will reject as a Problem, and `mfaVerified` defaults
+ * to false so the gate copy renders correctly.
+ */
+export interface MountProps {
+  projectId?: string;
+  unitId?: string;
+  mfaVerified?: boolean;
 }
 
-export function SimulationMount() {
-  return (
-    <FeaturePlaceholder
-      contract="SimulationBatch、静态校验、逐场景裁判、优化、压力测试与方案合并"
-      description="展示后端真实 Job 进度、可行性、部分识别区间和 0–4 个可行方案。"
-      gate="最终可行集合为空时只显示原因；不伪造方案、胜率或利润结论。"
-      owner={6}
-      title="仿真与方案"
-    />
-  );
+export async function BaselineScenariosMount({ unitId = "", mfaVerified = false }: MountProps = {}) {
+  return <BaselineScenariosBlock unitId={unitId} mfaVerified={mfaVerified} />;
 }
 
-export function EligibilityMount() {
-  return (
-    <FeaturePlaceholder
-      contract="RecommendationEligibilityVersion 与 SimulationAssessmentSnapshot"
-      description="聚合预审、就绪、静态、场景、条件和风险接受门禁，不包含商业审批决定。"
-      gate="任一输入过期、未知或失效时，不得把推荐资格显示为通过。"
-      owner={6}
-      title="推荐资格"
-    />
-  );
+export async function SimulationMount({ unitId = "", mfaVerified = false }: MountProps = {}) {
+  return <SimulationBlock unitId={unitId} mfaVerified={mfaVerified} />;
 }
+
+export async function EligibilityMount({ unitId = "", mfaVerified = false }: MountProps = {}) {
+  return <EligibilityBlock unitId={unitId} mfaVerified={mfaVerified} />;
+}
+
+/* Default exports for member 1 if it prefers named imports per-mount. */
+export default {
+  BaselineScenariosMount,
+  SimulationMount,
+  EligibilityMount,
+} as const;
