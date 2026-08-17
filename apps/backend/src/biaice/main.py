@@ -21,6 +21,7 @@ from biaice.api import (
     me,
     model_lifecycle,
     provider_management,
+    simulation,
 )
 from biaice.api.operation_catalog import OPERATION_CATALOG
 from biaice.core.audit import (
@@ -155,6 +156,11 @@ def create_app(
         secret_store=secret_store,
         runtime=provider_runtime,
     )
+
+    from biaice.modules.simulation.application.services import configure_simulation
+
+    configure_simulation(app)
+
     app.state.readiness_checks = tuple(
         readiness_checks
         if readiness_checks is not None
@@ -172,7 +178,7 @@ def create_app(
     app.include_router(me.router)
     app.include_router(jobs.router)
     app.include_router(gates.router)
-    # member-7/3 routers MUST be registered before contract_stubs
+    # member-7/3/6 routers MUST be registered before contract_stubs
     # so FastAPI first-match-wins routes implemented operations to real handlers.
     app.include_router(approvals_reports.router)
     app.include_router(documents.router)
@@ -181,6 +187,7 @@ def create_app(
     app.include_router(commercial.router)
     app.include_router(model_lifecycle.router)
     app.include_router(provider_management.router)
+    app.include_router(simulation.router)
     app.include_router(contract_stubs.router)
     app.include_router(internal.router)
 
