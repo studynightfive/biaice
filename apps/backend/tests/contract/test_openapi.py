@@ -13,6 +13,38 @@ MEMBER7_IMPLEMENTED_OPERATION_IDS = frozenset(
         "revoke_risk_acceptance",
     }
 )
+MEMBER3_IMPLEMENTED_OPERATION_IDS = frozenset(
+    {
+        "create_project_document_upload_session",
+        "create_unit_document_upload_session",
+        "get_document_upload_session",
+        "put_document_upload_chunk",
+        "complete_document_upload_session",
+        "cancel_document_upload_session",
+        "list_project_documents",
+        "list_unit_documents",
+        "get_document",
+        "review_document",
+        "release_from_quarantine_document",
+        "quarantine_document",
+        "download_document",
+        "inherit_to_unit_document_link",
+        "override_document_link",
+        "resolve_conflict_document_link",
+        "detach_document_link",
+        "create_project_parse_job",
+        "create_unit_parse_job",
+        "get_parse_job",
+        "retry_parse_job",
+        "cancel_parse_job",
+        "list_document_derived_assets",
+        "get_derived_asset",
+        "list_replicas",
+    }
+)
+IMPLEMENTED_CATALOG_OPERATION_IDS = (
+    MEMBER7_IMPLEMENTED_OPERATION_IDS | MEMBER3_IMPLEMENTED_OPERATION_IDS
+)
 
 
 def operations(schema):
@@ -32,8 +64,7 @@ def test_openapi_has_unique_operations_all_p0_groups_and_explicit_contract_only_
     implemented = [
         operation
         for operation in OPERATION_CATALOG
-        if operation.owner == "member-7"
-        and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATION_IDS
+        if operation.operation_id in IMPLEMENTED_CATALOG_OPERATION_IDS
     ]
     assert len([item for item in items if item[2].get("x-contract-only")]) == (
         len(OPERATION_CATALOG) - len(implemented)

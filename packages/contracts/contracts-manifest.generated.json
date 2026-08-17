@@ -1,11 +1,11 @@
 {
-  "error-catalog.yaml": "5588cfd185e5228ba22fefe1222decfe95a2c59ab2d484ec9b907d2976469911",
+  "error-catalog.yaml": "0ad8b00100f575e19c0e8ca0026d44d95972d7919220820b0d1215087f4a547d",
   "events/catalog.yaml": "f434ccadfa2ebced7e96edf94bf6fa644ea06be573376a996c2866636a036f39",
   "events/event-envelope.schema.json": "aa7f6a7fec9c14e5558ea199bf0599ffcc582ef8e46f802dc93e44066582d96d",
-  "generated-typescript/client.ts": "208046e2cda120bd6acc32c9ee484dcf68a12a889a90f5a8439c10e1ff2ec7a2",
+  "generated-typescript/client.ts": "d4568985ce8053933300a66915d31af4804d171f8646d11b23d5112fd18e6d7b",
   "generated-typescript/index.ts": "910149d0109fd486ed5518a16e47d02d39ac6c8e9462e5a4fafe70bcd71a0ff1",
-  "generated-typescript/types.ts": "cdcb36f64f569f9fe2501cdc57acd885f81fe2bbf95316255c7d9e9677a6fbdc",
-  "openapi.generated.json": "33e84cc29daff83d48fb7085a9b9b21ac94100883562f6abe66afb5af45ea525",
-  "operation-catalog.generated.json": "b3dfc680fe6e91672de4629afc73109ca42593bb341beffc5971100ad88dfe6d",
-  "traceability.generated.json": "74f66dc5b3476d657425deb0dc9af97c12298477986702be97d09a814ccd56ac"
+  "generated-typescript/types.ts": "32c6930d45c4392195f713a88908c84e8dc909f8a727d65d972e8cbc729b54d5",
+  "openapi.generated.json": "1f0c7e6dc6428fcde3420cf61c30a0b1c299c0ef592fcc0b61a88d8be2df5fbc",
+  "operation-catalog.generated.json": "882d97eda735dfd650bab3b38a688428b2c16632b1b84ec6a8bc5a7e34ef555a",
+  "traceability.generated.json": "49728d78cb4c626c9f29ed08206322981ba03806e948f7536e81bb63338e81fc"
 }

@@ -59,6 +59,60 @@
     "status": 409,
     "title": "Deletion receipt invalid"
   },
+  "DOCUMENT_ALREADY_RELEASED": {
+    "recoverable": false,
+    "remediation": "Use the current released document or quarantine it first.",
+    "status": 409,
+    "title": "Document is already released"
+  },
+  "DOCUMENT_LINK_CONFLICT": {
+    "recoverable": true,
+    "remediation": "Resolve the inherited/override conflict with an explicit reason.",
+    "status": 409,
+    "title": "Document link conflict requires confirmation"
+  },
+  "DOCUMENT_LINK_NOT_RESOLVABLE": {
+    "recoverable": false,
+    "remediation": "Choose an open conflicting link and confirm the surviving document.",
+    "status": 409,
+    "title": "Document link cannot be resolved"
+  },
+  "DOCUMENT_NOT_DOWNLOADABLE": {
+    "recoverable": false,
+    "remediation": "Scan-failed and quarantined documents cannot be viewed.",
+    "status": 409,
+    "title": "Document body is not downloadable"
+  },
+  "DOCUMENT_NOT_PARSABLE": {
+    "recoverable": false,
+    "remediation": "Parse only after a clean scan; infected files stay isolated.",
+    "status": 409,
+    "title": "Document cannot be parsed"
+  },
+  "DOCUMENT_NOT_RELEASABLE": {
+    "recoverable": false,
+    "remediation": "Complete review after a clean scan before release.",
+    "status": 409,
+    "title": "Document is not releasable"
+  },
+  "DOCUMENT_NOT_REVIEWABLE": {
+    "recoverable": false,
+    "remediation": "Wait until the document has passed scan.",
+    "status": 409,
+    "title": "Document is not reviewable"
+  },
+  "DOCUMENT_SCAN_FAILED": {
+    "recoverable": false,
+    "remediation": "Keep the file quarantined; do not release or parse it.",
+    "status": 409,
+    "title": "Document scan failed"
+  },
+  "DOCUMENT_TYPE_BLOCKED": {
+    "recoverable": false,
+    "remediation": "Upload an allowed PDF, DOCX, XLSX, image or controlled archive.",
+    "status": 422,
+    "title": "Document type is blocked"
+  },
   "EGRESS_AUTHORIZATION_UNAVAILABLE": {
     "recoverable": true,
     "remediation": "Keep Provider egress disabled until the atomic single-use grant store is bound.",
@@ -238,6 +292,36 @@
     "remediation": "Sign in again.",
     "status": 401,
     "title": "Invalid access token"
+  },
+  "UPLOAD_CHUNK_HASH_MISMATCH": {
+    "recoverable": true,
+    "remediation": "Resend the chunk with a matching SHA-256.",
+    "status": 422,
+    "title": "Upload chunk hash mismatch"
+  },
+  "UPLOAD_HASH_MISMATCH": {
+    "recoverable": true,
+    "remediation": "Re-upload the file so the assembled SHA-256 matches the declared hash.",
+    "status": 422,
+    "title": "Assembled file hash mismatch"
+  },
+  "UPLOAD_INCOMPLETE": {
+    "recoverable": true,
+    "remediation": "Upload the missing parts before completing the session.",
+    "status": 409,
+    "title": "Upload is incomplete"
+  },
+  "UPLOAD_SESSION_EXPIRED": {
+    "recoverable": true,
+    "remediation": "Create a new upload session and resume with a new file transfer.",
+    "status": 410,
+    "title": "Upload session has expired"
+  },
+  "UPLOAD_SESSION_NOT_ACTIVE": {
+    "recoverable": false,
+    "remediation": "Create a new upload session.",
+    "status": 409,
+    "title": "Upload session is not active"
   },
   "WAIVER_PROHIBITED": {
     "recoverable": false,
