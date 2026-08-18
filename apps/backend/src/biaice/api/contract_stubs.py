@@ -214,6 +214,8 @@ MEMBER3_IMPLEMENTED_OPERATIONS = frozenset(
 )
 
 for operation in OPERATION_CATALOG:
+    if operation.fr in {"FR-05", "FR-12", "FR-13"}:
+        continue
     if (
         operation.owner == "member-7"
         and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATIONS

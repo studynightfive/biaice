@@ -227,6 +227,12 @@
     "status": 400,
     "title": "Invalid idempotency key"
   },
+  "INVALID_STATE_TRANSITION": {
+    "recoverable": false,
+    "remediation": "Refresh the resource and use an action allowed from its current state.",
+    "status": 409,
+    "title": "Invalid state transition"
+  },
   "JOB_NOT_CANCELLABLE": {
     "recoverable": false,
     "remediation": "Refresh the job state.",
@@ -281,6 +287,114 @@
     "status": 422,
     "title": "Plan merge was blocked by linkage rules"
   },
+  "PROVIDER_BUDGET_EXCEEDED": {
+    "recoverable": true,
+    "remediation": "Wait for budget reset or obtain an approved budget change.",
+    "status": 409,
+    "title": "Provider budget exceeded"
+  },
+  "PROVIDER_CALL_NOT_AUTHORIZED": {
+    "recoverable": false,
+    "remediation": "Use an approved purpose and data scope.",
+    "status": 403,
+    "title": "Provider call is not authorized"
+  },
+  "PROVIDER_CATALOG_NOT_CURRENT": {
+    "recoverable": true,
+    "remediation": "Refresh the published Provider catalog and use its exact version and hash.",
+    "status": 409,
+    "title": "Provider catalog is not current"
+  },
+  "PROVIDER_CONFIG_NOT_ACTIVE": {
+    "recoverable": true,
+    "remediation": "Activate a current configuration.",
+    "status": 409,
+    "title": "Provider configuration is not active"
+  },
+  "PROVIDER_CREDENTIAL_INVALID": {
+    "recoverable": true,
+    "remediation": "Rotate the credential and test it again.",
+    "status": 409,
+    "title": "Provider credential is invalid"
+  },
+  "PROVIDER_CREDENTIAL_MISSING": {
+    "recoverable": true,
+    "remediation": "Write a credential to a draft configuration.",
+    "status": 409,
+    "title": "Provider credential is missing"
+  },
+  "PROVIDER_CREDENTIAL_REVOKED": {
+    "recoverable": false,
+    "remediation": "Create a successor with a new credential.",
+    "status": 409,
+    "title": "Provider credential is revoked"
+  },
+  "PROVIDER_CREDENTIAL_ROTATION_REQUIRES_SUCCESSOR": {
+    "recoverable": true,
+    "remediation": "Create and verify a draft successor instead of changing the active configuration.",
+    "status": 409,
+    "title": "Provider credential rotation requires a successor"
+  },
+  "PROVIDER_CREDENTIAL_UNVERIFIED": {
+    "recoverable": true,
+    "remediation": "Run the fixed connection test.",
+    "status": 409,
+    "title": "Provider credential is unverified"
+  },
+  "PROVIDER_CREDENTIAL_USAGE_NOT_ALLOWED": {
+    "recoverable": false,
+    "remediation": "Use the credential only within its TEST, BUSINESS or DELETION scope.",
+    "status": 409,
+    "title": "Provider credential usage is not allowed"
+  },
+  "PROVIDER_EGRESS_BLOCKED": {
+    "recoverable": true,
+    "remediation": "Synchronize the approved catalog hash and restore the restricted egress adapter.",
+    "status": 503,
+    "title": "Provider egress is blocked"
+  },
+  "PROVIDER_POLICY_NOT_CURRENT": {
+    "recoverable": true,
+    "remediation": "Refresh Provider policy, legal basis, PIA and cross-border evidence.",
+    "status": 409,
+    "title": "Provider policy is not current"
+  },
+  "PROVIDER_RATE_LIMITED": {
+    "recoverable": true,
+    "remediation": "Retry after the approved backoff interval.",
+    "status": 429,
+    "title": "Provider rate limit reached"
+  },
+  "PROVIDER_REAL_DATA_MODE_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Use verified synthetic data or pass REAL_DATA_MODE before Provider processing.",
+    "status": 503,
+    "title": "Provider real-data gate required"
+  },
+  "PROVIDER_RESPONSE_INVALID": {
+    "recoverable": false,
+    "remediation": "Keep the response blocked and inspect the adapter.",
+    "status": 502,
+    "title": "Provider response is invalid"
+  },
+  "PROVIDER_ROTATION_CONFLICT": {
+    "recoverable": true,
+    "remediation": "Finish or revoke the existing successor before starting another rotation.",
+    "status": 409,
+    "title": "Provider rotation conflict"
+  },
+  "PROVIDER_TIMEOUT": {
+    "recoverable": true,
+    "remediation": "Retry or use the documented manual path.",
+    "status": 504,
+    "title": "Provider request timed out"
+  },
+  "PROVIDER_UPSTREAM_ERROR": {
+    "recoverable": true,
+    "remediation": "Retry after the Provider recovers.",
+    "status": 502,
+    "title": "Provider upstream error"
+  },
   "REAL_DATA_MODE_REQUIRED": {
     "recoverable": true,
     "remediation": "Use synthetic data or pass REAL_DATA_MODE.",
@@ -334,6 +448,12 @@
     "remediation": "Remove tenant/data-domain scope fields and headers.",
     "status": 400,
     "title": "Client scope override is forbidden"
+  },
+  "SECRET_STORE_UNAVAILABLE": {
+    "recoverable": true,
+    "remediation": "Keep credential operations blocked until the approved write-only store recovers.",
+    "status": 503,
+    "title": "Secret store unavailable"
   },
   "SNAPSHOT_PAYLOAD_HASH_MISMATCH": {
     "recoverable": false,
