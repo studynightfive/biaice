@@ -66,8 +66,6 @@ def downgrade() -> None:
     if bind.dialect.name != "postgresql":
         return
     op.execute(
-        'DROP POLICY IF EXISTS "risk_acceptance_tenant_domain_isolation" '
-        'ON "risk_acceptance"'
+        'DROP POLICY IF EXISTS "risk_acceptance_tenant_domain_isolation" ON "risk_acceptance"'
     )
     op.execute('ALTER TABLE "risk_acceptance" DISABLE ROW LEVEL SECURITY')
-

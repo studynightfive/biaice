@@ -238,9 +238,7 @@ def test_sqlalchemy_repository_persists_risk_acceptance() -> None:
         revocation_reason="upstream baseline changed",
         request_id="req-sql-1",
     )
-    assert service.get(
-        identity=_identity(), risk_acceptance_id=item.risk_acceptance_id
-    ) == revoked
+    assert service.get(identity=_identity(), risk_acceptance_id=item.risk_acceptance_id) == revoked
 
 
 def test_sqlalchemy_repository_scope_isolation() -> None:
@@ -255,6 +253,4 @@ def test_sqlalchemy_repository_scope_isolation() -> None:
         )
         is None
     )
-    assert (
-        repository.list_risk_acceptances(scope=other.scope, decision_unit_id=UNIT) == ()
-    )
+    assert repository.list_risk_acceptances(scope=other.scope, decision_unit_id=UNIT) == ()

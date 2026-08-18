@@ -50,4 +50,3 @@ class RiskAcceptanceRow(Base, TenantScopedMixin):
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     revoked_by: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
     revocation_reason: Mapped[str | None] = mapped_column(String(1000), nullable=True)
-
