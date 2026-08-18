@@ -12,6 +12,7 @@ from biaice.core.clock import Clock, SystemClock
 from biaice.core.errors import BiaiceError
 from biaice.core.outbox import EventEnvelope, OutboxPort
 from biaice.modules.approvals_reports.application.repository import (
+    ApprovalsReportsRepository,
     InMemoryApprovalsReportsRepository,
 )
 from biaice.modules.approvals_reports.domain.models import (
@@ -64,7 +65,7 @@ class RiskAcceptanceService:
     def __init__(
         self,
         *,
-        repository: InMemoryApprovalsReportsRepository,
+        repository: ApprovalsReportsRepository,
         clock: Clock,
         audit_writer: AuditWriter,
         outbox_port: OutboxPort | None,
@@ -262,7 +263,7 @@ class ApprovalsReportsServices:
     def __init__(
         self,
         *,
-        repository: InMemoryApprovalsReportsRepository,
+        repository: ApprovalsReportsRepository,
         clock: Clock,
         audit_writer: AuditWriter,
         outbox_port: OutboxPort | None,
@@ -277,10 +278,19 @@ class ApprovalsReportsServices:
 
 
 def configure_approvals_reports(
-    app, *, repository: InMemoryApprovalsReportsRepository | None = None
+    app, *, repository: ApprovalsReportsRepository | None = None
 ) -> ApprovalsReportsServices:
     """Attach member-7 services to the FastAPI app state."""
-    repository = repository or InMemoryApprovalsReportsRepository()
+    if repository is None:
+        from biaice.modules.approvals_reports.infrastructure.sql_repository import (
+            SqlAlchemyApprovalsReportsRepository,
+        )
+
+        session_factory = getattr(app.state, "session_factory", None)
+        if session_factory is not None:
+            repository = SqlAlchemyApprovalsReportsRepository(session_factory)
+        else:
+            repository = InMemoryApprovalsReportsRepository()
     services = ApprovalsReportsServices(
         repository=repository,
         clock=SystemClock(),

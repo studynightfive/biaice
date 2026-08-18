@@ -1,4 +1,4 @@
-"""In-memory approvals/reports repository for the M0 member-7 slice."""
+"""Approvals/reports repository ports and in-memory fallback."""
 
 from __future__ import annotations
 
@@ -37,7 +37,11 @@ def _scope_matches(item: RiskAcceptance, scope: TenantScope) -> bool:
 
 
 class InMemoryApprovalsReportsRepository:
-    """Thread-safe in-memory store; SQLAlchemy adapter lands in a later PR."""
+    """Thread-safe in-memory store for tests and composition fallback.
+
+    Production composition uses ``SqlAlchemyApprovalsReportsRepository`` when a
+    session factory is available; both implement :class:`ApprovalsReportsRepository`.
+    """
 
     def __init__(self) -> None:
         self._risk_acceptances: dict[UUID, RiskAcceptance] = {}

@@ -3,13 +3,17 @@
 # the Stage Gate reviewer can join it with m0-platform.md and simulation.yaml.
 traceability:
   owner: member-7
-  status: IMPLEMENTED_SLICE
+  status: IMPLEMENTED_SLICE_PERSISTED
   contract_only: false
   handler_module: biaice.api.approvals_reports
   service_module: biaice.modules.approvals_reports.application.services
   domain_module: biaice.modules.approvals_reports.domain
   repository_module: biaice.modules.approvals_reports.application.repository
-  migration_revision: m7_approvals_reports_0001
+  infrastructure_repository_module: biaice.modules.approvals_reports.infrastructure.sql_repository
+  migration_revision: m7_approvals_reports_0002_risk_acceptance_rls
+  frontend_route: /projects/{projectId}/units/{unitId}/approvals
+  frontend_component: apps/web/src/features/approvals/public.tsx
+  frontend_api_module: apps/web/src/features/approvals/api.ts
   items:
     - fr: FR-09b
       use_case: Create RiskAcceptanceVersion with maker-checker and validity period
@@ -61,5 +65,6 @@ traceability:
     - validity_period: valid_until must be later than valid_from; expiry is derived at read time.
     - fail_closed: revoked or expired risk acceptance blocks further revocation.
     - scope_projection: tenant_id + data_domain_id + decision_unit scope enforced by the repository.
+    - persistence_scope: SQLAlchemy adapter writes inside tenant_transaction and PostgreSQL RLS policy.
     - audit_and_outbox: every create/revoke writes an AuditEvent and RiskAccepted/RiskRevoked event.
 
