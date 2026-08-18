@@ -6,6 +6,7 @@ from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request, Response, status
+from pydantic import BaseModel, ConfigDict, Field
 
 from biaice.api.operation_catalog import OPERATION_CATALOG
 from biaice.core.auth import IdentityContext, get_identity
@@ -38,6 +39,14 @@ from biaice.modules.model_governance.domain.provider_models import (
 router = APIRouter(prefix="/api/v1", tags=["FR-13", "provider-management"])
 PageLimit = Annotated[int, Query(ge=1, le=200)]
 PageCursor = Annotated[str | None, Query(min_length=1, max_length=4096)]
+
+
+class StrictPageQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    limit: int = Field(default=100, ge=1, le=200)
+    cursor: str | None = Field(default=None, min_length=1, max_length=4096)
+
 
 PROVIDER_MANAGEMENT_OPERATION_IDS = frozenset(
     {
@@ -219,12 +228,11 @@ def revoke_ai_provider_catalog_version(
     openapi_extra=_extra("list_ai_provider_configurations"),
 )
 def list_ai_provider_configurations(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ProviderManagementService = Depends(get_provider_service),
 ) -> ProviderConfigurationPage:
-    return service.list_configurations(identity=identity, limit=limit, cursor=cursor)
+    return service.list_configurations(identity=identity, limit=query.limit, cursor=query.cursor)
 
 
 @router.post(
@@ -480,12 +488,11 @@ def revoke_ai_provider_configuration(
     openapi_extra=_extra("list_provider_invocations"),
 )
 def list_provider_invocations(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ProviderManagementService = Depends(get_provider_service),
 ) -> ProviderInvocationPage:
-    return service.list_invocations(identity=identity, limit=limit, cursor=cursor)
+    return service.list_invocations(identity=identity, limit=query.limit, cursor=query.cursor)
 
 
 @router.get(

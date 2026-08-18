@@ -6,11 +6,16 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from biaice.core.audit import HashChainAuditWriter, InMemoryAppendOnlyAuditSink
 from biaice.core.auth import IdentityContext, Role, TenantScope
+from biaice.core.db import Base
 from biaice.core.errors import BiaiceError
 from biaice.modules.approvals_reports.application.repository import (
+    ApprovalsReportsRepository,
     InMemoryApprovalsReportsRepository,
 )
 from biaice.modules.approvals_reports.application.services import (
@@ -19,6 +24,10 @@ from biaice.modules.approvals_reports.application.services import (
 from biaice.modules.approvals_reports.domain.models import (
     RiskAcceptanceState,
     RiskAcceptanceValidity,
+)
+from biaice.modules.approvals_reports.infrastructure.models import RiskAcceptanceRow
+from biaice.modules.approvals_reports.infrastructure.sql_repository import (
+    SqlAlchemyApprovalsReportsRepository,
 )
 
 TENANT = uuid4()
@@ -55,12 +64,12 @@ def _identity(*, mfa: bool = True, tenant=TENANT, domain=DOMAIN):
 
 def _service(
     now: datetime | None = None,
-    repository: InMemoryApprovalsReportsRepository | None = None,
+    repository: ApprovalsReportsRepository | None = None,
 ) -> tuple[
     RiskAcceptanceService,
     HashChainAuditWriter,
     InMemoryAppendOnlyAuditSink,
-    InMemoryApprovalsReportsRepository,
+    ApprovalsReportsRepository,
 ]:
     sink = InMemoryAppendOnlyAuditSink()
     audit = HashChainAuditWriter(sink, clock=FixedClock(now or NOW))
@@ -72,6 +81,17 @@ def _service(
         outbox_port=None,
     )
     return service, audit, sink, repository
+
+
+def _sql_repository() -> SqlAlchemyApprovalsReportsRepository:
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(engine, tables=[RiskAcceptanceRow.__table__])
+    factory = sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
+    return SqlAlchemyApprovalsReportsRepository(factory)
 
 
 def _create_payload(
@@ -198,3 +218,39 @@ def test_scope_isolation_hides_other_tenants() -> None:
             risk_acceptance_id=item.risk_acceptance_id,
         )
     assert error.value.code == "RESOURCE_NOT_FOUND"
+
+
+def test_sqlalchemy_repository_persists_risk_acceptance() -> None:
+    repository = _sql_repository()
+    service, _, _, _ = _service(repository=repository)
+
+    item = _create_payload(service)
+    loaded = service.get(identity=_identity(), risk_acceptance_id=item.risk_acceptance_id)
+    assert loaded == item
+    assert [
+        listed.risk_acceptance_id
+        for listed in service.list(identity=_identity(), decision_unit_id=UNIT)
+    ] == [item.risk_acceptance_id]
+
+    revoked = service.revoke(
+        identity=_identity(),
+        risk_acceptance_id=item.risk_acceptance_id,
+        revocation_reason="upstream baseline changed",
+        request_id="req-sql-1",
+    )
+    assert service.get(identity=_identity(), risk_acceptance_id=item.risk_acceptance_id) == revoked
+
+
+def test_sqlalchemy_repository_scope_isolation() -> None:
+    repository = _sql_repository()
+    service, _, _, _ = _service(repository=repository)
+    item = _create_payload(service)
+
+    other = _identity(tenant=uuid4(), domain=uuid4())
+    assert (
+        repository.get_risk_acceptance(
+            scope=other.scope, risk_acceptance_id=item.risk_acceptance_id
+        )
+        is None
+    )
+    assert repository.list_risk_acceptances(scope=other.scope, decision_unit_id=UNIT) == ()

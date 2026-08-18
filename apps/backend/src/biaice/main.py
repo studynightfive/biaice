@@ -132,7 +132,8 @@ def create_app(
     from biaice.modules.projects.application.services import configure_fr01
 
     configure_fr01(app)
-    # member-7 approvals/reports services: in-memory repository + services wired here
+    # member-7 approvals/reports services: SQLAlchemy when a session factory is
+    # configured, in-memory fallback otherwise
     from biaice.modules.approvals_reports.application.services import (
         configure_approvals_reports,
     )

@@ -1,6 +1,6 @@
 # M0 成员 7 交接说明：RiskAcceptance（FR-09b MVP-B 切片）
 
-状态：`IMPLEMENTED_SLICE / HUMAN_GATES_PENDING`
+状态：`IMPLEMENTED_SLICE_PERSISTED / HUMAN_GATES_PENDING`
 
 本次交付是成员 7 在 M0/MVP-B 的第一个可运行切片：`RiskAcceptanceVersion`
 创建、列表、读取与撤销。它只开放 MVP-B 允许的 RiskAcceptance 能力，不开放
@@ -9,16 +9,21 @@
 
 ## 交付范围
 
-- `biaice.modules.approvals_reports`：冻结 Pydantic 模型、In-memory 仓储与
-  `RiskAcceptanceService` 单写者。
+- `biaice.modules.approvals_reports`：冻结 Pydantic 模型、SQLAlchemy adapter
+  （`infrastructure/sql_repository.py`）与 `RiskAcceptanceService` 单写者；
+  无 session_factory 时保留 In-memory fallback。
 - `biaice.api.approvals_reports`：4 个真实 handler
   （create/list/get/revoke_risk_acceptance），注册于 contract_stubs 之前。
+- 前端 `apps/web/src/features/approvals`：`/approvals` 真实页面，支持风险接受
+  创建、列表、撤销和 MFA/错误/空状态；Pilot 前不开放审批写动作。
 - 权限：`fr-09b:read/create/revoke`；创建与撤销要求 MFA。
 - 事件：`approvals_reports.risk_accepted.v1` 与
   `approvals_reports.risk_revoked.v1`。
-- 迁移：`m7_approvals_reports_0001`（`risk_acceptance` 表）。
+- 迁移：`m7_approvals_reports_0001`（`risk_acceptance` 表）与
+  `m7_approvals_reports_0002_risk_acceptance_rls`（PostgreSQL RLS）。
 - 测试：单元 + 契约，覆盖空状态、幂等、maker-checker、有效期、撤销、权限、
-  MFA 与 scope 隔离。
+  MFA、scope 隔离与 SQLAlchemy round-trip；前端 API/组件测试覆盖契约路径、
+  幂等头、MFA 禁用和空状态。
 
 ## 架构约束
 
@@ -48,7 +53,8 @@
 
 ## 已知限制
 
-- In-memory 仓储用于 M0；SQLAlchemy adapter 与 RLS 策略需要后续 PR。
+- SQLAlchemy adapter 与 RLS 策略已提供；配置 `app.state.session_factory` 后启用，
+  未配置时仍回退到 In-memory（用于测试与无数据库静态模式）。
 - `contract_stubs.py` 已跳过 4 个已实现 operation；OpenAPI/生成客户端仍由
   成员 1 在契约 PR 中重新导出，本分支不手改生成目录。
 - 独立授权角色目前以 `independent_approver_id` 记录在创建请求中；真实
@@ -64,8 +70,9 @@ uv run --project apps/backend --extra test pytest apps/backend/tests/contract/te
 ## 回滚方法
 
 1. `git revert <commit>` 回滚本 PR；不重写共享历史。
-2. 数据库只追加 `m7_approvals_reports_0001`，未触及既有迁移；多 head 由成员 1
-   合并。
+2. 数据库只追加 `m7_approvals_reports_0001` 与
+   `m7_approvals_reports_0002_risk_acceptance_rls`，未触及既有迁移；多 head 由
+   成员 1 合并。
 3. 临时关闭真实路由：移除 `main.py` 中
    `app.include_router(approvals_reports.router)` 并恢复 contract_stubs 跳过
    集合，即回落到 501 stub。
