@@ -182,7 +182,7 @@ jobs:
       - name: Web vitest simulation suite
         run: npm run test:web -- simulation
       - name: Lint member-6 frontend
-        run: npx eslint --max-warnings=0 apps/web/src/features/simulation apps/web/src/lib/api/client.ts
+        run: npm exec --workspace @biaice/web -- eslint --max-warnings=0 src/features/simulation src/lib/api/client.ts
 
   compose:
     name: Compose topology
