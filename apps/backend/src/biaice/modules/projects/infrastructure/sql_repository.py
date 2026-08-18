@@ -249,7 +249,9 @@ class SqlAlchemyFr01Repository:
             created_at=item.version.created_at,
         )
 
-    def get_regime(self, *, scope: TenantScope, applicable_regime_id: UUID) -> ApplicableRegime | None:
+    def get_regime(
+        self, *, scope: TenantScope, applicable_regime_id: UUID
+    ) -> ApplicableRegime | None:
         return self._get_body(
             ApplicableRegime,
             ApplicableRegimeRow,
@@ -271,7 +273,9 @@ class SqlAlchemyFr01Repository:
 
     def upsert_rule_set(self, item: RuleSet) -> None:
         with self._tx(_write_scope(item)) as session:
-            row = session.get(RuleSetRow, item.rule_set_id) or RuleSetRow(rule_set_id=item.rule_set_id)
+            row = session.get(RuleSetRow, item.rule_set_id) or RuleSetRow(
+                rule_set_id=item.rule_set_id
+            )
             row.tenant_id = item.tenant_id
             row.data_domain_id = item.data_domain_id
             row.project_id = item.project_id
@@ -308,10 +312,7 @@ class SqlAlchemyFr01Repository:
                 decision_unit_id=item.decision_unit_id,
                 scope=scope,
             )
-            and (
-                item.decision_unit_id == unit_id
-                or item.scope_level is RuleScopeLevel.PROJECT
-            )
+            and (item.decision_unit_id == unit_id or item.scope_level is RuleScopeLevel.PROJECT)
         ]
         selected.sort(key=lambda item: (item.version.created_at, str(item.rule_set_id)))
         return tuple(selected)
@@ -343,7 +344,9 @@ class SqlAlchemyFr01Repository:
 
     def list_clauses(self, *, scope: TenantScope, rule_set_id: UUID) -> tuple[RuleClause, ...]:
         with self._tx(scope) as session:
-            rows = session.query(RuleClauseRow).filter(RuleClauseRow.rule_set_id == rule_set_id).all()
+            rows = (
+                session.query(RuleClauseRow).filter(RuleClauseRow.rule_set_id == rule_set_id).all()
+            )
             items = [RuleClause.model_validate(row.body) for row in rows]
         selected = [
             item
@@ -359,8 +362,12 @@ class SqlAlchemyFr01Repository:
         selected.sort(key=lambda item: (item.priority, str(item.rule_clause_id)))
         return tuple(selected)
 
-    def list_all_clauses_for_unit(self, *, scope: TenantScope, unit_id: UUID) -> tuple[RuleClause, ...]:
-        rule_set_ids = {item.rule_set_id for item in self.list_rule_sets(scope=scope, unit_id=unit_id)}
+    def list_all_clauses_for_unit(
+        self, *, scope: TenantScope, unit_id: UUID
+    ) -> tuple[RuleClause, ...]:
+        rule_set_ids = {
+            item.rule_set_id for item in self.list_rule_sets(scope=scope, unit_id=unit_id)
+        }
         if not rule_set_ids:
             return ()
         with self._tx(scope) as session:
@@ -392,7 +399,9 @@ class SqlAlchemyFr01Repository:
             created_at=item.version.created_at,
         )
 
-    def get_review(self, *, scope: TenantScope, compliance_review_id: UUID) -> ComplianceReview | None:
+    def get_review(
+        self, *, scope: TenantScope, compliance_review_id: UUID
+    ) -> ComplianceReview | None:
         return self._get_body(
             ComplianceReview,
             ComplianceReviewRow,
@@ -432,7 +441,9 @@ class SqlAlchemyFr01Repository:
             unit_id_of=lambda item: item.decision_unit_id,
         )
 
-    def list_constraints(self, *, scope: TenantScope, unit_id: UUID) -> tuple[CrossLotConstraint, ...]:
+    def list_constraints(
+        self, *, scope: TenantScope, unit_id: UUID
+    ) -> tuple[CrossLotConstraint, ...]:
         return self._list_body(
             CrossLotConstraint,
             CrossLotConstraintRow,

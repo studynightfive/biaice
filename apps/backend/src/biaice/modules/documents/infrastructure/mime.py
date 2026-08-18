@@ -30,9 +30,26 @@ MIME_SIGNATURES: dict[bytes, str] = {
 }
 
 BLOCKED_EXTENSIONS: set[str] = {
-    ".exe", ".bat", ".cmd", ".com", ".msi", ".dll", ".scr", ".pif",
-    ".vbs", ".jse", ".wsf", ".wsh", ".ps1", ".psm1", ".sh", ".bash",
-    ".jar", ".class", ".so", ".dylib",
+    ".exe",
+    ".bat",
+    ".cmd",
+    ".com",
+    ".msi",
+    ".dll",
+    ".scr",
+    ".pif",
+    ".vbs",
+    ".jse",
+    ".wsf",
+    ".wsh",
+    ".ps1",
+    ".psm1",
+    ".sh",
+    ".bash",
+    ".jar",
+    ".class",
+    ".so",
+    ".dylib",
 }
 
 MAX_ARCHIVE_SIZE_BYTES = 100 * 1024 * 1024
@@ -66,6 +83,7 @@ class MimeDetectionService:
     def validate_extension(self, filename: str) -> tuple[bool, str | None]:
         """Validate file extension."""
         import os
+
         _, ext = os.path.splitext(filename.lower())
         if ext in BLOCKED_EXTENSIONS:
             return False, f"File extension {ext} is not allowed for security reasons"

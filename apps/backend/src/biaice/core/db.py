@@ -34,9 +34,7 @@ class TenantScopedMixin:
     tenant_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     data_domain_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     project_id: Mapped[UUID | None] = mapped_column(Uuid, nullable=True, index=True)
-    decision_unit_id: Mapped[UUID | None] = mapped_column(
-        Uuid, nullable=True, index=True
-    )
+    decision_unit_id: Mapped[UUID | None] = mapped_column(Uuid, nullable=True, index=True)
 
 
 def create_session_factory(engine: Engine) -> sessionmaker[Session]:
@@ -44,9 +42,7 @@ def create_session_factory(engine: Engine) -> sessionmaker[Session]:
 
 
 @event.listens_for(Session, "before_flush")
-def enforce_scope_on_flush(
-    session: Session, flush_context: object, instances: object
-) -> None:
+def enforce_scope_on_flush(session: Session, flush_context: object, instances: object) -> None:
     del flush_context, instances
     scope: TenantScope | None = session.info.get("tenant_scope")
     if scope is None:
@@ -89,9 +85,7 @@ def tenant_transaction(session: Session, scope: TenantScope) -> Iterator[Session
                 {
                     "tenant_id": str(scope.tenant_id),
                     "data_domain_id": str(scope.data_domain_id),
-                    "project_ids": ",".join(
-                        sorted(str(value) for value in scope.project_ids)
-                    ),
+                    "project_ids": ",".join(sorted(str(value) for value in scope.project_ids)),
                     "decision_unit_ids": ",".join(
                         sorted(str(value) for value in scope.decision_unit_ids)
                     ),

@@ -175,9 +175,7 @@ def _fingerprint(value: Any) -> str:
 
 
 def _catalog_hash(command: ProviderCatalogCreate) -> str:
-    return _fingerprint(
-        [item.model_dump(mode="json") for item in command.entries]
-    )
+    return _fingerprint([item.model_dump(mode="json") for item in command.entries])
 
 
 def _credential_reference(configuration: AIProviderConfiguration) -> SecretReference | None:
@@ -371,9 +369,7 @@ class ProviderManagementService:
         self._catalogs[catalog.catalog_id] = catalog
         return catalog
 
-    def get_catalog(
-        self, *, identity: IdentityContext, catalog_id: UUID
-    ) -> ProviderCatalogVersion:
+    def get_catalog(self, *, identity: IdentityContext, catalog_id: UUID) -> ProviderCatalogVersion:
         self._require_role(
             identity,
             PLATFORM_CATALOG_ROLES | PLATFORM_CATALOG_CHECKER_ROLES,
@@ -487,8 +483,7 @@ class ProviderManagementService:
             (
                 item
                 for item in catalog.entries
-                if item.provider_id == provider_id
-                and item.provider_model_id == provider_model_id
+                if item.provider_id == provider_id and item.provider_model_id == provider_model_id
             ),
             None,
         )
@@ -524,7 +519,10 @@ class ProviderManagementService:
     ) -> AIProviderConfiguration:
         catalog = self._published_catalog(command.catalog_id, command.catalog_hash)
         entry = self._catalog_entry(catalog, command.provider_id, command.provider_model_id)
-        if command.purpose not in entry.allowed_purposes or command.retention_days > entry.retention_days:
+        if (
+            command.purpose not in entry.allowed_purposes
+            or command.retention_days > entry.retention_days
+        ):
             raise BiaiceError("PROVIDER_POLICY_NOT_CURRENT")
         require_audit(self._audit)
         now = self._clock.now()
@@ -558,9 +556,7 @@ class ProviderManagementService:
         self._configurations[configuration.config_id] = configuration
         return configuration
 
-    def _configuration(
-        self, identity: IdentityContext, config_id: UUID
-    ) -> AIProviderConfiguration:
+    def _configuration(self, identity: IdentityContext, config_id: UUID) -> AIProviderConfiguration:
         item = self._configurations.get(config_id)
         if (
             item is None
@@ -668,9 +664,7 @@ class ProviderManagementService:
         request_id: str,
     ) -> AIProviderConfiguration:
         self._require_role(identity, frozenset({Role.TENANT_AI_ADMIN}), mfa=True)
-        fingerprint = _fingerprint(
-            {"config_id": str(config_id), **command.model_dump(mode="json")}
-        )
+        fingerprint = _fingerprint({"config_id": str(config_id), **command.model_dump(mode="json")})
         with self._lock:
             return self._execute_idempotent(
                 identity=identity,
@@ -782,9 +776,7 @@ class ProviderManagementService:
     ) -> ProviderCredentialReceipt:
         self._require_role(identity, frozenset({Role.TENANT_AI_ADMIN}), mfa=True)
         self._gates.require(GateName.BYOK_SECRET_GATE)
-        secret_hash = hashlib.sha256(
-            command.api_key.get_secret_value().encode("utf-8")
-        ).hexdigest()
+        secret_hash = hashlib.sha256(command.api_key.get_secret_value().encode("utf-8")).hexdigest()
         fingerprint = _fingerprint({"config_id": str(config_id), "secret_hash": secret_hash})
         with self._lock:
             return self._execute_idempotent(
@@ -952,16 +944,15 @@ class ProviderManagementService:
             ProviderCredentialState.VALID
             if authenticated
             else ProviderCredentialState.INVALID
-            if outcome.stable_error_code in {
+            if outcome.stable_error_code
+            in {
                 "PROVIDER_CREDENTIAL_INVALID",
                 "PROVIDER_CREDENTIAL_REVOKED",
             }
             else current.credential_state
         )
         activation_state = (
-            ProviderActivationState.VERIFIED
-            if authenticated
-            else ProviderActivationState.INACTIVE
+            ProviderActivationState.VERIFIED if authenticated else ProviderActivationState.INACTIVE
         )
         updated = current.model_copy(
             update={
@@ -1023,7 +1014,10 @@ class ProviderManagementService:
             )
             if record.state not in allowed_states:
                 raise BiaiceError("PROVIDER_POLICY_NOT_CURRENT")
-            if resource_type != "legal_basis_evidence" and record.updated_by == configuration.created_by:
+            if (
+                resource_type != "legal_basis_evidence"
+                and record.updated_by == configuration.created_by
+            ):
                 raise BiaiceError("MAKER_CHECKER_REQUIRED")
 
     def activate_configuration(
@@ -1037,9 +1031,7 @@ class ProviderManagementService:
     ) -> AIProviderConfiguration:
         self._require_role(identity, frozenset({Role.TENANT_AI_ADMIN}), mfa=True)
         self._gates.require(GateName.BYOK_SECRET_GATE)
-        fingerprint = _fingerprint(
-            {"config_id": str(config_id), **command.model_dump(mode="json")}
-        )
+        fingerprint = _fingerprint({"config_id": str(config_id), **command.model_dump(mode="json")})
         with self._lock:
             return self._execute_idempotent(
                 identity=identity,
@@ -1201,9 +1193,7 @@ class ProviderManagementService:
                 idempotency_key=idempotency_key,
                 fingerprint=fingerprint,
                 expected_type=AIProviderConfiguration,
-                command=lambda: self._apply_stop(
-                    identity, config_id, command, request_id, action
-                ),
+                command=lambda: self._apply_stop(identity, config_id, command, request_id, action),
             )
 
     def _apply_stop(
@@ -1267,9 +1257,7 @@ class ProviderManagementService:
         request_id: str,
     ) -> ProviderDeletionAccepted:
         self._require_role(identity, frozenset({Role.TENANT_AI_ADMIN}), mfa=True)
-        fingerprint = _fingerprint(
-            {"config_id": str(config_id), **command.model_dump(mode="json")}
-        )
+        fingerprint = _fingerprint({"config_id": str(config_id), **command.model_dump(mode="json")})
         with self._lock:
             return self._execute_idempotent(
                 identity=identity,

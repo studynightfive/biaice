@@ -98,6 +98,11 @@ jobs:
           scripts/contracts scripts/security scripts/validate_compose_topology.py
           scripts/verify_dependency_locks.py scripts/verify_image_locks.py
           scripts/verify_no_legacy.py
+      - run: >-
+          python -m ruff format --check apps/backend packages/contracts/scripts
+          scripts/contracts scripts/security scripts/validate_compose_topology.py
+          scripts/verify_dependency_locks.py scripts/verify_image_locks.py
+          scripts/verify_no_legacy.py
       - run: python -m pytest apps/backend/tests
       - run: python packages/contracts/scripts/generate_contracts.py --check
       - run: python scripts/contracts/check_contract_status.py
@@ -175,9 +180,9 @@ jobs:
       - name: Lint member-6 backend
         run: python -m ruff check apps/backend/src/biaice/modules/simulation apps/backend/src/biaice/api/simulation.py
       - name: Web vitest simulation suite
-        run: npm run test:web -- --testPathPattern=simulation
+        run: npm run test:web -- simulation
       - name: Lint member-6 frontend
-        run: npx eslint apps/web/src/features/simulation apps/web/src/lib/api/client.ts || true
+        run: npm exec --workspace @biaice/web -- eslint --max-warnings=0 src/features/simulation src/lib/api/client.ts
 
   compose:
     name: Compose topology

@@ -87,7 +87,9 @@ class SourceDocumentRow(Base, TenantScopedMixin):
 
     status: Mapped[str] = mapped_column(String(30), nullable=False)
     quarantined_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    scan_completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    scan_completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
@@ -170,9 +172,7 @@ class ParseJobRow(Base, TenantScopedMixin):
     attempt: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     max_attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
 
-    derived_asset_ids: Mapped[list[UUID]] = mapped_column(
-        ARRAY(Uuid), nullable=False, default=list
-    )
+    derived_asset_ids: Mapped[list[UUID]] = mapped_column(ARRAY(Uuid), nullable=False, default=list)
 
     created_by: Mapped[UUID] = mapped_column(Uuid, nullable=False)
 
@@ -212,7 +212,9 @@ class DerivedAssetRow(Base, TenantScopedMixin):
     page_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
     source_location: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
-    replica_locations_registered: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    replica_locations_registered: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
 
     retained_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     superseded_by_id: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
@@ -239,7 +241,9 @@ class DocumentReplicaLocationRow(Base, TenantScopedMixin):
 
     required_for_completion: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     deletion_sla_seconds: Mapped[int] = mapped_column(Integer, nullable=False, default=86400)
-    retention_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    retention_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     registered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 

@@ -26,9 +26,7 @@ class Settings(BaseSettings):
 
     application_name: str = "标策 AI API"
     application_version: str = "0.1.0"
-    environment: Literal["development", "test", "contract", "production"] = (
-        "development"
-    )
+    environment: Literal["development", "test", "contract", "production"] = "development"
     deployment_profile: Literal["synthetic_http", "secure_https"] = "synthetic_http"
     api_prefix: str = "/api/v1"
     public_origin: str = "https://biaice.local:8443"
@@ -60,21 +58,14 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def reject_unsafe_profiles(self) -> "Settings":
-        if (
-            self.environment == "production"
-            and self.deployment_profile != "secure_https"
-        ):
+        if self.environment == "production" and self.deployment_profile != "secure_https":
             raise ValueError("production requires secure_https deployment_profile")
         if (
             self.real_data_mode_requested or self.byok_enabled
         ) and self.deployment_profile != "secure_https":
-            raise ValueError(
-                "real data and BYOK are forbidden in synthetic_http profile"
-            )
+            raise ValueError("real data and BYOK are forbidden in synthetic_http profile")
         if self.allow_test_auth and self.environment != "test":
-            raise ValueError(
-                "test authentication is only permitted in the test environment"
-            )
+            raise ValueError("test authentication is only permitted in the test environment")
         if not 1 <= self.clamav_port <= 65535:
             raise ValueError("clamav_port must be a valid TCP port")
         return self

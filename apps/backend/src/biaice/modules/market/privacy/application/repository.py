@@ -12,9 +12,7 @@ from biaice.modules.market.privacy.domain.models import MarketResourceRecord
 
 
 class MarketResourceRepository(Protocol):
-    def save(
-        self, *, scope: TenantScope, record: MarketResourceRecord
-    ) -> MarketResourceRecord: ...
+    def save(self, *, scope: TenantScope, record: MarketResourceRecord) -> MarketResourceRecord: ...
 
     def get(
         self, *, scope: TenantScope, resource_type: str, resource_id: UUID
@@ -29,9 +27,7 @@ class InMemoryMarketResourceRepository:
     """Synthetic/test adapter; it never claims durable or production storage."""
 
     def __init__(self) -> None:
-        self._records: dict[
-            tuple[UUID, UUID, str, UUID], MarketResourceRecord
-        ] = {}
+        self._records: dict[tuple[UUID, UUID, str, UUID], MarketResourceRecord] = {}
         self._lock = threading.RLock()
 
     @staticmethod
@@ -45,17 +41,13 @@ class InMemoryMarketResourceRepository:
             resource_id,
         )
 
-    def save(
-        self, *, scope: TenantScope, record: MarketResourceRecord
-    ) -> MarketResourceRecord:
+    def save(self, *, scope: TenantScope, record: MarketResourceRecord) -> MarketResourceRecord:
         scope.assert_allows(
             tenant_id=record.tenant_id,
             data_domain_id=record.data_domain_id,
         )
         with self._lock:
-            self._records[
-                self._key(scope, record.resource_type, record.resource_id)
-            ] = record
+            self._records[self._key(scope, record.resource_type, record.resource_id)] = record
         return record
 
     def get(
@@ -89,9 +81,7 @@ class InMemoryCommandJournal:
     """Replay journal scoped by tenant/domain and idempotency key."""
 
     def __init__(self) -> None:
-        self._entries: dict[
-            tuple[UUID, UUID, str], tuple[str, MarketResourceRecord]
-        ] = {}
+        self._entries: dict[tuple[UUID, UUID, str], tuple[str, MarketResourceRecord]] = {}
 
     def replay(
         self, *, scope: TenantScope, key: str, fingerprint: str
@@ -116,4 +106,3 @@ class InMemoryCommandJournal:
             fingerprint,
             response,
         )
-

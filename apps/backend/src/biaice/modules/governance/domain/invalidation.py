@@ -15,20 +15,14 @@ from biaice.modules.governance.domain.models import (
     UpstreamChangeType,
 )
 
-INVALIDATION_MATRIX: dict[
-    UpstreamChangeType, dict[DependencyType, InvalidationEffect]
-] = {
+INVALIDATION_MATRIX: dict[UpstreamChangeType, dict[DependencyType, InvalidationEffect]] = {
     UpstreamChangeType.DRAFT_CREATED: {},
     UpstreamChangeType.SNAPSHOT_FROZEN: {},
     UpstreamChangeType.PUBLISH_EFFECTIVE: {
         kind: InvalidationEffect.STALE for kind in DependencyType
     },
-    UpstreamChangeType.REVOKE: {
-        kind: InvalidationEffect.INVALIDATED for kind in DependencyType
-    },
-    UpstreamChangeType.DELETE: {
-        kind: InvalidationEffect.INVALIDATED for kind in DependencyType
-    },
+    UpstreamChangeType.REVOKE: {kind: InvalidationEffect.INVALIDATED for kind in DependencyType},
+    UpstreamChangeType.DELETE: {kind: InvalidationEffect.INVALIDATED for kind in DependencyType},
     UpstreamChangeType.RETENTION_EXPIRED: {
         kind: InvalidationEffect.INVALIDATED for kind in DependencyType
     },

@@ -8,9 +8,14 @@ from dataclasses import dataclass
 from biaice.core.config import get_settings
 from biaice.modules.documents.domain.models import ScanResult
 
-EICAR_SIGNATURE = (
-    b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
+# Keep the standard test payload out of bytecode as one contiguous constant.
+# Endpoint protection products correctly quarantine files containing the full
+# EICAR signature, including an otherwise harmless ``scanner.pyc`` cache.
+_EICAR_SIGNATURE_PARTS = (
+    b"X5O!P%@AP[4",
+    b"\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*",
 )
+EICAR_SIGNATURE = b"".join(_EICAR_SIGNATURE_PARTS)
 CLAMAV_CHUNK_SIZE = 2048
 CLAMAV_TIMEOUT_SECONDS = 5.0
 
@@ -98,9 +103,7 @@ def scan_clamav_tcp(
 
 def scan_bytes(data: bytes) -> ClamAVScanResult:
     settings = get_settings()
-    clamav = scan_clamav_tcp(
-        data, host=settings.clamav_host, port=settings.clamav_port
-    )
+    clamav = scan_clamav_tcp(data, host=settings.clamav_host, port=settings.clamav_port)
     if clamav is None or clamav.result is ScanResult.ERROR:
         return _eicar_scan(data, clamav_reached=False)
     if clamav.result is ScanResult.CLEAN and is_eicar_test_file(data):

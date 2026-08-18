@@ -69,13 +69,9 @@ class AuditWriter(Protocol):
 class AuditAnchorPort(Protocol):
     """Independent trust-domain anchor; implementations must be append-only."""
 
-    def record(
-        self, *, scope: TenantScope, event_hash: str, trusted_at: datetime
-    ) -> str: ...
+    def record(self, *, scope: TenantScope, event_hash: str, trusted_at: datetime) -> str: ...
 
-    def verify(
-        self, *, scope: TenantScope, event_hash: str, anchor_reference: str
-    ) -> bool: ...
+    def verify(self, *, scope: TenantScope, event_hash: str, anchor_reference: str) -> bool: ...
 
 
 class UnavailableAuditWriter:
@@ -107,8 +103,7 @@ class InMemoryAppendOnlyAuditSink:
         matches = [
             event
             for event in self._events
-            if event.tenant_id == scope.tenant_id
-            and event.data_domain_id == scope.data_domain_id
+            if event.tenant_id == scope.tenant_id and event.data_domain_id == scope.data_domain_id
         ]
         return matches[-1].event_hash if matches else None
 
@@ -122,8 +117,7 @@ class InMemoryAppendOnlyAuditSink:
         return tuple(
             event
             for event in self._events
-            if event.tenant_id == scope.tenant_id
-            and event.data_domain_id == scope.data_domain_id
+            if event.tenant_id == scope.tenant_id and event.data_domain_id == scope.data_domain_id
         )
 
 
@@ -164,9 +158,7 @@ class HashChainAuditWriter:
                 "action": action,
                 "object_type": object_type,
                 "object_id": str(object_id),
-                "object_version_id": str(object_version_id)
-                if object_version_id
-                else None,
+                "object_version_id": str(object_version_id) if object_version_id else None,
                 "request_id": request_id,
                 "reason_code": reason_code,
                 "outcome": outcome,
@@ -208,9 +200,7 @@ def verify_hash_chain(events: Sequence[AuditEvent]) -> str:
             "action": event.action,
             "object_type": event.object_type,
             "object_id": str(event.object_id),
-            "object_version_id": str(event.object_version_id)
-            if event.object_version_id
-            else None,
+            "object_version_id": str(event.object_version_id) if event.object_version_id else None,
             "request_id": event.request_id,
             "reason_code": event.reason_code,
             "outcome": event.outcome,
@@ -218,9 +208,9 @@ def verify_hash_chain(events: Sequence[AuditEvent]) -> str:
             "previous_hash": event.previous_hash,
         }
         calculated = hashlib.sha256(
-            json.dumps(
-                unsigned, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-            ).encode("utf-8")
+            json.dumps(unsigned, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+                "utf-8"
+            )
         ).hexdigest()
         if not hmac.compare_digest(calculated, event.event_hash):
             raise BiaiceError("AUDIT_INTEGRITY_FAILED")

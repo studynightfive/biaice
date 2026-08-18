@@ -43,9 +43,12 @@ from biaice.core.telemetry import (
     ScopeOverrideMiddleware,
 )
 from biaice.modules.commercial import api as commercial
+from biaice.modules.evidence import api as evidence
 from biaice.modules.model_governance.application.provider_management import (
     ProviderRuntimePort,
 )
+from biaice.modules.projects.http import router as projects_router
+from biaice.modules.rules.http import router as rules_router
 
 
 def _build_authenticator(settings: Settings) -> Authenticator:
@@ -123,6 +126,12 @@ def create_app(
     app.state.gate_service = gate_service
     app.state.audit_writer = runtime_audit_writer
     app.state.job_port = job_port or UnavailableJobPort()
+
+    # Configure producers before consumers so cross-member application ports
+    # are bound to real fail-closed implementations at composition time.
+    from biaice.modules.projects.application.services import configure_fr01
+
+    configure_fr01(app)
     # member-7 approvals/reports services: in-memory repository + services wired here
     from biaice.modules.approvals_reports.application.services import (
         configure_approvals_reports,
@@ -142,6 +151,12 @@ def create_app(
     )
 
     configure_fr12_privacy_services(app)
+    from biaice.modules.evidence.application.services import configure_evidence
+
+    configure_evidence(app)
+    from biaice.modules.commercial.application.services import configure_commercial
+
+    configure_commercial(app)
     from biaice.modules.model_governance.application.model_lifecycle import (
         configure_model_lifecycle,
     )
@@ -178,10 +193,13 @@ def create_app(
     app.include_router(me.router)
     app.include_router(jobs.router)
     app.include_router(gates.router)
-    # member-7/3/6 routers MUST be registered before contract_stubs
+    # Implemented member routers MUST be registered before contract_stubs
     # so FastAPI first-match-wins routes implemented operations to real handlers.
+    app.include_router(projects_router)
+    app.include_router(rules_router)
     app.include_router(approvals_reports.router)
     app.include_router(documents.router)
+    app.include_router(evidence.router)
     app.include_router(fr05.router)
     app.include_router(market_privacy.router)
     app.include_router(commercial.router)
@@ -467,10 +485,7 @@ def create_app(
             ),
         }
         for spec in OPERATION_CATALOG:
-            if (
-                spec.fr == "FR-05"
-                or spec.operation_id in model_lifecycle.MODEL_LIFECYCLE_OPERATION_IDS
-            ):
+            if spec.operation_id in contract_stubs.IMPLEMENTED_OPERATION_IDS:
                 actual_owner[spec.operation_id] = (
                     spec.owner,
                     spec.fr,

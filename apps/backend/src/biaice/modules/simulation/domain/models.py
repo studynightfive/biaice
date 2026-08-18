@@ -11,6 +11,7 @@ and the create/freeze triple:
     created_at / created_by / frozen_at / frozen_by
 so that audit, scope and invalidation services have a single source of truth.
 """
+
 from __future__ import annotations
 
 import re
@@ -32,9 +33,7 @@ def validate_decimal_str(value: str) -> str:
     if not isinstance(value, str):
         raise TypeError("DecimalStr fields must be string-typed; binary float is forbidden")
     if not DECIMAL_REGEX.fullmatch(value):
-        raise ValueError(
-            f"DecimalStr must match {DECIMAL_REGEX.pattern!r}; received {value!r}"
-        )
+        raise ValueError(f"DecimalStr must match {DECIMAL_REGEX.pattern!r}; received {value!r}")
     return value
 
 
@@ -44,6 +43,7 @@ class FrozenModel(BaseModel):
 
 class DecimalStr(FrozenModel):
     """Decimal-as-string envelope with strict pattern validation."""
+
     value: str = Field(pattern=DECIMAL_STR_PATTERN)
 
     @classmethod
@@ -88,6 +88,7 @@ class ScenarioSetState(StrEnum):
 
 class ScenarioKind(StrEnum):
     """Search-space and evaluation scenarios must be mutually exclusive sets."""
+
     SEARCH = "SEARCH"
     EVALUATION = "EVALUATION"
     STRESS = "STRESS"

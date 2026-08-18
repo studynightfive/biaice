@@ -110,9 +110,7 @@ def create_risk_acceptance(
 )
 def list_risk_acceptances(
     unit_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.APPROVALS_RISK_READ)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.APPROVALS_RISK_READ)),
     service: RiskAcceptanceService = Depends(get_risk_acceptance_service),
 ) -> RiskAcceptanceListResponse:
     return RiskAcceptanceListResponse(
@@ -128,9 +126,7 @@ def list_risk_acceptances(
 )
 def get_risk_acceptance(
     risk_acceptance_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.APPROVALS_RISK_READ)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.APPROVALS_RISK_READ)),
     service: RiskAcceptanceService = Depends(get_risk_acceptance_service),
 ) -> RiskAcceptance:
     return service.get(identity=identity, risk_acceptance_id=risk_acceptance_id)
@@ -159,4 +155,3 @@ def revoke_risk_acceptance(
         revocation_reason=body.revocation_reason,
         request_id=request.state.request_id,
     )
-

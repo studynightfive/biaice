@@ -95,9 +95,7 @@ def ready(request: Request, response: Response) -> HealthResponse:
         "DOWN"
         if not ready_value
         else (
-            "DEGRADED"
-            if any(component.status == "DEGRADED" for component in components)
-            else "UP"
+            "DEGRADED" if any(component.status == "DEGRADED" for component in components) else "UP"
         )
     )
     return HealthResponse(

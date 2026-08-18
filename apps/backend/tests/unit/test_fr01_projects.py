@@ -93,9 +93,7 @@ def _idem() -> str:
 
 
 def test_reopened_is_event_not_state() -> None:
-    nxt, reopened = resolve_transition(
-        DecisionUnitLifecycleState.CANCELLED, "REOPENED"
-    )
+    nxt, reopened = resolve_transition(DecisionUnitLifecycleState.CANCELLED, "REOPENED")
     assert reopened is True
     assert nxt is DecisionUnitLifecycleState.REGIME_AND_SCOPE_PENDING
 

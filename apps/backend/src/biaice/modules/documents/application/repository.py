@@ -21,13 +21,9 @@ from biaice.modules.governance.domain.models import ReplicaLocation
 class DocumentsRepository(Protocol):
     def upsert_session(self, item: UploadSession) -> None: ...
 
-    def get_session(
-        self, *, scope: TenantScope, session_id: UUID
-    ) -> UploadSession | None: ...
+    def get_session(self, *, scope: TenantScope, session_id: UUID) -> UploadSession | None: ...
 
-    def put_chunk(
-        self, *, session_id: UUID, part_number: int, data: bytes
-    ) -> None: ...
+    def put_chunk(self, *, session_id: UUID, part_number: int, data: bytes) -> None: ...
 
     def get_chunk(self, *, session_id: UUID, part_number: int) -> bytes | None: ...
 
@@ -37,9 +33,7 @@ class DocumentsRepository(Protocol):
 
     def upsert_document(self, item: SourceDocument) -> None: ...
 
-    def get_document(
-        self, *, scope: TenantScope, document_id: UUID
-    ) -> SourceDocument | None: ...
+    def get_document(self, *, scope: TenantScope, document_id: UUID) -> SourceDocument | None: ...
 
     def list_documents(
         self,
@@ -65,15 +59,11 @@ class DocumentsRepository(Protocol):
 
     def upsert_parse_job(self, item: ParseJob) -> None: ...
 
-    def get_parse_job(
-        self, *, scope: TenantScope, job_id: UUID
-    ) -> ParseJob | None: ...
+    def get_parse_job(self, *, scope: TenantScope, job_id: UUID) -> ParseJob | None: ...
 
     def upsert_derived_asset(self, item: DerivedAsset) -> None: ...
 
-    def get_derived_asset(
-        self, *, scope: TenantScope, asset_id: UUID
-    ) -> DerivedAsset | None: ...
+    def get_derived_asset(self, *, scope: TenantScope, asset_id: UUID) -> DerivedAsset | None: ...
 
     def list_derived_assets(
         self, *, scope: TenantScope, document_id: UUID
@@ -150,9 +140,7 @@ class InMemoryDocumentsRepository:
         with self._lock:
             self._sessions[item.session_id] = item
 
-    def get_session(
-        self, *, scope: TenantScope, session_id: UUID
-    ) -> UploadSession | None:
+    def get_session(self, *, scope: TenantScope, session_id: UUID) -> UploadSession | None:
         with self._lock:
             item = self._sessions.get(session_id)
         if item is None or not _session_in_scope(item, scope):
@@ -187,9 +175,7 @@ class InMemoryDocumentsRepository:
         with self._lock:
             self._documents[item.document_id] = item
 
-    def get_document(
-        self, *, scope: TenantScope, document_id: UUID
-    ) -> SourceDocument | None:
+    def get_document(self, *, scope: TenantScope, document_id: UUID) -> SourceDocument | None:
         with self._lock:
             item = self._documents.get(document_id)
         if item is None or not _document_in_scope(item, scope):
@@ -209,9 +195,7 @@ class InMemoryDocumentsRepository:
                 for item in self._documents.values()
                 if _document_in_scope(item, scope)
                 and (project_id is None or item.project_id == project_id)
-                and (
-                    decision_unit_id is None or item.decision_unit_id == decision_unit_id
-                )
+                and (decision_unit_id is None or item.decision_unit_id == decision_unit_id)
             ]
         items.sort(key=lambda item: (item.uploaded_at, str(item.document_id)))
         return tuple(items)
@@ -250,9 +234,7 @@ class InMemoryDocumentsRepository:
     def get_parse_job(self, *, scope: TenantScope, job_id: UUID) -> ParseJob | None:
         with self._lock:
             item = self._parse_jobs.get(job_id)
-        if item is None or not _tenant_scoped(
-            item.tenant_id, item.data_domain_id, scope
-        ):
+        if item is None or not _tenant_scoped(item.tenant_id, item.data_domain_id, scope):
             return None
         return item
 
@@ -264,14 +246,10 @@ class InMemoryDocumentsRepository:
         with self._lock:
             self._assets[item.asset_id] = item
 
-    def get_derived_asset(
-        self, *, scope: TenantScope, asset_id: UUID
-    ) -> DerivedAsset | None:
+    def get_derived_asset(self, *, scope: TenantScope, asset_id: UUID) -> DerivedAsset | None:
         with self._lock:
             item = self._assets.get(asset_id)
-        if item is None or not _tenant_scoped(
-            item.tenant_id, item.data_domain_id, scope
-        ):
+        if item is None or not _tenant_scoped(item.tenant_id, item.data_domain_id, scope):
             return None
         return item
 
@@ -295,9 +273,7 @@ class InMemoryDocumentsRepository:
     def get_link(self, *, scope: TenantScope, link_id: UUID) -> DocumentLink | None:
         with self._lock:
             item = self._links.get(link_id)
-        if item is None or not _tenant_scoped(
-            item.tenant_id, item.data_domain_id, scope
-        ):
+        if item is None or not _tenant_scoped(item.tenant_id, item.data_domain_id, scope):
             return None
         return item
 

@@ -70,9 +70,7 @@ def build_readiness_checks(
 
     def oidc_jwks() -> ComponentHealth:
         if not settings.oidc_jwks_url:
-            return ComponentHealth(
-                name="oidc_jwks", status="DOWN", detail="not_configured"
-            )
+            return ComponentHealth(name="oidc_jwks", status="DOWN", detail="not_configured")
         try:
             with urllib.request.urlopen(settings.oidc_jwks_url, timeout=2) as response:
                 payload = json.load(response)

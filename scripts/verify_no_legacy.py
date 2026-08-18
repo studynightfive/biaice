@@ -30,8 +30,14 @@ def main() -> int:
     tracked_raw = subprocess.run(
         ["git", "ls-files", "-z"], cwd=ROOT, check=True, capture_output=True
     ).stdout
-    tracked = {item.decode("utf-8").replace("\\", "/") for item in tracked_raw.split(b"\0") if item}
-    failures = [f"forbidden tracked path: {path}" for path in sorted(FORBIDDEN_PATHS & tracked)]
+    tracked = {
+        item.decode("utf-8").replace("\\", "/")
+        for item in tracked_raw.split(b"\0")
+        if item
+    }
+    failures = [
+        f"forbidden tracked path: {path}" for path in sorted(FORBIDDEN_PATHS & tracked)
+    ]
 
     package_path = ROOT / "package.json"
     package = json.loads(package_path.read_text(encoding="utf-8"))
@@ -47,12 +53,19 @@ def main() -> int:
         if not base.exists():
             continue
         for path in base.rglob("*"):
-            if not path.is_file() or path.suffix.lower() in {".png", ".jpg", ".jpeg", ".ico"}:
+            if not path.is_file() or path.suffix.lower() in {
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".ico",
+            }:
                 continue
             text = path.read_text(encoding="utf-8", errors="ignore")
             for marker in runtime_markers:
                 if marker in text:
-                    failures.append(f"forbidden runtime marker {marker!r}: {path.relative_to(ROOT)}")
+                    failures.append(
+                        f"forbidden runtime marker {marker!r}: {path.relative_to(ROOT)}"
+                    )
 
     if failures:
         print("Legacy runtime verification failed:", file=sys.stderr)

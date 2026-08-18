@@ -26,6 +26,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@biaice/contracts": [
+        "../../packages/contracts/generated-typescript/index.ts"
       ]
     }
   },

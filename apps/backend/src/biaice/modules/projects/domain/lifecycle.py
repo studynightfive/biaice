@@ -143,7 +143,10 @@ _BRANCHES: dict[DecisionUnitLifecycleState, frozenset[DecisionUnitLifecycleState
         {DecisionUnitLifecycleState.STRATEGY_READINESS_PENDING}
     ),
     DecisionUnitLifecycleState.REMEDIATION: frozenset(
-        {DecisionUnitLifecycleState.PRECHECK_PENDING, DecisionUnitLifecycleState.RULES_PENDING_CONFIRMATION}
+        {
+            DecisionUnitLifecycleState.PRECHECK_PENDING,
+            DecisionUnitLifecycleState.RULES_PENDING_CONFIRMATION,
+        }
     ),
     DecisionUnitLifecycleState.STRATEGY_READINESS_PENDING: frozenset(
         {
@@ -203,7 +206,10 @@ _BRANCHES: dict[DecisionUnitLifecycleState, frozenset[DecisionUnitLifecycleState
         {DecisionUnitLifecycleState.REWORK, DecisionUnitLifecycleState.APPROVAL_PACKAGE_FROZEN}
     ),
     DecisionUnitLifecycleState.APPROVED_CONDITIONAL: frozenset(
-        {DecisionUnitLifecycleState.CONDITION_CLOSURE, DecisionUnitLifecycleState.SUBMISSION_AUTHORIZED}
+        {
+            DecisionUnitLifecycleState.CONDITION_CLOSURE,
+            DecisionUnitLifecycleState.SUBMISSION_AUTHORIZED,
+        }
     ),
     DecisionUnitLifecycleState.CONDITION_CLOSURE: frozenset(
         {DecisionUnitLifecycleState.SUBMISSION_AUTHORIZED, DecisionUnitLifecycleState.REWORK}

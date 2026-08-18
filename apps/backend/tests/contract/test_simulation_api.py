@@ -1,4 +1,5 @@
 """Contract tests for FR-06/07/08/09a simulation API."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -105,6 +106,74 @@ def test_freeze_decision_baseline_requires_idempotency(client):
     assert payload["frozen_at"] is not None
     assert payload["frozen_by"] is not None
     assert payload["manifest"]["manifest_hash"]
+
+
+def test_baseline_to_batch_pipeline_has_no_unreachable_state(client):
+    unit = uuid4()
+    baseline_response = client.post(
+        f"/api/v1/decision-units/{unit}/decision-baselines/freeze",
+        json=_baseline_payload(unit),
+        headers={"Idempotency-Key": "pipeline-baseline-1234567890"},
+    )
+    assert baseline_response.status_code == 200, baseline_response.text
+    baseline_id = baseline_response.json()["baseline_id"]
+
+    search_response = client.post(
+        f"/api/v1/decision-units/{unit}/candidate-search-spaces",
+        json={
+            "decision_unit_id": str(unit),
+            "baseline_id": baseline_id,
+            "description": "Primary candidate dimensions",
+            "dimension_axes": ["price", "quality"],
+            "candidate_count_lower_bound": 2,
+        },
+        headers={"Idempotency-Key": "pipeline-search-space-1234567890"},
+    )
+    assert search_response.status_code == 200, search_response.text
+    search_space = search_response.json()
+    assert search_space["state"] == "FROZEN"
+
+    scenario_response = client.post(
+        f"/api/v1/decision-units/{unit}/scenario-sets",
+        json={
+            "decision_unit_id": str(unit),
+            "baseline_id": baseline_id,
+            "search_space_id": search_space["search_space_id"],
+            "members": [
+                {
+                    "scenario_id": str(uuid4()),
+                    "scenario_kind": "SEARCH",
+                    "weight": "0.5",
+                    "label": "Search scenario",
+                },
+                {
+                    "scenario_id": str(uuid4()),
+                    "scenario_kind": "EVALUATION",
+                    "weight": "0.5",
+                    "label": "Evaluation scenario",
+                },
+            ],
+            "stress_axes": ["PRICE_BAND"],
+        },
+        headers={"Idempotency-Key": "pipeline-scenario-set-1234567890"},
+    )
+    assert scenario_response.status_code == 200, scenario_response.text
+    scenario_set = scenario_response.json()
+    assert scenario_set["state"] == "FROZEN"
+
+    batch_response = client.post(
+        f"/api/v1/decision-units/{unit}/simulation-batches",
+        json={
+            "decision_unit_id": str(unit),
+            "baseline_id": baseline_id,
+            "scenario_set_id": scenario_set["scenario_set_id"],
+            "award_mode": "SINGLE",
+            "policy_threshold": "0.5",
+        },
+        headers={"Idempotency-Key": "pipeline-batch-1234567890"},
+    )
+    assert batch_response.status_code == 200, batch_response.text
+    assert batch_response.json()["state"] == "PENDING"
 
 
 def test_snapshot_enforces_shadow_watermark(client):

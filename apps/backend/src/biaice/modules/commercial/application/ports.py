@@ -28,8 +28,6 @@ class MarketReadinessPort(Protocol):
 
 
 class UnavailableMarketReadinessPort:
-    def current_view(
-        self, *, scope: TenantScope, decision_unit_id: UUID
-    ) -> None:
+    def current_view(self, *, scope: TenantScope, decision_unit_id: UUID) -> None:
         del scope, decision_unit_id
         return None

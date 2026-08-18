@@ -8,7 +8,7 @@ from typing import Any, Mapping, Sequence
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 
 @dataclass(frozen=True, slots=True)
@@ -213,10 +213,16 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         502, "Provider upstream error", True, "Retry after the Provider recovers."
     ),
     "PROVIDER_RESPONSE_INVALID": ErrorDefinition(
-        502, "Provider response is invalid", False, "Keep the response blocked and inspect the adapter."
+        502,
+        "Provider response is invalid",
+        False,
+        "Keep the response blocked and inspect the adapter.",
     ),
     "PROVIDER_BUDGET_EXCEEDED": ErrorDefinition(
-        409, "Provider budget exceeded", True, "Wait for budget reset or obtain an approved budget change."
+        409,
+        "Provider budget exceeded",
+        True,
+        "Wait for budget reset or obtain an approved budget change.",
     ),
     "WAIVER_PROHIBITED": ErrorDefinition(
         409, "Waiver prohibited", False, "Resolve the mandatory gate evidence."
@@ -226,6 +232,60 @@ ERROR_CATALOG: dict[str, ErrorDefinition] = {
         "Independent checker required",
         True,
         "Choose a checker different from the maker.",
+    ),
+    "EVIDENCE_DOCUMENT_NOT_RELEASED": ErrorDefinition(
+        409,
+        "Evidence document is not released",
+        True,
+        "Release the referenced document before using it as evidence.",
+    ),
+    "EVIDENCE_SATISFIED_WITHOUT_PROOF": ErrorDefinition(
+        409,
+        "Evidence proof is required",
+        False,
+        "Attach current reviewed evidence before marking the requirement satisfied.",
+    ),
+    "EVIDENCE_REVIEW_REQUIRED": ErrorDefinition(
+        409,
+        "Independent evidence review is required",
+        True,
+        "Have an authorized reviewer assess the evidence match.",
+    ),
+    "PUBLISHED_VERSION_IMMUTABLE": ErrorDefinition(
+        409,
+        "Published version is immutable",
+        False,
+        "Create a successor version instead of editing the published version.",
+    ),
+    "REQUIREMENT_NOT_PUBLISHED": ErrorDefinition(
+        409,
+        "Requirement is not published",
+        True,
+        "Publish the requirement before using it in a formal match.",
+    ),
+    "RESPONSE_PROFILE_EVIDENCE_NOT_CURRENT": ErrorDefinition(
+        409,
+        "Response profile evidence is not current",
+        True,
+        "Refresh or replace expired, revoked or invalidated evidence.",
+    ),
+    "CONDITION_NOT_OPEN": ErrorDefinition(
+        409,
+        "Condition is not open",
+        False,
+        "Refresh the condition and act only while it remains open.",
+    ),
+    "COST_ALREADY_APPROVED": ErrorDefinition(
+        409,
+        "Cost baseline is already approved",
+        False,
+        "Create a successor baseline for further changes.",
+    ),
+    "COST_NOT_APPROVED": ErrorDefinition(
+        409,
+        "Cost baseline is not approved",
+        True,
+        "Obtain independent cost approval before publication.",
     ),
     "RISK_ACCEPTANCE_INVALID_PERIOD": ErrorDefinition(
         422,
@@ -515,15 +575,8 @@ def problem_response(request: Request, error: BiaiceError) -> JSONResponse:
 
 
 def install_error_handlers(app: FastAPI) -> None:
-    @app.exception_handler(BiaiceError)
-    async def handle_biaice_error(request: Request, error: BiaiceError) -> JSONResponse:
-        return problem_response(request, error)
-
-    @app.exception_handler(RequestValidationError)
-    async def handle_validation_error(
-        request: Request, error: RequestValidationError
-    ) -> JSONResponse:
-        fields = [
+    def validation_problems(error: RequestValidationError | ValidationError) -> list[FieldProblem]:
+        return [
             FieldProblem(
                 field=".".join(
                     str(part)
@@ -535,12 +588,37 @@ def install_error_handlers(app: FastAPI) -> None:
             )
             for item in error.errors()
         ]
+
+    @app.exception_handler(BiaiceError)
+    async def handle_biaice_error(request: Request, error: BiaiceError) -> JSONResponse:
+        return problem_response(request, error)
+
+    @app.exception_handler(RequestValidationError)
+    async def handle_validation_error(
+        request: Request, error: RequestValidationError
+    ) -> JSONResponse:
         return problem_response(
             request,
             BiaiceError(
                 "REQUEST_VALIDATION_FAILED",
                 detail="One or more request fields are invalid.",
-                errors=fields,
+                errors=validation_problems(error),
+            ),
+        )
+
+    @app.exception_handler(ValidationError)
+    async def handle_domain_validation_error(
+        request: Request, error: ValidationError
+    ) -> JSONResponse:
+        # Request DTOs cannot encode every cross-field/domain-model invariant.
+        # Treat a domain construction failure as invalid client input, while
+        # FastAPI's separate ResponseValidationError remains a server defect.
+        return problem_response(
+            request,
+            BiaiceError(
+                "REQUEST_VALIDATION_FAILED",
+                detail="One or more request fields violate domain constraints.",
+                errors=validation_problems(error),
             ),
         )
 

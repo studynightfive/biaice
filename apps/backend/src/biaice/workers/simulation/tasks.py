@@ -6,6 +6,7 @@ The simulation queue (`simulation`) is pre-registered in
 real Python+NumPy evaluator while tests use the deterministic
 `DefaultSimulationRuntime`.
 """
+
 from __future__ import annotations
 
 from typing import Any, Protocol

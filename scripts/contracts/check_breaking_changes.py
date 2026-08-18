@@ -171,11 +171,7 @@ def _schema_breakages(
 
     old_ref = unresolved_old.get("$ref") if isinstance(unresolved_old, dict) else None
     new_ref = unresolved_new.get("$ref") if isinstance(unresolved_new, dict) else None
-    if (
-        isinstance(old_ref, str)
-        and not old_ref.startswith("#/")
-        and old_ref != new_ref
-    ):
+    if isinstance(old_ref, str) and not old_ref.startswith("#/") and old_ref != new_ref:
         failures.append(f"{location}: changed external schema reference")
         return
 
@@ -192,7 +188,9 @@ def _schema_breakages(
     new_format = new_schema.get("format")
     format_breaks = (
         direction == "request" and new_format is not None and new_format != old_format
-    ) or (direction == "response" and old_format is not None and new_format != old_format)
+    ) or (
+        direction == "response" and old_format is not None and new_format != old_format
+    )
     if format_breaks:
         failures.append(
             f"{location}: incompatible {direction} format {old_format!r} -> {new_format!r}"
@@ -201,8 +199,16 @@ def _schema_breakages(
     old_enum = old_schema.get("enum")
     new_enum = new_schema.get("enum")
     if isinstance(old_enum, list) or isinstance(new_enum, list):
-        old_values = {_canonical(item) for item in old_enum} if isinstance(old_enum, list) else None
-        new_values = {_canonical(item) for item in new_enum} if isinstance(new_enum, list) else None
+        old_values = (
+            {_canonical(item) for item in old_enum}
+            if isinstance(old_enum, list)
+            else None
+        )
+        new_values = (
+            {_canonical(item) for item in new_enum}
+            if isinstance(new_enum, list)
+            else None
+        )
         enum_breaks = (
             direction == "request"
             and new_values is not None
@@ -229,9 +235,13 @@ def _schema_breakages(
             failures.append(f"{location}: changed {direction} {keyword} alternatives")
             continue
         if len(old_branches) != len(new_branches):
-            failures.append(f"{location}: changed {direction} {keyword} alternative count")
+            failures.append(
+                f"{location}: changed {direction} {keyword} alternative count"
+            )
             continue
-        for index, (old_branch, new_branch) in enumerate(zip(old_branches, new_branches)):
+        for index, (old_branch, new_branch) in enumerate(
+            zip(old_branches, new_branches)
+        ):
             _schema_breakages(
                 old_branch,
                 new_branch,
@@ -278,14 +288,16 @@ def _schema_breakages(
 
     old_additional = _additional_properties_allowed(old_schema)
     new_additional = _additional_properties_allowed(new_schema)
-    additional_breaks = (direction == "request" and old_additional and not new_additional) or (
-        direction == "response" and not old_additional and new_additional
-    )
+    additional_breaks = (
+        direction == "request" and old_additional and not new_additional
+    ) or (direction == "response" and not old_additional and new_additional)
     if additional_breaks:
         failures.append(f"{location}: incompatible {direction} additionalProperties")
     old_additional_schema = old_schema.get("additionalProperties")
     new_additional_schema = new_schema.get("additionalProperties")
-    if isinstance(old_additional_schema, dict) and isinstance(new_additional_schema, dict):
+    if isinstance(old_additional_schema, dict) and isinstance(
+        new_additional_schema, dict
+    ):
         _schema_breakages(
             old_additional_schema,
             new_additional_schema,
@@ -314,7 +326,10 @@ def _parameter_map(
     document: JsonObject, path_item: JsonObject, operation: JsonObject
 ) -> dict[tuple[str, str], JsonObject]:
     result: dict[tuple[str, str], JsonObject] = {}
-    for parameter in [*path_item.get("parameters", []), *operation.get("parameters", [])]:
+    for parameter in [
+        *path_item.get("parameters", []),
+        *operation.get("parameters", []),
+    ]:
         parameter = _resolve(document, parameter)
         if not isinstance(parameter, dict):
             continue
@@ -326,10 +341,16 @@ def _parameter_map(
 
 
 def _effective_security(document: JsonObject, operation: JsonObject) -> Any:
-    return operation["security"] if "security" in operation else document.get("security", [])
+    return (
+        operation["security"]
+        if "security" in operation
+        else document.get("security", [])
+    )
 
 
-def _normalize_security(value: Any) -> tuple[tuple[tuple[str, tuple[str, ...]], ...], ...]:
+def _normalize_security(
+    value: Any,
+) -> tuple[tuple[tuple[str, tuple[str, ...]], ...], ...]:
     if not isinstance(value, list):
         return ()
     alternatives: list[tuple[tuple[str, tuple[str, ...]], ...]] = []
@@ -433,7 +454,9 @@ def _compare_response(
     new_headers = new_response.get("headers", {})
     if not isinstance(old_headers, dict) or not isinstance(new_headers, dict):
         return
-    normalized_new_headers = {name.lower(): value for name, value in new_headers.items()}
+    normalized_new_headers = {
+        name.lower(): value for name, value in new_headers.items()
+    }
     for header_name, old_header in old_headers.items():
         new_header = normalized_new_headers.get(header_name.lower())
         if new_header is None:
@@ -469,11 +492,15 @@ def find_breaking_changes(baseline: JsonObject, current: JsonObject) -> list[str
 
     old_security_schemes = baseline.get("components", {}).get("securitySchemes", {})
     new_security_schemes = current.get("components", {}).get("securitySchemes", {})
-    if isinstance(old_security_schemes, dict) and isinstance(new_security_schemes, dict):
+    if isinstance(old_security_schemes, dict) and isinstance(
+        new_security_schemes, dict
+    ):
         for scheme_name, old_scheme in old_security_schemes.items():
             if scheme_name not in new_security_schemes:
                 failures.append(f"removed security scheme: {scheme_name}")
-            elif _canonical(old_scheme) != _canonical(new_security_schemes[scheme_name]):
+            elif _canonical(old_scheme) != _canonical(
+                new_security_schemes[scheme_name]
+            ):
                 failures.append(f"changed security scheme: {scheme_name}")
 
     old_operations = operation_map(baseline)
@@ -512,10 +539,14 @@ def find_breaking_changes(baseline: JsonObject, current: JsonObject) -> list[str
                 f"{operation_id}: removed parameters {sorted(removed_parameters)}"
             )
         old_required = {
-            key for key, parameter in old_parameters.items() if parameter.get("required") is True
+            key
+            for key, parameter in old_parameters.items()
+            if parameter.get("required") is True
         }
         new_required = {
-            key for key, parameter in new_parameters.items() if parameter.get("required") is True
+            key
+            for key, parameter in new_parameters.items()
+            if parameter.get("required") is True
         }
         newly_required = new_required - old_required
         if newly_required:
@@ -561,7 +592,9 @@ def find_breaking_changes(baseline: JsonObject, current: JsonObject) -> list[str
             failures.append(
                 f"{operation_id}: removed success responses {sorted(removed_success)}"
             )
-        normalized_new_responses = {str(code): response for code, response in new_responses.items()}
+        normalized_new_responses = {
+            str(code): response for code, response in new_responses.items()
+        }
         for status, old_response in old_responses.items():
             status = str(status)
             if status not in normalized_new_responses:
@@ -597,7 +630,9 @@ def load_baseline(ref: str) -> JsonObject | None:
 
 def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("ref", nargs="?", default="origin/main", help="Git baseline ref")
+    parser.add_argument(
+        "ref", nargs="?", default="origin/main", help="Git baseline ref"
+    )
     parser.add_argument(
         "--allow-missing-baseline",
         action="store_true",

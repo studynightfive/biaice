@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "仿真与方案",
 };
 
-export default function SimulationPage() {
-  return <SimulationMount />;
+type SimulationPageProps = {
+  readonly params: Promise<{ projectId: string; unitId: string }>;
+};
+
+export default async function SimulationPage({ params }: SimulationPageProps) {
+  const { unitId } = await params;
+  return <SimulationMount unitId={unitId} />;
 }

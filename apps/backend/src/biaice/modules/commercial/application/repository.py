@@ -24,16 +24,9 @@ def _scope_matches(
 ) -> bool:
     if tenant_id != scope.tenant_id or data_domain_id != scope.data_domain_id:
         return False
-    if (
-        project_id is not None
-        and not scope.all_projects
-        and project_id not in scope.project_ids
-    ):
+    if project_id is not None and not scope.all_projects and project_id not in scope.project_ids:
         return False
-    if (
-        not scope.all_decision_units
-        and decision_unit_id not in scope.decision_unit_ids
-    ):
+    if not scope.all_decision_units and decision_unit_id not in scope.decision_unit_ids:
         return False
     return True
 
@@ -41,13 +34,21 @@ def _scope_matches(
 class CommercialRepository(Protocol):
     def upsert_cost(self, item: CostBaseline) -> None: ...
     def get_cost(self, *, scope: TenantScope, cost_baseline_id: UUID) -> CostBaseline | None: ...
-    def list_costs(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[CostBaseline, ...]: ...
+    def list_costs(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[CostBaseline, ...]: ...
     def upsert_policy(self, item: CommercialPolicy) -> None: ...
     def get_policy(self, *, scope: TenantScope, policy_id: UUID) -> CommercialPolicy | None: ...
-    def list_policies(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[CommercialPolicy, ...]: ...
+    def list_policies(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[CommercialPolicy, ...]: ...
     def upsert_readiness(self, item: StrategyReadinessAssessment) -> None: ...
-    def get_readiness(self, *, scope: TenantScope, readiness_id: UUID) -> StrategyReadinessAssessment | None: ...
-    def list_readiness(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[StrategyReadinessAssessment, ...]: ...
+    def get_readiness(
+        self, *, scope: TenantScope, readiness_id: UUID
+    ) -> StrategyReadinessAssessment | None: ...
+    def list_readiness(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[StrategyReadinessAssessment, ...]: ...
 
 
 class InMemoryCommercialRepository:
@@ -108,7 +109,9 @@ class InMemoryCommercialRepository:
             return None
         return item
 
-    def list_policies(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[CommercialPolicy, ...]:
+    def list_policies(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[CommercialPolicy, ...]:
         with self._lock:
             items = [
                 item

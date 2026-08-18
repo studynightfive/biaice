@@ -41,9 +41,7 @@ def get_me(
         tenant_id=identity.scope.tenant_id,
         data_domain_id=identity.scope.data_domain_id,
         roles=tuple(sorted(role.value for role in identity.roles)),
-        permissions=tuple(
-            sorted(permission.value for permission in identity.permissions)
-        ),
+        permissions=tuple(sorted(permission.value for permission in identity.permissions)),
         mfa_verified=identity.mfa_verified,
         authenticated_at=identity.authenticated_at,
     )

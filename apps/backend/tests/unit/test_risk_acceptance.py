@@ -74,7 +74,9 @@ def _service(
     return service, audit, sink, repository
 
 
-def _create_payload(service: RiskAcceptanceService, *, unit: object = UNIT, approver: object = APPROVER):
+def _create_payload(
+    service: RiskAcceptanceService, *, unit: object = UNIT, approver: object = APPROVER
+):
     return service.create(
         identity=_identity(),
         decision_unit_id=unit,
@@ -101,9 +103,7 @@ def test_create_risk_acceptance_is_active_and_current() -> None:
     actions = [event.action for event in sink.list_events(_identity().scope)]
     assert "approvals_reports.risk_acceptance.create" in actions
     listed = service.list(identity=_identity(), decision_unit_id=UNIT)
-    assert [listed_item.risk_acceptance_id for listed_item in listed] == [
-        item.risk_acceptance_id
-    ]
+    assert [listed_item.risk_acceptance_id for listed_item in listed] == [item.risk_acceptance_id]
 
 
 def test_create_rejects_maker_checker_same_person() -> None:

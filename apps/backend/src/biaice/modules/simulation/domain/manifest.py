@@ -9,6 +9,7 @@ create or freeze a batch that depends on a hash the world cannot prove.
 All functions are pure and frozen — the application layer is responsible for
 serializing manifest entries in a deterministic order.
 """
+
 from __future__ import annotations
 
 import hashlib

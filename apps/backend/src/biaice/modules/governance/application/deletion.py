@@ -67,9 +67,7 @@ class DeletionCoordinator:
         return job
 
     def run_once(self, *, scope: TenantScope, deletion_job_id: UUID) -> DeletionJob:
-        job = self.repository.lock_deletion_job(
-            scope=scope, deletion_job_id=deletion_job_id
-        )
+        job = self.repository.lock_deletion_job(scope=scope, deletion_job_id=deletion_job_id)
         if job is None:
             raise BiaiceError("RESOURCE_NOT_FOUND")
         scope.assert_allows(
@@ -81,9 +79,7 @@ class DeletionCoordinator:
         if job.state == DeletionJobState.COMPLETED:
             return job
         if job.logical_access_blocked_at is None:
-            raise RuntimeError(
-                "physical deletion cannot precede logical access blocking"
-            )
+            raise RuntimeError("physical deletion cannot precede logical access blocking")
 
         holds = self.repository.list_active_holds(scope=scope, target=job.target)
         if holds:
@@ -98,9 +94,7 @@ class DeletionCoordinator:
 
         replicas = tuple(self.repository.list_replicas(scope=scope, target=job.target))
         required_replica_ids = frozenset(
-            replica.replica_id
-            for replica in replicas
-            if replica.required_for_completion
+            replica.replica_id for replica in replicas if replica.required_for_completion
         )
         if not required_replica_ids:
             # Registry completeness is part of the deletion proof. An empty
@@ -155,21 +149,16 @@ class DeletionCoordinator:
                 deletion_job_id=job.deletion_job_id,
                 replica=replica,
                 issued_at=self.clock.now(),
-                deadline_at=self.clock.now()
-                + timedelta(seconds=replica.deletion_sla_seconds),
+                deadline_at=self.clock.now() + timedelta(seconds=replica.deletion_sla_seconds),
                 attempt=attempted.attempt,
                 idempotency_key=f"{job.deletion_job_id}:{replica.replica_id}",
             )
             raw_receipt = adapter.delete(scope=scope, command=command)
-            self._assert_receipt_binding(
-                scope=scope, job=job, command=command, receipt=raw_receipt
-            )
+            self._assert_receipt_binding(scope=scope, job=job, command=command, receipt=raw_receipt)
             receipt = self.receipt_verifier.verify(
                 scope=scope, command=command, receipt=raw_receipt
             )
-            self._assert_receipt_binding(
-                scope=scope, job=job, command=command, receipt=receipt
-            )
+            self._assert_receipt_binding(scope=scope, job=job, command=command, receipt=receipt)
             self.repository.append_receipt(scope=scope, receipt=receipt)
             all_receipts.append(receipt)
 
@@ -181,8 +170,7 @@ class DeletionCoordinator:
         }
         if not required_replica_ids.issubset(successful_ids):
             failed = any(
-                receipt.outcome
-                in {ReceiptOutcome.FAILED_TERMINAL, ReceiptOutcome.UNSUPPORTED}
+                receipt.outcome in {ReceiptOutcome.FAILED_TERMINAL, ReceiptOutcome.UNSUPPORTED}
                 for receipt in latest_by_replica.values()
             )
             waiting = attempted.model_copy(

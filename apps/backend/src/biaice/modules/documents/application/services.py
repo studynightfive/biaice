@@ -341,12 +341,8 @@ class DocumentIntakeService:
         )
         return session
 
-    def get_session(
-        self, *, identity: IdentityContext, session_id: UUID
-    ) -> UploadSession:
-        session = self.repository.get_session(
-            scope=identity.scope, session_id=session_id
-        )
+    def get_session(self, *, identity: IdentityContext, session_id: UUID) -> UploadSession:
+        session = self.repository.get_session(scope=identity.scope, session_id=session_id)
         if session is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
@@ -402,14 +398,14 @@ class DocumentIntakeService:
             received_sha256=digest,
             received_at=now,
         )
-        self.repository.put_chunk(
-            session_id=session.session_id, part_number=part_number, data=data
-        )
-        remaining = [
-            item for item in session.received_parts if item.part_number != part_number
-        ]
+        self.repository.put_chunk(session_id=session.session_id, part_number=part_number, data=data)
+        remaining = [item for item in session.received_parts if item.part_number != part_number]
         updated = session.model_copy(
-            update={"received_parts": tuple(sorted((*remaining, chunk), key=lambda item: item.part_number))}
+            update={
+                "received_parts": tuple(
+                    sorted((*remaining, chunk), key=lambda item: item.part_number)
+                )
+            }
         )
         self.repository.upsert_session(updated)
         self.audit_writer.write(
@@ -429,9 +425,7 @@ class DocumentIntakeService:
         require_audit(self.audit_writer)
         session = self.get_session(identity=identity, session_id=session_id)
         if session.status is UploadSessionStatus.COMPLETED and session.document_id:
-            document = self.get_document(
-                identity=identity, document_id=session.document_id
-            )
+            document = self.get_document(identity=identity, document_id=session.document_id)
             return session, document
         if session.status is UploadSessionStatus.EXPIRED:
             raise BiaiceError("UPLOAD_SESSION_EXPIRED")
@@ -459,9 +453,7 @@ class DocumentIntakeService:
                 "DOCUMENT_TYPE_BLOCKED",
                 detail="Sniffed MIME type is not allowed for intake.",
             )
-        existing = self.repository.find_by_content_hash(
-            scope=identity.scope, content_hash=digest
-        )
+        existing = self.repository.find_by_content_hash(scope=identity.scope, content_hash=digest)
         now = self.clock.now()
         if existing is not None:
             completed = session.model_copy(
@@ -479,9 +471,7 @@ class DocumentIntakeService:
             self.repository.drop_chunks(session_id=session.session_id)
             return completed, existing
         document_id = uuid4()
-        storage_key = (
-            f"quarantine/{session.tenant_id}/{session.session_id}/{session.filename}"
-        )
+        storage_key = f"quarantine/{session.tenant_id}/{session.session_id}/{session.filename}"
         locator_hash = self.repository.put_blob(storage_key, payload)
         status = (
             DocumentStatus.SCAN_FAILED
@@ -528,9 +518,7 @@ class DocumentIntakeService:
         self.repository.upsert_document(document)
         self.repository.upsert_session(completed)
         self.repository.drop_chunks(session_id=session.session_id)
-        self._register_replica(
-            target=_document_target(document), locator_hash=locator_hash
-        )
+        self._register_replica(target=_document_target(document), locator_hash=locator_hash)
         self.audit_writer.write(
             identity=identity,
             action="documents.source_document.upload",
@@ -641,12 +629,8 @@ class DocumentIntakeService:
         merged.sort(key=lambda item: (item.uploaded_at, str(item.document_id)))
         return tuple(merged)
 
-    def get_document(
-        self, *, identity: IdentityContext, document_id: UUID
-    ) -> SourceDocument:
-        document = self.repository.get_document(
-            scope=identity.scope, document_id=document_id
-        )
+    def get_document(self, *, identity: IdentityContext, document_id: UUID) -> SourceDocument:
+        document = self.repository.get_document(scope=identity.scope, document_id=document_id)
         if document is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
@@ -869,19 +853,13 @@ class DocumentIntakeService:
     def get_parse_job(self, *, identity: IdentityContext, job_id: UUID) -> ParseJob:
         job = self.repository.get_parse_job(scope=identity.scope, job_id=job_id)
         if job is None:
-            raise BiaiceError(
-                "JOB_NOT_FOUND", detail=f"Parse job {job_id} not found in scope."
-            )
+            raise BiaiceError("JOB_NOT_FOUND", detail=f"Parse job {job_id} not found in scope.")
         return job
 
-    def execute_parse_job_for_worker(
-        self, *, job_id: UUID, request_id: str
-    ) -> ParseJob:
+    def execute_parse_job_for_worker(self, *, job_id: UUID, request_id: str) -> ParseJob:
         job = self.repository.get_parse_job_unscoped(job_id)
         if job is None:
-            raise BiaiceError(
-                "JOB_NOT_FOUND", detail=f"Parse job {job_id} not found."
-            )
+            raise BiaiceError("JOB_NOT_FOUND", detail=f"Parse job {job_id} not found.")
         identity = IdentityContext(
             subject_id=job.created_by,
             username="ingest-worker",
@@ -896,9 +874,7 @@ class DocumentIntakeService:
             mfa_verified=True,
             authenticated_at=self.clock.now(),
         )
-        return self.execute_parse_job(
-            identity=identity, job_id=job_id, request_id=request_id
-        )
+        return self.execute_parse_job(identity=identity, job_id=job_id, request_id=request_id)
 
     def execute_parse_job(
         self, *, identity: IdentityContext, job_id: UUID, request_id: str
@@ -937,9 +913,7 @@ class DocumentIntakeService:
             self.repository.upsert_parse_job(failed)
             self._emit_parse_failed(identity, failed, request_id)
             return failed
-        extracting = running.model_copy(
-            update={"stage": "PERSIST", "progress_percent": 70}
-        )
+        extracting = running.model_copy(update={"stage": "PERSIST", "progress_percent": 70})
         self.repository.upsert_parse_job(extracting)
         outcome = parse_document(payload, document.mime_category)
         finished_at = self.clock.now()
@@ -959,9 +933,7 @@ class DocumentIntakeService:
             self._emit_parse_failed(identity, failed, request_id)
             return failed
         asset_id = uuid4()
-        storage_key = (
-            f"derived/{document.tenant_id}/{document.document_id}/{asset_id}.txt"
-        )
+        storage_key = f"derived/{document.tenant_id}/{document.document_id}/{asset_id}.txt"
         encoded = outcome.text.encode("utf-8")
         locator_hash = self.repository.put_blob(storage_key, encoded)
         fragment_ref = f"doc:{document.document_id}/fragment:{asset_id}"
@@ -1097,16 +1069,10 @@ class DocumentIntakeService:
         self, *, identity: IdentityContext, document_id: UUID
     ) -> tuple[DerivedAsset, ...]:
         self.get_document(identity=identity, document_id=document_id)
-        return self.repository.list_derived_assets(
-            scope=identity.scope, document_id=document_id
-        )
+        return self.repository.list_derived_assets(scope=identity.scope, document_id=document_id)
 
-    def get_derived_asset(
-        self, *, identity: IdentityContext, asset_id: UUID
-    ) -> DerivedAsset:
-        asset = self.repository.get_derived_asset(
-            scope=identity.scope, asset_id=asset_id
-        )
+    def get_derived_asset(self, *, identity: IdentityContext, asset_id: UUID) -> DerivedAsset:
+        asset = self.repository.get_derived_asset(scope=identity.scope, asset_id=asset_id)
         if asset is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
@@ -1315,11 +1281,7 @@ class DocumentIntakeService:
             )
             if other is not None and other.kind is document.kind:
                 same_kind.append(link)
-        conflict = (
-            DocumentLinkConflictState.OPEN
-            if same_kind
-            else DocumentLinkConflictState.NONE
-        )
+        conflict = DocumentLinkConflictState.OPEN if same_kind else DocumentLinkConflictState.NONE
         now = self.clock.now()
         created = DocumentLink(
             link_id=uuid4(),
@@ -1339,9 +1301,7 @@ class DocumentIntakeService:
         if conflict is DocumentLinkConflictState.OPEN:
             for link in same_kind:
                 self.repository.upsert_link(
-                    link.model_copy(
-                        update={"conflict_state": DocumentLinkConflictState.OPEN}
-                    )
+                    link.model_copy(update={"conflict_state": DocumentLinkConflictState.OPEN})
                 )
         self.audit_writer.write(
             identity=identity,
@@ -1354,9 +1314,7 @@ class DocumentIntakeService:
         )
         return created
 
-    def _register_replica(
-        self, *, target: ScopedObjectRef, locator_hash: str
-    ) -> ReplicaLocation:
+    def _register_replica(self, *, target: ScopedObjectRef, locator_hash: str) -> ReplicaLocation:
         replica = ReplicaLocation(
             replica_id=uuid4(),
             target=target,
@@ -1370,9 +1328,7 @@ class DocumentIntakeService:
         self.repository.upsert_replica(replica)
         return replica
 
-    def _emit_parse_failed(
-        self, identity: IdentityContext, job: ParseJob, request_id: str
-    ) -> None:
+    def _emit_parse_failed(self, identity: IdentityContext, job: ParseJob, request_id: str) -> None:
         _emit_event(
             self.outbox_port,
             identity=identity,
@@ -1401,32 +1357,24 @@ class DocumentReadService:
         document = self.repository.get_document(scope=scope, document_id=document_id)
         if document is None or document.status is not DocumentStatus.RELEASED:
             return None
-        assets = self.repository.list_derived_assets(
-            scope=scope, document_id=document_id
-        )
+        assets = self.repository.list_derived_assets(scope=scope, document_id=document_id)
         latest_job_status: ParseStatus | None = None
         return ReleasedDocumentView(
             document_id=document.document_id,
             content_hash=document.content_hash,
             status=document.status,
-            parse_status=latest_job_status
-            if not assets
-            else ParseStatus.SUCCEEDED,
+            parse_status=latest_job_status if not assets else ParseStatus.SUCCEEDED,
             fragment_refs=tuple(asset.fragment_ref for asset in assets),
             reviewed_by=document.reviewed_by,
             released_by=document.released_by,
             uploaded_at=document.uploaded_at,
         )
 
-    def get_fragment(
-        self, *, scope: TenantScope, asset_id: UUID
-    ) -> DerivedAsset | None:
+    def get_fragment(self, *, scope: TenantScope, asset_id: UUID) -> DerivedAsset | None:
         asset = self.repository.get_derived_asset(scope=scope, asset_id=asset_id)
         if asset is None:
             return None
-        document = self.repository.get_document(
-            scope=scope, document_id=asset.source_document_id
-        )
+        document = self.repository.get_document(scope=scope, document_id=asset.source_document_id)
         if document is None or document.status is not DocumentStatus.RELEASED:
             return None
         return asset

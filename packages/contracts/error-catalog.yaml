@@ -47,6 +47,24 @@
     "status": 422,
     "title": "Candidate-level error blocks the batch"
   },
+  "CONDITION_NOT_OPEN": {
+    "recoverable": false,
+    "remediation": "Refresh the condition and act only while it remains open.",
+    "status": 409,
+    "title": "Condition is not open"
+  },
+  "COST_ALREADY_APPROVED": {
+    "recoverable": false,
+    "remediation": "Create a successor baseline for further changes.",
+    "status": 409,
+    "title": "Cost baseline is already approved"
+  },
+  "COST_NOT_APPROVED": {
+    "recoverable": true,
+    "remediation": "Obtain independent cost approval before publication.",
+    "status": 409,
+    "title": "Cost baseline is not approved"
+  },
   "COVERAGE_BELOW_THRESHOLD": {
     "recoverable": false,
     "remediation": "Increase n_scenarios or relax infra exclusions, then rerun.",
@@ -160,6 +178,24 @@
     "remediation": "Refresh the draft before retrying.",
     "status": 412,
     "title": "ETag mismatch"
+  },
+  "EVIDENCE_DOCUMENT_NOT_RELEASED": {
+    "recoverable": true,
+    "remediation": "Release the referenced document before using it as evidence.",
+    "status": 409,
+    "title": "Evidence document is not released"
+  },
+  "EVIDENCE_REVIEW_REQUIRED": {
+    "recoverable": true,
+    "remediation": "Have an authorized reviewer assess the evidence match.",
+    "status": 409,
+    "title": "Independent evidence review is required"
+  },
+  "EVIDENCE_SATISFIED_WITHOUT_PROOF": {
+    "recoverable": false,
+    "remediation": "Attach current reviewed evidence before marking the requirement satisfied.",
+    "status": 409,
+    "title": "Evidence proof is required"
   },
   "GATE_ASSESSMENT_NOT_FOUND": {
     "recoverable": false,
@@ -395,6 +431,12 @@
     "status": 502,
     "title": "Provider upstream error"
   },
+  "PUBLISHED_VERSION_IMMUTABLE": {
+    "recoverable": false,
+    "remediation": "Create a successor version instead of editing the published version.",
+    "status": 409,
+    "title": "Published version is immutable"
+  },
   "REAL_DATA_MODE_REQUIRED": {
     "recoverable": true,
     "remediation": "Use synthetic data or pass REAL_DATA_MODE.",
@@ -407,11 +449,23 @@
     "status": 422,
     "title": "Request validation failed"
   },
+  "REQUIREMENT_NOT_PUBLISHED": {
+    "recoverable": true,
+    "remediation": "Publish the requirement before using it in a formal match.",
+    "status": 409,
+    "title": "Requirement is not published"
+  },
   "RESOURCE_NOT_FOUND": {
     "recoverable": false,
     "remediation": "Check the resource identifier.",
     "status": 404,
     "title": "Resource not found"
+  },
+  "RESPONSE_PROFILE_EVIDENCE_NOT_CURRENT": {
+    "recoverable": true,
+    "remediation": "Refresh or replace expired, revoked or invalidated evidence.",
+    "status": 409,
+    "title": "Response profile evidence is not current"
   },
   "RETENTION_EXPIRED": {
     "recoverable": false,

@@ -28,20 +28,14 @@ class InputManifestItemRow(Base, TenantScopedMixin):
     manifest_item_id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
     downstream_type: Mapped[str] = mapped_column(String(100), nullable=False)
     downstream_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
-    downstream_version_id: Mapped[UUID] = mapped_column(
-        Uuid, nullable=False, index=True
-    )
+    downstream_version_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     upstream_type: Mapped[str] = mapped_column(String(100), nullable=False)
     upstream_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     upstream_version_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     upstream_content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     dependency_type: Mapped[str] = mapped_column(String(30), nullable=False)
-    affected_fields: Mapped[list[str]] = mapped_column(
-        ARRAY(String(200)), nullable=False
-    )
-    recorded_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    affected_fields: Mapped[list[str]] = mapped_column(ARRAY(String(200)), nullable=False)
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class DataLineageEdgeRow(Base, TenantScopedMixin):
@@ -64,16 +58,10 @@ class DataLineageEdgeRow(Base, TenantScopedMixin):
     upstream_version_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     downstream_type: Mapped[str] = mapped_column(String(100), nullable=False)
     downstream_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
-    downstream_version_id: Mapped[UUID | None] = mapped_column(
-        Uuid, nullable=True, index=True
-    )
+    downstream_version_id: Mapped[UUID | None] = mapped_column(Uuid, nullable=True, index=True)
     dependency_type: Mapped[str] = mapped_column(String(30), nullable=False)
-    affected_fields: Mapped[list[str]] = mapped_column(
-        ARRAY(String(200)), nullable=False
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    affected_fields: Mapped[list[str]] = mapped_column(ARRAY(String(200)), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class InvalidationEventRow(Base, TenantScopedMixin):
@@ -95,9 +83,7 @@ class InvalidationEventRow(Base, TenantScopedMixin):
     downstream_version_id: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
     effect: Mapped[str] = mapped_column(String(30), nullable=False)
     reason_code: Mapped[str] = mapped_column(String(120), nullable=False)
-    occurred_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     idempotency_fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)
 
 
@@ -116,14 +102,10 @@ class SupersessionEventRow(Base, TenantScopedMixin):
 
     supersession_id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
     object_type: Mapped[str] = mapped_column(String(100), nullable=False)
-    superseded_version_id: Mapped[UUID] = mapped_column(
-        Uuid, nullable=False, index=True
-    )
+    superseded_version_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     successor_version_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     reason_code: Mapped[str] = mapped_column(String(120), nullable=False)
-    occurred_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     actor_id: Mapped[UUID] = mapped_column(Uuid, nullable=False)
 
 
@@ -155,9 +137,7 @@ class RetentionDispositionJobRow(Base, TenantScopedMixin):
     )
     legal_hold_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     attempt: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    next_attempt_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    next_attempt_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class LegalHoldRecordRow(Base, TenantScopedMixin):
@@ -174,9 +154,7 @@ class LegalHoldRecordRow(Base, TenantScopedMixin):
     placed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     released_by: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
     release_checked_by: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
-    released_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class LegalHoldOverrideRow(Base, TenantScopedMixin):
@@ -188,9 +166,7 @@ class LegalHoldOverrideRow(Base, TenantScopedMixin):
     reason_code: Mapped[str] = mapped_column(String(120), nullable=False)
     requested_by: Mapped[UUID] = mapped_column(Uuid, nullable=False)
     checked_by: Mapped[UUID] = mapped_column(Uuid, nullable=False)
-    occurred_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class DeletionJobRow(Base, TenantScopedMixin):
@@ -211,9 +187,7 @@ class DeletionJobRow(Base, TenantScopedMixin):
     state: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     reason_code: Mapped[str] = mapped_column(String(120), nullable=False)
     requested_by: Mapped[UUID] = mapped_column(Uuid, nullable=False)
-    requested_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     idempotency_key: Mapped[str] = mapped_column(String(128), nullable=False)
     logical_access_blocked_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
@@ -223,9 +197,7 @@ class DeletionJobRow(Base, TenantScopedMixin):
     )
     legal_hold_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     attempt: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    completed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     tombstone_id: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
 
 
@@ -247,19 +219,13 @@ class DeletionReceiptRow(Base, TenantScopedMixin):
     replica_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     adapter_name: Mapped[str] = mapped_column(String(120), nullable=False)
     outcome: Mapped[str] = mapped_column(String(30), nullable=False)
-    attempted_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
-    completed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    attempted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     evidence_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     adapter_signature: Mapped[str] = mapped_column(Text, nullable=False)
     verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     stable_error_code: Mapped[str | None] = mapped_column(String(120), nullable=True)
-    retry_after: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    retry_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class TombstoneRecordRow(Base, TenantScopedMixin):
@@ -278,9 +244,7 @@ class TombstoneRecordRow(Base, TenantScopedMixin):
     deleted_object_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     deleted_version_id: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
     deletion_job_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
-    deleted_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     reason_code: Mapped[str] = mapped_column(String(120), nullable=False)
     minimal_reference_hash: Mapped[str] = mapped_column(String(64), nullable=False)
 
@@ -298,9 +262,7 @@ class ReplicaLocationProjectionRow(Base, TenantScopedMixin):
     adapter_name: Mapped[str] = mapped_column(String(120), nullable=False)
     adapter_owner: Mapped[str] = mapped_column(String(60), nullable=False)
     locator_hash: Mapped[str] = mapped_column(String(64), nullable=False)
-    required_for_completion: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=True
-    )
+    required_for_completion: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     deletion_sla_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
     retention_expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True

@@ -47,9 +47,7 @@ FIXED_TRANSITIONS: dict[tuple[str, str], dict[str, str]] = {
     ("pia_record", "approve"): {"DRAFT": "APPROVED"},
     ("pia_record", "revoke"): {"APPROVED": "REVOKED"},
     ("cross_border_assessment", "approve"): {"DRAFT": "APPROVED"},
-    ("cross_border_assessment", "mark-not-required"): {
-        "DRAFT": "NOT_REQUIRED"
-    },
+    ("cross_border_assessment", "mark-not-required"): {"DRAFT": "NOT_REQUIRED"},
     ("cross_border_assessment", "revoke"): {
         "APPROVED": "REVOKED",
         "NOT_REQUIRED": "REVOKED",
@@ -71,9 +69,7 @@ FIXED_TRANSITIONS: dict[tuple[str, str], dict[str, str]] = {
     ("dsr_policy", "publish"): {"DRAFT": "PUBLISHED"},
     ("dsr_policy", "archive"): {"PUBLISHED": "ARCHIVED"},
     ("load_profile", "freeze"): {"DRAFT": "FROZEN"},
-    ("data_subject_request", "verify-identity"): {
-        "RECEIVED": "IDENTITY_VERIFIED"
-    },
+    ("data_subject_request", "verify-identity"): {"RECEIVED": "IDENTITY_VERIFIED"},
     ("data_subject_request", "complete"): {
         "IN_PROGRESS": "COMPLETED",
         "READY_TO_COMPLETE": "COMPLETED",
@@ -85,9 +81,7 @@ FIXED_TRANSITIONS: dict[tuple[str, str], dict[str, str]] = {
 DYNAMIC_TRANSITIONS: dict[str, dict[str, frozenset[str]]] = {
     "data_subject_request": {
         "IDENTITY_VERIFIED": frozenset({"IN_PROGRESS", "REJECTED"}),
-        "IN_PROGRESS": frozenset(
-            {"WAITING_FOR_INFORMATION", "READY_TO_COMPLETE", "REJECTED"}
-        ),
+        "IN_PROGRESS": frozenset({"WAITING_FOR_INFORMATION", "READY_TO_COMPLETE", "REJECTED"}),
         "WAITING_FOR_INFORMATION": frozenset({"IN_PROGRESS", "REJECTED"}),
         "READY_TO_COMPLETE": frozenset({"IN_PROGRESS"}),
     },
@@ -99,9 +93,7 @@ DYNAMIC_TRANSITIONS: dict[str, dict[str, frozenset[str]]] = {
     },
 }
 
-INDEPENDENT_CHECKER_ACTIONS = frozenset(
-    {"approve", "mark-not-required", "publish", "freeze"}
-)
+INDEPENDENT_CHECKER_ACTIONS = frozenset({"approve", "mark-not-required", "publish", "freeze"})
 
 
 def _fingerprint(operation_id: str, body: dict[str, Any]) -> str:
@@ -115,9 +107,7 @@ def _fingerprint(operation_id: str, body: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _cursor_sort_key(
-    *, resource_type: str, state: str | None, created_at: datetime
-) -> str:
+def _cursor_sort_key(*, resource_type: str, state: str | None, created_at: datetime) -> str:
     return json.dumps(
         {
             "resource_type": resource_type,
@@ -307,10 +297,7 @@ class MarketResourceService:
                 resource_type=resource_type,
                 resource_id=resource_id,
             )
-            if (
-                action in INDEPENDENT_CHECKER_ACTIONS
-                and current.created_by == identity.subject_id
-            ):
+            if action in INDEPENDENT_CHECKER_ACTIONS and current.created_by == identity.subject_id:
                 raise BiaiceError("MAKER_CHECKER_REQUIRED")
             next_state = self._next_state(
                 resource_type=resource_type,
@@ -361,9 +348,7 @@ class MarketResourceService:
             )
         if action == "transition":
             target = command.target_state
-            allowed = DYNAMIC_TRANSITIONS.get(resource_type, {}).get(
-                current_state, frozenset()
-            )
+            allowed = DYNAMIC_TRANSITIONS.get(resource_type, {}).get(current_state, frozenset())
             if target is None or target not in allowed:
                 raise BiaiceError("INVALID_STATE_TRANSITION")
             return target

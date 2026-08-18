@@ -27,39 +27,52 @@ def _scope_matches(
 ) -> bool:
     if tenant_id != scope.tenant_id or data_domain_id != scope.data_domain_id:
         return False
-    if (
-        project_id is not None
-        and not scope.all_projects
-        and project_id not in scope.project_ids
-    ):
+    if project_id is not None and not scope.all_projects and project_id not in scope.project_ids:
         return False
-    if (
-        not scope.all_decision_units
-        and decision_unit_id not in scope.decision_unit_ids
-    ):
+    if not scope.all_decision_units and decision_unit_id not in scope.decision_unit_ids:
         return False
     return True
 
 
 class EvidenceRepository(Protocol):
     def upsert_requirement(self, item: Requirement) -> None: ...
-    def get_requirement(self, *, scope: TenantScope, requirement_id: UUID) -> Requirement | None: ...
-    def list_requirements(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[Requirement, ...]: ...
+    def get_requirement(
+        self, *, scope: TenantScope, requirement_id: UUID
+    ) -> Requirement | None: ...
+    def list_requirements(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[Requirement, ...]: ...
     def upsert_evidence(self, item: CompanyEvidence) -> None: ...
     def get_evidence(self, *, scope: TenantScope, evidence_id: UUID) -> CompanyEvidence | None: ...
-    def list_evidence(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[CompanyEvidence, ...]: ...
+    def list_evidence(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[CompanyEvidence, ...]: ...
     def upsert_match(self, item: EvidenceMatch) -> None: ...
     def get_match(self, *, scope: TenantScope, match_id: UUID) -> EvidenceMatch | None: ...
-    def list_matches(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[EvidenceMatch, ...]: ...
+    def list_matches(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[EvidenceMatch, ...]: ...
     def upsert_profile(self, item: CompanyResponseProfile) -> None: ...
-    def get_profile(self, *, scope: TenantScope, profile_id: UUID) -> CompanyResponseProfile | None: ...
-    def list_profiles(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[CompanyResponseProfile, ...]: ...
+    def get_profile(
+        self, *, scope: TenantScope, profile_id: UUID
+    ) -> CompanyResponseProfile | None: ...
+    def list_profiles(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[CompanyResponseProfile, ...]: ...
     def upsert_precheck(self, item: PrecheckAssessment) -> None: ...
-    def get_precheck(self, *, scope: TenantScope, precheck_id: UUID) -> PrecheckAssessment | None: ...
-    def list_prechecks(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[PrecheckAssessment, ...]: ...
+    def get_precheck(
+        self, *, scope: TenantScope, precheck_id: UUID
+    ) -> PrecheckAssessment | None: ...
+    def list_prechecks(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[PrecheckAssessment, ...]: ...
     def upsert_condition(self, item: ConditionRequirement) -> None: ...
-    def get_condition(self, *, scope: TenantScope, condition_id: UUID) -> ConditionRequirement | None: ...
-    def list_conditions(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[ConditionRequirement, ...]: ...
+    def get_condition(
+        self, *, scope: TenantScope, condition_id: UUID
+    ) -> ConditionRequirement | None: ...
+    def list_conditions(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[ConditionRequirement, ...]: ...
 
 
 class InMemoryEvidenceRepository:
@@ -89,7 +102,9 @@ class InMemoryEvidenceRepository:
             return None
         return item
 
-    def list_requirements(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[Requirement, ...]:
+    def list_requirements(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[Requirement, ...]:
         with self._lock:
             items = [
                 item
@@ -123,7 +138,9 @@ class InMemoryEvidenceRepository:
             return None
         return item
 
-    def list_evidence(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[CompanyEvidence, ...]:
+    def list_evidence(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[CompanyEvidence, ...]:
         with self._lock:
             items = [
                 item
@@ -157,7 +174,9 @@ class InMemoryEvidenceRepository:
             return None
         return item
 
-    def list_matches(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[EvidenceMatch, ...]:
+    def list_matches(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[EvidenceMatch, ...]:
         with self._lock:
             items = [
                 item
@@ -191,7 +210,9 @@ class InMemoryEvidenceRepository:
             return None
         return item
 
-    def list_profiles(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[CompanyResponseProfile, ...]:
+    def list_profiles(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[CompanyResponseProfile, ...]:
         with self._lock:
             items = [
                 item
@@ -225,7 +246,9 @@ class InMemoryEvidenceRepository:
             return None
         return item
 
-    def list_prechecks(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[PrecheckAssessment, ...]:
+    def list_prechecks(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[PrecheckAssessment, ...]:
         with self._lock:
             items = [
                 item
@@ -246,7 +269,9 @@ class InMemoryEvidenceRepository:
         with self._lock:
             self._conditions[item.condition_id] = item
 
-    def get_condition(self, *, scope: TenantScope, condition_id: UUID) -> ConditionRequirement | None:
+    def get_condition(
+        self, *, scope: TenantScope, condition_id: UUID
+    ) -> ConditionRequirement | None:
         with self._lock:
             item = self._conditions.get(condition_id)
         if item is None or not _scope_matches(
@@ -259,7 +284,9 @@ class InMemoryEvidenceRepository:
             return None
         return item
 
-    def list_conditions(self, *, scope: TenantScope, decision_unit_id: UUID) -> tuple[ConditionRequirement, ...]:
+    def list_conditions(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> tuple[ConditionRequirement, ...]:
         with self._lock:
             items = [
                 item

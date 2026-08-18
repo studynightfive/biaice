@@ -1,4 +1,5 @@
 """Unit tests for probability helpers (FR-07/08)."""
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -32,7 +33,9 @@ def test_p_minus_requires_outcomes() -> None:
 
 
 def test_coverage_reports_undefined_below_threshold() -> None:
-    report = coverage(total_scenarios=10, denominator_scenarios=2, threshold=DecimalStr(value="0.5"))
+    report = coverage(
+        total_scenarios=10, denominator_scenarios=2, threshold=DecimalStr(value="0.5")
+    )
     assert report.is_undefined
     assert is_undefined(report)
     high = coverage(total_scenarios=10, denominator_scenarios=8, threshold=DecimalStr(value="0.5"))
@@ -40,7 +43,9 @@ def test_coverage_reports_undefined_below_threshold() -> None:
 
 
 def test_coverage_zero_denominator_is_undefined() -> None:
-    report = coverage(total_scenarios=10, denominator_scenarios=0, threshold=DecimalStr(value="0.1"))
+    report = coverage(
+        total_scenarios=10, denominator_scenarios=0, threshold=DecimalStr(value="0.1")
+    )
     assert report.is_undefined
 
 

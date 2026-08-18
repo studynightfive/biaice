@@ -10,9 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_valid
 class Money(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    amount: Decimal = Field(
-        description="Decimal fixed-point value, serialized as a string"
-    )
+    amount: Decimal = Field(description="Decimal fixed-point value, serialized as a string")
     currency: str = Field(pattern=r"^[A-Z]{3}$", description="ISO 4217 currency code")
 
     @field_validator("amount", mode="before")

@@ -27,9 +27,7 @@ class JobState(StrEnum):
     FAILED_TERMINAL = "FAILED_TERMINAL"
 
 
-TERMINAL_JOB_STATES = frozenset(
-    {JobState.CANCELLED, JobState.SUCCEEDED, JobState.FAILED_TERMINAL}
-)
+TERMINAL_JOB_STATES = frozenset({JobState.CANCELLED, JobState.SUCCEEDED, JobState.FAILED_TERMINAL})
 
 
 class JobRecord(Base, TenantScopedMixin):
@@ -52,17 +50,11 @@ class JobRecord(Base, TenantScopedMixin):
     payload: Mapped[dict] = mapped_column(JSONB, nullable=False)
     attempt: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     max_attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
-    cancellation_requested: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=False
-    )
+    cancellation_requested: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     last_error_code: Mapped[str | None] = mapped_column(String(100), nullable=True)
     last_error_detail: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class JobView(BaseModel):
@@ -109,9 +101,7 @@ class JobCommandEnvelope(BaseModel):
         return TenantScope(
             tenant_id=self.tenant_id,
             data_domain_id=self.data_domain_id,
-            project_ids=frozenset({self.project_id})
-            if self.project_id
-            else frozenset(),
+            project_ids=frozenset({self.project_id}) if self.project_id else frozenset(),
             decision_unit_ids=frozenset({self.decision_unit_id})
             if self.decision_unit_id
             else frozenset(),
@@ -149,9 +139,7 @@ class JobPort(Protocol):
         idempotency_key: str,
     ) -> JobView | None: ...
 
-    def events(
-        self, *, scope: TenantScope, job_id: UUID, after: int = 0
-    ) -> Sequence[JobEvent]: ...
+    def events(self, *, scope: TenantScope, job_id: UUID, after: int = 0) -> Sequence[JobEvent]: ...
 
 
 class UnavailableJobPort:
@@ -171,8 +159,6 @@ class UnavailableJobPort:
         del scope, job_id, actor_id, idempotency_key
         return None
 
-    def events(
-        self, *, scope: TenantScope, job_id: UUID, after: int = 0
-    ) -> Sequence[JobEvent]:
+    def events(self, *, scope: TenantScope, job_id: UUID, after: int = 0) -> Sequence[JobEvent]:
         del scope, job_id, after
         return ()

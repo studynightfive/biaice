@@ -7,6 +7,7 @@ manual overrides. Failed or INDETERMINATE validations force the batch into
 CANDIDATE_ERROR_NOT_RECOVERABLE — they never trigger scenario deletion or
 metric inflation.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -26,6 +27,7 @@ from biaice.modules.simulation.domain.models import (
 @dataclass(frozen=True, slots=True)
 class StaticValidationContext:
     """Static rules extracted from the frozen baseline manifest and the simulation batch."""
+
     rule_codes: FrozenSet[str]
     revoked_overrides: FrozenSet[str]
     cost_upper_bound: DecimalStr
@@ -101,7 +103,9 @@ def validate_candidate(
 
 def assert_validation_passed(results: Sequence[StaticValidationResult]) -> None:
     """Raise CANDIDATE_ERROR_NOT_RECOVERABLE if any candidate was not PASS."""
-    failed = [result for result in results if result.validation.status != StaticValidationStatus.PASS]
+    failed = [
+        result for result in results if result.validation.status != StaticValidationStatus.PASS
+    ]
     if failed:
         first = failed[0]
         raise BiaiceError(
@@ -116,4 +120,5 @@ def assert_validation_passed(results: Sequence[StaticValidationResult]) -> None:
 
 def _decimal(value: str):
     from decimal import Decimal
+
     return Decimal(value)

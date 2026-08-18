@@ -1,4 +1,5 @@
 """Unit tests for the SHADOW_PILOT_LOCKED snapshot helper."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -59,18 +60,20 @@ def test_assert_shadow_watermark_rejects_tampering() -> None:
 
 def test_create_snapshot_when_lock_false_stays_draft() -> None:
     snapshot = create_snapshot(_request())
-    draft = create_snapshot(SnapshotRequest(
-        snapshot_id=uuid4(),
-        version_id=uuid4(),
-        tenant_id=uuid4(),
-        data_domain_id=uuid4(),
-        project_id=None,
-        decision_unit_id=uuid4(),
-        payload={"k": "v"},
-        created_at=NOW,
-        created_by=uuid4(),
-        lock=False,
-    ))
+    draft = create_snapshot(
+        SnapshotRequest(
+            snapshot_id=uuid4(),
+            version_id=uuid4(),
+            tenant_id=uuid4(),
+            data_domain_id=uuid4(),
+            project_id=None,
+            decision_unit_id=uuid4(),
+            payload={"k": "v"},
+            created_at=NOW,
+            created_by=uuid4(),
+            lock=False,
+        )
+    )
     assert draft.state == SnapshotState.DRAFT
     assert draft.locked_at is None
     # the locked snapshot from _request must still validate watermark

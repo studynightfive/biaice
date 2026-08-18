@@ -41,26 +41,18 @@ def test_empty_project_scope_is_no_access_not_wildcard() -> None:
     project_id = uuid4()
     scope = TenantScope(tenant_id=TENANT_A, data_domain_id=DOMAIN_A)
     with pytest.raises(BiaiceError):
-        scope.assert_allows(
-            tenant_id=TENANT_A, data_domain_id=DOMAIN_A, project_id=project_id
-        )
+        scope.assert_allows(tenant_id=TENANT_A, data_domain_id=DOMAIN_A, project_id=project_id)
     wildcard = scope.model_copy(update={"all_projects": True})
-    wildcard.assert_allows(
-        tenant_id=TENANT_A, data_domain_id=DOMAIN_A, project_id=project_id
-    )
+    wildcard.assert_allows(tenant_id=TENANT_A, data_domain_id=DOMAIN_A, project_id=project_id)
 
 
 def test_signed_cursor_cannot_cross_scope_or_be_tampered() -> None:
     codec = CursorCodec(b"x" * 32)
     scope_a = TenantScope(tenant_id=TENANT_A, data_domain_id=DOMAIN_A)
-    cursor = codec.encode(
-        scope=scope_a, sort_key="2026-08-14T00:00:00Z", tie_breaker=str(uuid4())
-    )
+    cursor = codec.encode(scope=scope_a, sort_key="2026-08-14T00:00:00Z", tie_breaker=str(uuid4()))
     assert codec.decode(cursor, scope=scope_a).sort_key == "2026-08-14T00:00:00Z"
     with pytest.raises(BiaiceError) as mismatch:
-        codec.decode(
-            cursor, scope=TenantScope(tenant_id=TENANT_B, data_domain_id=DOMAIN_A)
-        )
+        codec.decode(cursor, scope=TenantScope(tenant_id=TENANT_B, data_domain_id=DOMAIN_A))
     assert mismatch.value.code == "CURSOR_SCOPE_MISMATCH"
     with pytest.raises(BiaiceError) as tampered:
         codec.decode(cursor[:-1] + ("A" if cursor[-1] != "A" else "B"), scope=scope_a)
@@ -138,7 +130,5 @@ def test_audit_hash_chain_detects_tampering(identity: IdentityContext) -> None:
     )
     assert verify_hash_chain((first, second)) == second.event_hash
     with pytest.raises(BiaiceError) as error:
-        verify_hash_chain(
-            (first, second.model_copy(update={"reason_code": "TAMPERED"}))
-        )
+        verify_hash_chain((first, second.model_copy(update={"reason_code": "TAMPERED"})))
     assert error.value.code == "AUDIT_INTEGRITY_FAILED"

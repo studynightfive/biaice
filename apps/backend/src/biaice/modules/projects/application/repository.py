@@ -63,11 +63,17 @@ class Fr01Repository(Protocol):
         self, *, scope: TenantScope, unit_id: UUID
     ) -> tuple[DecisionUnitLifecycleEvent, ...]: ...
     def upsert_scope(self, item: ScopeAssessment) -> None: ...
-    def get_scope(self, *, scope: TenantScope, scope_assessment_id: UUID) -> ScopeAssessment | None: ...
+    def get_scope(
+        self, *, scope: TenantScope, scope_assessment_id: UUID
+    ) -> ScopeAssessment | None: ...
     def list_scopes(self, *, scope: TenantScope, unit_id: UUID) -> tuple[ScopeAssessment, ...]: ...
     def upsert_regime(self, item: ApplicableRegime) -> None: ...
-    def get_regime(self, *, scope: TenantScope, applicable_regime_id: UUID) -> ApplicableRegime | None: ...
-    def list_regimes(self, *, scope: TenantScope, unit_id: UUID) -> tuple[ApplicableRegime, ...]: ...
+    def get_regime(
+        self, *, scope: TenantScope, applicable_regime_id: UUID
+    ) -> ApplicableRegime | None: ...
+    def list_regimes(
+        self, *, scope: TenantScope, unit_id: UUID
+    ) -> tuple[ApplicableRegime, ...]: ...
     def upsert_rule_set(self, item: RuleSet) -> None: ...
     def get_rule_set(self, *, scope: TenantScope, rule_set_id: UUID) -> RuleSet | None: ...
     def list_rule_sets(self, *, scope: TenantScope, unit_id: UUID) -> tuple[RuleSet, ...]: ...
@@ -75,16 +81,26 @@ class Fr01Repository(Protocol):
     def get_clause(self, *, scope: TenantScope, rule_clause_id: UUID) -> RuleClause | None: ...
     def list_clauses(self, *, scope: TenantScope, rule_set_id: UUID) -> tuple[RuleClause, ...]: ...
     def upsert_review(self, item: ComplianceReview) -> None: ...
-    def get_review(self, *, scope: TenantScope, compliance_review_id: UUID) -> ComplianceReview | None: ...
-    def list_reviews(self, *, scope: TenantScope, unit_id: UUID) -> tuple[ComplianceReview, ...]: ...
+    def get_review(
+        self, *, scope: TenantScope, compliance_review_id: UUID
+    ) -> ComplianceReview | None: ...
+    def list_reviews(
+        self, *, scope: TenantScope, unit_id: UUID
+    ) -> tuple[ComplianceReview, ...]: ...
     def upsert_constraint(self, item: CrossLotConstraint) -> None: ...
     def get_constraint(
         self, *, scope: TenantScope, cross_lot_constraint_id: UUID
     ) -> CrossLotConstraint | None: ...
-    def list_constraints(self, *, scope: TenantScope, unit_id: UUID) -> tuple[CrossLotConstraint, ...]: ...
-    def list_all_clauses_for_unit(self, *, scope: TenantScope, unit_id: UUID) -> tuple[RuleClause, ...]: ...
+    def list_constraints(
+        self, *, scope: TenantScope, unit_id: UUID
+    ) -> tuple[CrossLotConstraint, ...]: ...
+    def list_all_clauses_for_unit(
+        self, *, scope: TenantScope, unit_id: UUID
+    ) -> tuple[RuleClause, ...]: ...
     def upsert_document_ref(self, item: DocumentIntakeRef) -> None: ...
-    def get_document_ref(self, *, scope: TenantScope, event_id: UUID) -> DocumentIntakeRef | None: ...
+    def get_document_ref(
+        self, *, scope: TenantScope, event_id: UUID
+    ) -> DocumentIntakeRef | None: ...
     def list_document_refs(
         self, *, scope: TenantScope, unit_id: UUID | None = None
     ) -> tuple[DocumentIntakeRef, ...]: ...
@@ -234,7 +250,9 @@ class InMemoryFr01Repository:
         with self._lock:
             self._regimes[item.applicable_regime_id] = item
 
-    def get_regime(self, *, scope: TenantScope, applicable_regime_id: UUID) -> ApplicableRegime | None:
+    def get_regime(
+        self, *, scope: TenantScope, applicable_regime_id: UUID
+    ) -> ApplicableRegime | None:
         with self._lock:
             item = self._regimes.get(applicable_regime_id)
         if item is None or not _scope_ok(
@@ -297,10 +315,7 @@ class InMemoryFr01Repository:
                     scope=scope,
                 )
                 and item.project_id == unit.project_id
-                and (
-                    item.decision_unit_id == unit_id
-                    or item.scope_level is RuleScopeLevel.PROJECT
-                )
+                and (item.decision_unit_id == unit_id or item.scope_level is RuleScopeLevel.PROJECT)
             ]
         items.sort(key=lambda item: (item.version.created_at, str(item.rule_set_id)))
         return tuple(items)
@@ -342,7 +357,9 @@ class InMemoryFr01Repository:
     def list_all_clauses_for_unit(
         self, *, scope: TenantScope, unit_id: UUID
     ) -> tuple[RuleClause, ...]:
-        rule_set_ids = {item.rule_set_id for item in self.list_rule_sets(scope=scope, unit_id=unit_id)}
+        rule_set_ids = {
+            item.rule_set_id for item in self.list_rule_sets(scope=scope, unit_id=unit_id)
+        }
         with self._lock:
             items = [
                 item
@@ -363,7 +380,9 @@ class InMemoryFr01Repository:
         with self._lock:
             self._reviews[item.compliance_review_id] = item
 
-    def get_review(self, *, scope: TenantScope, compliance_review_id: UUID) -> ComplianceReview | None:
+    def get_review(
+        self, *, scope: TenantScope, compliance_review_id: UUID
+    ) -> ComplianceReview | None:
         with self._lock:
             item = self._reviews.get(compliance_review_id)
         if item is None or not _scope_ok(
@@ -412,7 +431,9 @@ class InMemoryFr01Repository:
             return None
         return item
 
-    def list_constraints(self, *, scope: TenantScope, unit_id: UUID) -> tuple[CrossLotConstraint, ...]:
+    def list_constraints(
+        self, *, scope: TenantScope, unit_id: UUID
+    ) -> tuple[CrossLotConstraint, ...]:
         with self._lock:
             items = [
                 item

@@ -118,9 +118,7 @@ def test_create_risk_acceptance_and_read_back(client):
     assert item["decision_unit_id"] == str(unit)
 
     listed = client.get(f"/api/v1/decision-units/{unit}/risk-acceptances").json()
-    assert [row["risk_acceptance_id"] for row in listed["items"]] == [
-        item["risk_acceptance_id"]
-    ]
+    assert [row["risk_acceptance_id"] for row in listed["items"]] == [item["risk_acceptance_id"]]
     fetched = client.get(f"/api/v1/risk-acceptances/{item['risk_acceptance_id']}")
     assert fetched.status_code == 200
     assert fetched.json()["version_id"] == item["version_id"]

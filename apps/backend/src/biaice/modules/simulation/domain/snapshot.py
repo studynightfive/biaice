@@ -10,6 +10,7 @@ must therefore never mutate the payload after creation. The create_snapshot
 helper also refuses to produce a snapshot whose payload hash would not match
 the committed version, surfacing SNAPSHOT_PAYLOAD_HASH_MISMATCH.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -56,9 +57,7 @@ def create_snapshot(request: SnapshotRequest) -> SimulationAssessmentSnapshot:
     if not request.payload:
         raise BiaiceError(
             "SNAPSHOT_PAYLOAD_HASH_MISMATCH",
-            detail=(
-                "快照 payload 不能为空 / Snapshot payload cannot be empty."
-            ),
+            detail=("快照 payload 不能为空 / Snapshot payload cannot be empty."),
         )
     payload_hash = compute_payload_hash(request.payload)
     snapshot = SimulationAssessmentSnapshot(

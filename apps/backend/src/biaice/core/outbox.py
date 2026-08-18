@@ -226,9 +226,7 @@ PROHIBITED_EVENT_KEYS = frozenset(
 def _reject_sensitive_keys(value: Any, path: str = "payload") -> None:
     if isinstance(value, dict):
         for key, nested in value.items():
-            canonical_key = (
-                re.sub(r"(?<!^)(?=[A-Z])", "_", key).replace("-", "_").lower()
-            )
+            canonical_key = re.sub(r"(?<!^)(?=[A-Z])", "_", key).replace("-", "_").lower()
             if canonical_key in PROHIBITED_EVENT_KEYS:
                 raise ValueError(f"sensitive event field is forbidden: {path}.{key}")
             _reject_sensitive_keys(nested, f"{path}.{key}")
@@ -266,9 +264,7 @@ class EventEnvelope(BaseModel):
 class OutboxEventRecord(Base, TenantScopedMixin):
     __tablename__ = "outbox_event"
     __table_args__ = (
-        UniqueConstraint(
-            "tenant_id", "data_domain_id", "event_id", name="uq_outbox_scope_event"
-        ),
+        UniqueConstraint("tenant_id", "data_domain_id", "event_id", name="uq_outbox_scope_event"),
     )
 
     event_id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
@@ -276,12 +272,8 @@ class OutboxEventRecord(Base, TenantScopedMixin):
     aggregate_type: Mapped[str] = mapped_column(String(100), nullable=False)
     aggregate_id: Mapped[UUID] = mapped_column(Uuid, nullable=False, index=True)
     payload: Mapped[dict] = mapped_column(JSONB, nullable=False)
-    occurred_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
-    dispatched_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    dispatched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     dispatch_attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
 

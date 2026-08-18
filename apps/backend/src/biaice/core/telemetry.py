@@ -44,13 +44,9 @@ PROHIBITED_TELEMETRY_KEYS = frozenset(
 def _validate_attributes(value: Any, path: str = "attributes") -> None:
     if isinstance(value, dict):
         for key, nested in value.items():
-            canonical_key = (
-                re.sub(r"(?<!^)(?=[A-Z])", "_", key).replace("-", "_").lower()
-            )
+            canonical_key = re.sub(r"(?<!^)(?=[A-Z])", "_", key).replace("-", "_").lower()
             if canonical_key in PROHIBITED_TELEMETRY_KEYS:
-                raise ValueError(
-                    f"sensitive telemetry field is forbidden: {path}.{key}"
-                )
+                raise ValueError(f"sensitive telemetry field is forbidden: {path}.{key}")
             _validate_attributes(nested, f"{path}.{key}")
     elif isinstance(value, list):
         for index, nested in enumerate(value):
@@ -76,15 +72,9 @@ class TelemetryEnvelope(BaseModel):
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         supplied = request.headers.get("X-Request-ID")
-        request_id = (
-            supplied
-            if supplied and SAFE_REQUEST_ID.fullmatch(supplied)
-            else str(uuid4())
-        )
+        request_id = supplied if supplied and SAFE_REQUEST_ID.fullmatch(supplied) else str(uuid4())
         request.state.request_id = request_id
         token = request_id_context.set(request_id)
         try:
@@ -103,14 +93,10 @@ class ScopeOverrideMiddleware(BaseHTTPMiddleware):
         {"x-tenant-id", "x-data-domain-id", "x-project-scope", "x-unit-scope"}
     )
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         from biaice.core.errors import BiaiceError, problem_response
 
-        if self.FORBIDDEN_HEADERS.intersection(
-            header.lower() for header in request.headers
-        ):
+        if self.FORBIDDEN_HEADERS.intersection(header.lower() for header in request.headers):
             return problem_response(request, BiaiceError("SCOPE_OVERRIDE_FORBIDDEN"))
         return await call_next(request)
 
@@ -118,22 +104,15 @@ class ScopeOverrideMiddleware(BaseHTTPMiddleware):
 class BYOKPreBodyGuardMiddleware(BaseHTTPMiddleware):
     """Reject credential/test bodies before FastAPI reads or validates them."""
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         from biaice.core.errors import BiaiceError, problem_response
         from biaice.core.security.gates import GateName
 
         path = request.url.path.rstrip("/")
-        provider_configuration = path.startswith(
-            "/api/v1/ai-provider-configurations/"
-        )
+        provider_configuration = path.startswith("/api/v1/ai-provider-configurations/")
         guarded = provider_configuration and (
             (request.method == "PUT" and path.endswith("/credential"))
-            or (
-                request.method == "POST"
-                and path.endswith(("/test-connection", "/activate"))
-            )
+            or (request.method == "POST" and path.endswith(("/test-connection", "/activate")))
         )
         if not guarded:
             return await call_next(request)
@@ -142,8 +121,8 @@ class BYOKPreBodyGuardMiddleware(BaseHTTPMiddleware):
         if not separator or scheme.lower() != "bearer" or not token:
             return problem_response(request, BiaiceError("AUTH_REQUIRED"))
         try:
-            request.state.pre_authenticated_identity = (
-                request.app.state.authenticator.authenticate(token)
+            request.state.pre_authenticated_identity = request.app.state.authenticator.authenticate(
+                token
             )
         except BiaiceError as error:
             return problem_response(request, error)
@@ -161,11 +140,7 @@ class BYOKPreBodyGuardMiddleware(BaseHTTPMiddleware):
         scheme = forwarded_scheme or request.url.scheme
         host = forwarded_host or request.headers.get("host", "")
         expected = settings.public_origin.removeprefix("https://")
-        if (
-            settings.deployment_profile != "secure_https"
-            or scheme != "https"
-            or host != expected
-        ):
+        if settings.deployment_profile != "secure_https" or scheme != "https" or host != expected:
             return problem_response(
                 request,
                 BiaiceError(

@@ -91,7 +91,7 @@ def _extras(permission: str) -> dict[str, Any]:
         "x-owner": "member-4",
         "x-fr": "FR-04",
         "x-required-permission": permission,
-        "x-schema-status": "OWNER_FROZEN",
+        "x-schema-status": "FROZEN",
     }
 
 
@@ -107,7 +107,9 @@ def list_cost_baselines(
     identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> CostListResponse:
-    return CostListResponse(items=service.list_cost_baselines(identity=identity, decision_unit_id=unit_id))
+    return CostListResponse(
+        items=service.list_cost_baselines(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(
@@ -213,7 +215,9 @@ def list_commercial_policies(
     identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> PolicyListResponse:
-    return PolicyListResponse(items=service.list_policies(identity=identity, decision_unit_id=unit_id))
+    return PolicyListResponse(
+        items=service.list_policies(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(
@@ -295,7 +299,9 @@ def list_readiness_assessments(
     identity: IdentityContext = Depends(RoleGuard(FR04_READ)),
     service: CommercialService = Depends(get_service),
 ) -> ReadinessListResponse:
-    return ReadinessListResponse(items=service.list_readiness(identity=identity, decision_unit_id=unit_id))
+    return ReadinessListResponse(
+        items=service.list_readiness(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(

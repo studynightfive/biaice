@@ -34,9 +34,7 @@ def require_if_match(
         and if_match.endswith('"')
         and all(character in "0123456789abcdef" for character in if_match[1:-1])
     ):
-        raise BiaiceError(
-            "ETAG_MISMATCH", detail="If-Match must contain one strong SHA-256 ETag."
-        )
+        raise BiaiceError("ETAG_MISMATCH", detail="If-Match must contain one strong SHA-256 ETag.")
     return if_match
 
 
@@ -63,9 +61,7 @@ class CursorPage(BaseModel):
 
 
 class CursorCodec:
-    def __init__(
-        self, secret: bytes, *, ttl: timedelta = timedelta(minutes=15)
-    ) -> None:
+    def __init__(self, secret: bytes, *, ttl: timedelta = timedelta(minutes=15)) -> None:
         if len(secret) < 32:
             raise ValueError("cursor HMAC secret must contain at least 32 bytes")
         self.secret = secret

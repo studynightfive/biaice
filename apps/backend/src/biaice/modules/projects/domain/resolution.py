@@ -88,7 +88,9 @@ def resolve_inherited_clauses(
     resolutions: list[RuleResolution] = []
     for key in sorted(grouped):
         pairs = grouped[key]
-        project = [clause for clause, rule_set in pairs if rule_set.scope_level is RuleScopeLevel.PROJECT]
+        project = [
+            clause for clause, rule_set in pairs if rule_set.scope_level is RuleScopeLevel.PROJECT
+        ]
         unit = [
             clause
             for clause, rule_set in pairs
@@ -96,7 +98,9 @@ def resolve_inherited_clauses(
         ]
         if project and len({_expression(item) for item in project}) > 1:
             resolutions.append(
-                _conflict(key, project, "Project-level clauses disagree; last-write-wins is forbidden.")
+                _conflict(
+                    key, project, "Project-level clauses disagree; last-write-wins is forbidden."
+                )
             )
             continue
         if unit and len({_expression(item) for item in unit}) > 1:

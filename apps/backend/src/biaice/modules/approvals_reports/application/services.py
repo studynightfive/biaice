@@ -40,11 +40,7 @@ def _emit_event(
         schema_version=1,
         tenant_id=identity.scope.tenant_id,
         data_domain_id=identity.scope.data_domain_id,
-        project_id=(
-            next(iter(identity.scope.project_ids))
-            if identity.scope.project_ids
-            else None
-        ),
+        project_id=(next(iter(identity.scope.project_ids)) if identity.scope.project_ids else None),
         decision_unit_id=(
             next(iter(identity.scope.decision_unit_ids))
             if identity.scope.decision_unit_ids
@@ -102,8 +98,7 @@ class RiskAcceptanceService:
             raise BiaiceError(
                 "MAKER_CHECKER_REQUIRED",
                 detail=(
-                    "The maker cannot also be the independent approver; "
-                    "choose a different checker."
+                    "The maker cannot also be the independent approver; choose a different checker."
                 ),
             )
         if valid_until <= valid_from:
@@ -118,9 +113,7 @@ class RiskAcceptanceService:
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
             project_id=(
-                next(iter(identity.scope.project_ids))
-                if identity.scope.project_ids
-                else None
+                next(iter(identity.scope.project_ids)) if identity.scope.project_ids else None
             ),
             decision_unit_id=decision_unit_id,
             state=RiskAcceptanceState.ACTIVE,
@@ -183,18 +176,14 @@ class RiskAcceptanceService:
             )
         )
 
-    def get(
-        self, *, identity: IdentityContext, risk_acceptance_id: UUID
-    ) -> RiskAcceptance:
+    def get(self, *, identity: IdentityContext, risk_acceptance_id: UUID) -> RiskAcceptance:
         item = self.repository.get_risk_acceptance(
             scope=identity.scope, risk_acceptance_id=risk_acceptance_id
         )
         if item is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
-                detail=(
-                    f"RiskAcceptance {risk_acceptance_id} not found in scope."
-                ),
+                detail=(f"RiskAcceptance {risk_acceptance_id} not found in scope."),
             )
         return effective_risk_acceptance(item, now=self.clock.now())
 
@@ -213,9 +202,7 @@ class RiskAcceptanceService:
         if item is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
-                detail=(
-                    f"RiskAcceptance {risk_acceptance_id} not found in scope."
-                ),
+                detail=(f"RiskAcceptance {risk_acceptance_id} not found in scope."),
             )
         effective = effective_risk_acceptance(item, now=self.clock.now())
         if effective.state is RiskAcceptanceState.REVOKED:

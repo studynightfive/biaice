@@ -49,7 +49,7 @@ ci(m6-sim): add member-6 simulation job to existing CI workflow
 The new `simulation` job runs alongside the existing CI:
 
 - `PYTHONPATH=apps/backend/src python -m pytest apps/backend/tests -q -k simulation`
-- `npm run test:web -- --testPathPattern=simulation`
+- `npm run test:web -- simulation`
 - `python -m ruff check apps/backend/src/biaice/modules/simulation apps/backend/src/biaice/api/simulation.py`
 - `npx eslint apps/web/src/features/simulation apps/web/src/lib/api/client.ts`
 
@@ -59,7 +59,7 @@ All existing CI jobs (repository-policy, web, backend, compose) are unchanged.
 
 ```bash
 PYTHONPATH=apps/backend/src python -m pytest apps/backend/tests -q -k simulation
-npm run test:web -- --testPathPattern=simulation
+npm run test:web -- simulation
 python -m ruff check apps/backend/src/biaice/modules/simulation apps/backend/src/biaice/api/simulation.py
 python -m alembic -c apps/backend/alembic.ini upgrade head
 ```

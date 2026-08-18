@@ -28,9 +28,7 @@ def backend_root() -> Path:
         resolved = candidate.resolve()
         if (resolved / "alembic.ini").is_file() and (resolved / "migrations").is_dir():
             return resolved
-    raise RuntimeError(
-        "Could not locate alembic.ini and migrations; set BIAICE_BACKEND_ROOT"
-    )
+    raise RuntimeError("Could not locate alembic.ini and migrations; set BIAICE_BACKEND_ROOT")
 
 
 def migrate() -> int:
@@ -45,17 +43,13 @@ def migrate() -> int:
 def seed_synthetic() -> int:
     # Identity seeds belong to Keycloak initialization. Domain fixtures belong
     # to module owners. This command is intentionally an idempotent M0 marker.
-    print(
-        json.dumps({"status": "ok", "mode": "synthetic-only", "domain_rows_created": 0})
-    )
+    print(json.dumps({"status": "ok", "mode": "synthetic-only", "domain_rows_created": 0}))
     return 0
 
 
 def check_gates() -> int:
     service = GateService(get_settings())
-    payload = {
-        gate.value: service.current(gate).model_dump(mode="json") for gate in GateName
-    }
+    payload = {gate.value: service.current(gate).model_dump(mode="json") for gate in GateName}
     print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
     return 0
 

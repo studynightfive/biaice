@@ -115,9 +115,7 @@ class Adapter:
             ).hexdigest(),
             adapter_signature="test-signature",
             verified=False,
-            stable_error_code=None
-            if self.outcome == ReceiptOutcome.SUCCEEDED
-            else "TEST_FAILURE",
+            stable_error_code=None if self.outcome == ReceiptOutcome.SUCCEEDED else "TEST_FAILURE",
         )
 
 
@@ -154,12 +152,8 @@ def setup_coordinator(identity, provider_outcome=ReceiptOutcome.SUCCEEDED, holds
         AdapterOwner.MEMBER_5_PROVIDER_REPLICA,
     )
     repository = FakeRepository((local_replica, provider_replica), holds=holds)
-    local = Adapter(
-        "member3-local", ReplicaKind.OBJECT_STORAGE, ReceiptOutcome.SUCCEEDED
-    )
-    provider = Adapter(
-        "member5-provider", ReplicaKind.PROVIDER_EXTERNAL, provider_outcome
-    )
+    local = Adapter("member3-local", ReplicaKind.OBJECT_STORAGE, ReceiptOutcome.SUCCEEDED)
+    provider = Adapter("member5-provider", ReplicaKind.PROVIDER_EXTERNAL, provider_outcome)
     coordinator = DeletionCoordinator(
         repository=repository,
         adapters=(local, provider),
@@ -181,9 +175,7 @@ def test_deletion_never_completes_until_local_and_provider_receipts_succeed(
     coordinator, repository, _, _, job = setup_coordinator(
         identity, ReceiptOutcome.FAILED_RETRYABLE
     )
-    result = coordinator.run_once(
-        scope=identity.scope, deletion_job_id=job.deletion_job_id
-    )
+    result = coordinator.run_once(scope=identity.scope, deletion_job_id=job.deletion_job_id)
     assert result.state == DeletionJobState.PARTIALLY_FAILED
     assert repository.completed_event_count == 0
     assert repository.tombstone is None
@@ -191,9 +183,7 @@ def test_deletion_never_completes_until_local_and_provider_receipts_succeed(
 
 def test_deletion_completes_atomically_after_all_verified_receipts(identity) -> None:
     coordinator, repository, local, provider, job = setup_coordinator(identity)
-    result = coordinator.run_once(
-        scope=identity.scope, deletion_job_id=job.deletion_job_id
-    )
+    result = coordinator.run_once(scope=identity.scope, deletion_job_id=job.deletion_job_id)
     assert result.state == DeletionJobState.COMPLETED
     assert local.calls == provider.calls == 1
     assert repository.tombstone is not None
@@ -219,12 +209,8 @@ def test_legal_hold_delays_physical_deletion_but_logical_access_stays_blocked(
         placed_by=identity.subject_id,
         placed_at=NOW,
     )
-    coordinator, repository, local, provider, job = setup_coordinator(
-        identity, holds=(hold,)
-    )
-    result = coordinator.run_once(
-        scope=identity.scope, deletion_job_id=job.deletion_job_id
-    )
+    coordinator, repository, local, provider, job = setup_coordinator(identity, holds=(hold,))
+    result = coordinator.run_once(scope=identity.scope, deletion_job_id=job.deletion_job_id)
     assert result.state == DeletionJobState.WAITING_FOR_HOLD_RELEASE
     assert result.logical_access_blocked_at == NOW
     assert local.calls == provider.calls == 0
@@ -251,9 +237,7 @@ def test_empty_replica_registry_is_unknown_not_vacuous_success(identity) -> None
         reason_code="RETENTION_EXPIRED",
         idempotency_key="empty-registry-0001",
     )
-    result = coordinator.run_once(
-        scope=identity.scope, deletion_job_id=job.deletion_job_id
-    )
+    result = coordinator.run_once(scope=identity.scope, deletion_job_id=job.deletion_job_id)
     assert result.state == DeletionJobState.ESCALATED
     assert repository.completed_event_count == 0
 

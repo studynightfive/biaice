@@ -126,7 +126,10 @@ def _stale_current_scopes(
     repository: Fr01Repository, identity: IdentityContext, unit_id: UUID
 ) -> None:
     for item in repository.list_scopes(scope=identity.scope, unit_id=unit_id):
-        if item.validity_state is ResourceValidity.CURRENT and item.lifecycle_state is ResourceLifecycle.PUBLISHED:
+        if (
+            item.validity_state is ResourceValidity.CURRENT
+            and item.lifecycle_state is ResourceLifecycle.PUBLISHED
+        ):
             repository.upsert_scope(
                 item.model_copy(update={"validity_state": ResourceValidity.STALE})
             )
@@ -136,7 +139,10 @@ def _stale_current_regimes(
     repository: Fr01Repository, identity: IdentityContext, unit_id: UUID
 ) -> None:
     for item in repository.list_regimes(scope=identity.scope, unit_id=unit_id):
-        if item.validity_state is ResourceValidity.CURRENT and item.lifecycle_state is ResourceLifecycle.PUBLISHED:
+        if (
+            item.validity_state is ResourceValidity.CURRENT
+            and item.lifecycle_state is ResourceLifecycle.PUBLISHED
+        ):
             repository.upsert_regime(
                 item.model_copy(update={"validity_state": ResourceValidity.STALE})
             )
@@ -241,7 +247,9 @@ class ScopeAssessmentService:
         return self.repository.list_scopes(scope=identity.scope, unit_id=unit_id)
 
     def get(self, *, identity: IdentityContext, scope_assessment_id: UUID) -> ScopeAssessment:
-        item = self.repository.get_scope(scope=identity.scope, scope_assessment_id=scope_assessment_id)
+        item = self.repository.get_scope(
+            scope=identity.scope, scope_assessment_id=scope_assessment_id
+        )
         if item is None:
             raise BiaiceError("RESOURCE_NOT_FOUND")
         identity.scope.assert_allows(
@@ -332,7 +340,10 @@ class ScopeAssessmentService:
             unit.model_copy(update={"current_scope_assessment_id": published.scope_assessment_id})
         )
         command = None
-        if published.round_kind is RoundKind.MULTI_ROUND or published.support is ScopeSupport.MULTI_ROUND_UNSUPPORTED:
+        if (
+            published.round_kind is RoundKind.MULTI_ROUND
+            or published.support is ScopeSupport.MULTI_ROUND_UNSUPPORTED
+        ):
             command = DecisionUnitLifecycleState.MULTI_ROUND_UNSUPPORTED.value
         elif published.cross_lot or published.support is ScopeSupport.PORTFOLIO_REVIEW_REQUIRED:
             command = DecisionUnitLifecycleState.PORTFOLIO_REVIEW_REQUIRED.value
@@ -444,18 +455,24 @@ class ApplicableRegimeService:
         return self.repository.list_regimes(scope=identity.scope, unit_id=unit_id)
 
     def get(self, *, identity: IdentityContext, applicable_regime_id: UUID) -> ApplicableRegime:
-        item = self.repository.get_regime(scope=identity.scope, applicable_regime_id=applicable_regime_id)
+        item = self.repository.get_regime(
+            scope=identity.scope, applicable_regime_id=applicable_regime_id
+        )
         if item is None:
             raise BiaiceError("RESOURCE_NOT_FOUND")
         return item
 
-    def publish(self, *, identity: IdentityContext, applicable_regime_id: UUID, request_id: str) -> ApplicableRegime:
+    def publish(
+        self, *, identity: IdentityContext, applicable_regime_id: UUID, request_id: str
+    ) -> ApplicableRegime:
         require_audit(self.audit_writer)
         current = self.get(identity=identity, applicable_regime_id=applicable_regime_id)
         if current.lifecycle_state is ResourceLifecycle.PUBLISHED:
             raise BiaiceError("REQUEST_VALIDATION_FAILED")
         if identity.subject_id == current.version.created_by:
-            raise BiaiceError("MAKER_CHECKER_REQUIRED", detail="The regime drafter cannot also publish.")
+            raise BiaiceError(
+                "MAKER_CHECKER_REQUIRED", detail="The regime drafter cannot also publish."
+            )
         now = self.clock.now()
         _stale_current_regimes(self.repository, identity, current.decision_unit_id)
         published = current.model_copy(
@@ -572,7 +589,9 @@ class RuleSetService:
         if current.lifecycle_state is ResourceLifecycle.PUBLISHED:
             raise BiaiceError("REQUEST_VALIDATION_FAILED")
         if identity.subject_id == current.version.created_by:
-            raise BiaiceError("MAKER_CHECKER_REQUIRED", detail="The rule-set drafter cannot also publish.")
+            raise BiaiceError(
+                "MAKER_CHECKER_REQUIRED", detail="The rule-set drafter cannot also publish."
+            )
         now = self.clock.now()
         effective = current.effective_from or now
         if effective > now:
@@ -592,7 +611,9 @@ class RuleSetService:
         )
         self.repository.upsert_rule_set(published)
         unit = require_unit(self.repository, identity, current.decision_unit_id)
-        self.repository.upsert_unit(unit.model_copy(update={"current_rule_set_id": published.rule_set_id}))
+        self.repository.upsert_unit(
+            unit.model_copy(update={"current_rule_set_id": published.rule_set_id})
+        )
         for old in revoked:
             _emit_event(
                 self.outbox_port,
@@ -801,7 +822,10 @@ class RuleClauseService:
                 "version": _version(
                     actor_id=identity.subject_id,
                     now=now,
-                    payload={"coverage_key": current.coverage_key, "supersedes": str(current.rule_clause_id)},
+                    payload={
+                        "coverage_key": current.coverage_key,
+                        "supersedes": str(current.rule_clause_id),
+                    },
                     number=current.version.version_number + 1,
                     supersedes=current.version.version_id,
                 ),
@@ -829,7 +853,9 @@ class RuleClauseService:
     ) -> tuple[RuleResolution, ...]:
         require_unit(self.repository, identity, unit_id)
         return resolve_inherited_clauses(
-            clauses=self.repository.list_all_clauses_for_unit(scope=identity.scope, unit_id=unit_id),
+            clauses=self.repository.list_all_clauses_for_unit(
+                scope=identity.scope, unit_id=unit_id
+            ),
             rule_sets=self.repository.list_rule_sets(scope=identity.scope, unit_id=unit_id),
             now=self.clock.now(),
             formal=formal,
@@ -892,7 +918,9 @@ class ComplianceReviewService:
         return self.repository.list_reviews(scope=identity.scope, unit_id=unit_id)
 
     def get(self, *, identity: IdentityContext, compliance_review_id: UUID) -> ComplianceReview:
-        item = self.repository.get_review(scope=identity.scope, compliance_review_id=compliance_review_id)
+        item = self.repository.get_review(
+            scope=identity.scope, compliance_review_id=compliance_review_id
+        )
         if item is None:
             raise BiaiceError("RESOURCE_NOT_FOUND")
         return item
@@ -912,7 +940,10 @@ class ComplianceReviewService:
                 "REQUEST_VALIDATION_FAILED",
                 detail=f"{current.state.value} cannot move to {target.value}.",
             )
-        if current.state is ComplianceReviewState.BLOCKING and target is ComplianceReviewState.CLOSED:
+        if (
+            current.state is ComplianceReviewState.BLOCKING
+            and target is ComplianceReviewState.CLOSED
+        ):
             raise BiaiceError(
                 "REQUEST_VALIDATION_FAILED",
                 detail="BLOCKING reviews can only explore; they cannot close into a formal path.",
@@ -971,7 +1002,9 @@ class CrossLotConstraintService:
             related_unit_ids=related_unit_ids,
             description=description,
             confirmed=False,
-            version=_version(actor_id=identity.subject_id, now=now, payload={"description": description}),
+            version=_version(
+                actor_id=identity.subject_id, now=now, payload={"description": description}
+            ),
         )
         self.repository.upsert_constraint(item)
         self.audit_writer.write(
@@ -990,7 +1023,9 @@ class CrossLotConstraintService:
         require_unit(self.repository, identity, unit_id)
         return self.repository.list_constraints(scope=identity.scope, unit_id=unit_id)
 
-    def get(self, *, identity: IdentityContext, cross_lot_constraint_id: UUID) -> CrossLotConstraint:
+    def get(
+        self, *, identity: IdentityContext, cross_lot_constraint_id: UUID
+    ) -> CrossLotConstraint:
         item = self.repository.get_constraint(
             scope=identity.scope, cross_lot_constraint_id=cross_lot_constraint_id
         )

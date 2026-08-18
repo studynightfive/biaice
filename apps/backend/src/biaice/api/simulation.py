@@ -3,6 +3,7 @@
 
 Registered before contract_stubs so FastAPI first-match-wins routes member-6 operations here.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -63,9 +64,7 @@ def get_simulation_repository(request: Request) -> InMemorySimulationRepository:
     if repository is None:
         raise BiaiceError(
             "INTERNAL_ERROR",
-            detail=(
-                "仿真仓储未配置 / Simulation repository is not configured on app.state."
-            ),
+            detail=("仿真仓储未配置 / Simulation repository is not configured on app.state."),
         )
     return repository
 
@@ -75,9 +74,7 @@ def get_simulation_services(request: Request) -> SimulationServices:
     if services is None:
         raise BiaiceError(
             "INTERNAL_ERROR",
-            detail=(
-                "仿真服务未配置 / Simulation services are not configured on app.state."
-            ),
+            detail=("仿真服务未配置 / Simulation services are not configured on app.state."),
         )
     return services
 
@@ -108,6 +105,8 @@ def get_eligibility_service(request: Request) -> EligibilityService:
 
 def get_snapshot_service(request: Request) -> SnapshotService:
     return get_simulation_services(request).snapshot
+
+
 # Request bodies
 class ManifestItemRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -131,10 +130,12 @@ class ManifestItemRequest(BaseModel):
                 raise ValueError("recorded_at must be ISO 8601 string") from exc
         raise ValueError("recorded_at must be ISO 8601 string, not " + type(value).__name__)
 
+
 class FreezeBaselineRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     decision_unit_id: UUID
     manifest_items: tuple[ManifestItemRequest, ...] = Field(min_length=1)
+
 
 class CreateSearchSpaceRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -144,6 +145,7 @@ class CreateSearchSpaceRequest(BaseModel):
     dimension_axes: tuple[str, ...] = Field(min_length=1)
     candidate_count_lower_bound: int = Field(ge=1)
 
+
 class ScenarioSetMemberRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     scenario_id: UUID
@@ -151,6 +153,7 @@ class ScenarioSetMemberRequest(BaseModel):
     weight: str = Field(pattern=r"^-?\d+(\.\d+)?$")
     label: str = Field(min_length=1, max_length=120)
     params: dict[str, Any] = Field(default_factory=dict)
+
 
 class CreateScenarioSetRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -161,6 +164,7 @@ class CreateScenarioSetRequest(BaseModel):
     members: tuple[ScenarioSetMemberRequest, ...] = Field(min_length=1)
     stress_axes: tuple[str, ...] = Field(default_factory=tuple)
 
+
 class CreateBatchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     decision_unit_id: UUID
@@ -169,6 +173,7 @@ class CreateBatchRequest(BaseModel):
     award_mode: AwardMode
     policy_threshold: str = Field(pattern=r"^-?\d+(\.\d+)?$")
 
+
 class CandidateBlueprintRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     label: str
@@ -176,12 +181,14 @@ class CandidateBlueprintRequest(BaseModel):
     expected_cost: str = Field(pattern=r"^-?\d+(\.\d+)?$")
     expected_margin: str = Field(pattern=r"^-?\d+(\.\d+)?$")
 
+
 class StressScenarioRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     axis: StressAxis
     feasible: bool
     stress_weight: str = Field(pattern=r"^-?\d+(\.\d+)?$")
     detail: str = Field(min_length=1, max_length=400)
+
 
 class CreateOptimizationRunRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -191,6 +198,7 @@ class CreateOptimizationRunRequest(BaseModel):
     blueprints: tuple[CandidateBlueprintRequest, ...] = Field(min_length=1)
     stress_axes: tuple[StressAxis, ...]
     stress_scenarios: tuple[StressScenarioRequest, ...] = Field(default_factory=tuple)
+
 
 class RecommendationEligibilityRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -203,70 +211,87 @@ class RecommendationEligibilityRequest(BaseModel):
     condition: ReviewValidity
     risk_acceptance: ReviewValidity
 
+
 class SnapshotRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     payload: dict[str, Any]
+
 
 # Response envelopes
 class BaselineListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[DecisionBaseline, ...]
 
+
 class SearchSpaceListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[CandidateSearchSpace, ...]
+
 
 class ScenarioSetListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[ScenarioSet, ...]
 
+
 class BatchListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[SimulationBatch, ...]
+
 
 class CandidateListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[SimulationCandidate, ...]
 
+
 class StaticValidationListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[StaticCandidateValidation, ...]
+
 
 class OutcomeListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[ScenarioOutcome, ...]
 
+
 class AssessmentListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[ScenarioStrategyAssessment, ...]
+
 
 class OptimizationRunListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[OptimizationRun, ...]
 
+
 class StressAssessmentListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[StressTestAssessment, ...]
+
 
 class StrategyPlanListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[StrategyPlan, ...]
 
+
 class MergeAssessmentListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[MergeAssessment, ...]
+
 
 class EligibilityListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[RecommendationEligibility, ...]
 
+
 class SnapshotListResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     items: tuple[SimulationAssessmentSnapshot, ...]
 
+
 class SnapshotDownloadResponse(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     snapshot: SimulationAssessmentSnapshot
+
 
 # Helpers
 def _manifest_items_from_request(items):
@@ -283,6 +308,7 @@ def _manifest_items_from_request(items):
         for item in items
     )
 
+
 def _scenario_members_from_request(members):
     result = []
     for item in members:
@@ -291,7 +317,9 @@ def _scenario_members_from_request(members):
         except ValueError as exc:
             raise BiaiceError(
                 "SCENARIO_SET_INVALID",
-                detail="scenario_kind must be one of " + ", ".join(k.value for k in ScenarioKind) + f"; got {item.scenario_kind!r}.",
+                detail="scenario_kind must be one of "
+                + ", ".join(k.value for k in ScenarioKind)
+                + f"; got {item.scenario_kind!r}.",
             ) from exc
         result.append(
             ScenarioSetMember(
@@ -304,6 +332,7 @@ def _scenario_members_from_request(members):
         )
     return tuple(result)
 
+
 def _blueprints_from_request(items):
     return tuple(
         CandidateBlueprint(
@@ -315,8 +344,10 @@ def _blueprints_from_request(items):
         for item in items
     )
 
+
 def _stress_scenarios_from_request(items, *, stress_axes):
     from collections import defaultdict
+
     bucket = defaultdict(list)
     for axis in stress_axes:
         bucket[axis] = []
@@ -330,6 +361,8 @@ def _stress_scenarios_from_request(items, *, stress_axes):
             )
         )
     return bucket
+
+
 # ===== Baseline =====
 @router.get(
     "/decision-units/{unit_id}/decision-baselines",
@@ -343,6 +376,7 @@ def list_decision_baselines(
     service: BaselineService = Depends(get_baseline_service),
 ) -> BaselineListResponse:
     return BaselineListResponse(items=service.list(identity=identity, decision_unit_id=unit_id))
+
 
 @router.post(
     "/decision-units/{unit_id}/decision-baselines/freeze",
@@ -369,6 +403,7 @@ def freeze_decision_baseline(
         request_id=request.state.request_id,
     )
 
+
 @router.get(
     "/decision-baselines/{decision_baseline_id}",
     operation_id="get_decision_baseline",
@@ -381,6 +416,7 @@ def get_decision_baseline(
     service: BaselineService = Depends(get_baseline_service),
 ) -> DecisionBaseline:
     return service.get(identity=identity, baseline_id=decision_baseline_id)
+
 
 # ===== Search space =====
 @router.get(
@@ -395,6 +431,7 @@ def list_candidate_search_spaces(
     service: SearchSpaceService = Depends(get_search_space_service),
 ) -> SearchSpaceListResponse:
     return SearchSpaceListResponse(items=service.list(identity=identity, decision_unit_id=unit_id))
+
 
 @router.post(
     "/decision-units/{unit_id}/candidate-search-spaces",
@@ -424,6 +461,7 @@ def create_candidate_search_space(
         request_id=request.state.request_id,
     )
 
+
 @router.get(
     "/candidate-search-spaces/{candidate_search_space_id}",
     operation_id="get_candidate_search_space",
@@ -436,6 +474,7 @@ def get_candidate_search_space(
     service: SearchSpaceService = Depends(get_search_space_service),
 ) -> CandidateSearchSpace:
     return service.get(identity=identity, search_space_id=candidate_search_space_id)
+
 
 # ===== Scenario set =====
 @router.get(
@@ -450,6 +489,7 @@ def list_scenario_sets(
     service: ScenarioSetService = Depends(get_scenario_set_service),
 ) -> ScenarioSetListResponse:
     return ScenarioSetListResponse(items=service.list(identity=identity, decision_unit_id=unit_id))
+
 
 @router.post(
     "/decision-units/{unit_id}/scenario-sets",
@@ -466,21 +506,20 @@ def create_scenario_set(
     ),
     idempotency_key: str = Depends(require_idempotency_key),
     service: ScenarioSetService = Depends(get_scenario_set_service),
-    repository: InMemorySimulationRepository = Depends(get_simulation_repository),
 ) -> ScenarioSet:
     if body.decision_unit_id != unit_id:
         raise BiaiceError("TENANT_SCOPE_VIOLATION")
-    evaluation_space = repository.get_search_space(scope=identity.scope, search_space_id=body.evaluation_space_id) if body.evaluation_space_id else None
     return service.create(
         identity=identity,
         decision_unit_id=unit_id,
         baseline_id=body.baseline_id,
         search_space_id=body.search_space_id,
-        evaluation_space_id=evaluation_space,
+        evaluation_space_id=body.evaluation_space_id,
         members=_scenario_members_from_request(body.members),
         stress_axes=[StressAxis(axis) for axis in body.stress_axes],
         request_id=request.state.request_id,
     )
+
 
 @router.get(
     "/scenario-sets/{scenario_set_id}",
@@ -494,6 +533,7 @@ def get_scenario_set(
     service: ScenarioSetService = Depends(get_scenario_set_service),
 ) -> ScenarioSet:
     return service.get(identity=identity, scenario_set_id=scenario_set_id)
+
 
 @router.post(
     "/scenario-sets/{scenario_set_id}/freeze",
@@ -515,6 +555,8 @@ def freeze_scenario_set(
         scenario_set_id=scenario_set_id,
         request_id=request.state.request_id,
     )
+
+
 # ===== Batches =====
 @router.post(
     "/decision-units/{unit_id}/simulation-batches",
@@ -526,9 +568,7 @@ def create_simulation_batch(
     body: CreateBatchRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.SIMULATION_BATCH_RUN, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_RUN, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: SimulationBatchService = Depends(get_batch_service),
 ) -> SimulationBatch:
@@ -544,6 +584,7 @@ def create_simulation_batch(
         request_id=request.state.request_id,
     )
 
+
 @router.get(
     "/decision-units/{unit_id}/simulation-batches",
     operation_id="list_simulation_batches",
@@ -556,6 +597,7 @@ def list_simulation_batches(
     service: SimulationBatchService = Depends(get_batch_service),
 ) -> BatchListResponse:
     return BatchListResponse(items=service.list(identity=identity, decision_unit_id=unit_id))
+
 
 @router.get(
     "/simulation-batches/{batch_id}",
@@ -570,6 +612,7 @@ def get_simulation_batch(
 ) -> SimulationBatch:
     return service.get(identity=identity, batch_id=batch_id)
 
+
 @router.post(
     "/simulation-batches/{batch_id}/cancel",
     operation_id="cancel_simulation_batch",
@@ -579,9 +622,7 @@ def get_simulation_batch(
 def cancel_simulation_batch(
     batch_id: UUID,
     request: Request,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.SIMULATION_BATCH_RUN, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_RUN, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: SimulationBatchService = Depends(get_batch_service),
 ) -> SimulationBatch:
@@ -590,6 +631,7 @@ def cancel_simulation_batch(
         batch_id=batch_id,
         request_id=request.state.request_id,
     )
+
 
 @router.post(
     "/simulation-batches/{batch_id}/retry",
@@ -600,9 +642,7 @@ def cancel_simulation_batch(
 def retry_simulation_batch(
     batch_id: UUID,
     request: Request,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.SIMULATION_BATCH_RUN, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_RUN, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: SimulationBatchService = Depends(get_batch_service),
 ) -> SimulationBatch:
@@ -611,6 +651,7 @@ def retry_simulation_batch(
         batch_id=batch_id,
         request_id=request.state.request_id,
     )
+
 
 @router.get(
     "/simulation-batches/{batch_id}/candidates",
@@ -623,7 +664,10 @@ def list_simulation_batch_candidates(
     identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_READ)),
     repository: InMemorySimulationRepository = Depends(get_simulation_repository),
 ) -> CandidateListResponse:
-    return CandidateListResponse(items=repository.list_candidates(scope=identity.scope, batch_id=batch_id))
+    return CandidateListResponse(
+        items=repository.list_candidates(scope=identity.scope, batch_id=batch_id)
+    )
+
 
 @router.get(
     "/simulation-batches/{batch_id}/static-validations",
@@ -636,7 +680,10 @@ def list_simulation_batch_static_validations(
     identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_READ)),
     repository: InMemorySimulationRepository = Depends(get_simulation_repository),
 ) -> StaticValidationListResponse:
-    return StaticValidationListResponse(items=repository.list_static_validations(scope=identity.scope, batch_id=batch_id))
+    return StaticValidationListResponse(
+        items=repository.list_static_validations(scope=identity.scope, batch_id=batch_id)
+    )
+
 
 @router.get(
     "/simulation-batches/{batch_id}/scenario-outcomes",
@@ -649,7 +696,10 @@ def list_simulation_batch_scenario_outcomes(
     identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_READ)),
     repository: InMemorySimulationRepository = Depends(get_simulation_repository),
 ) -> OutcomeListResponse:
-    return OutcomeListResponse(items=repository.list_scenario_outcomes(scope=identity.scope, batch_id=batch_id))
+    return OutcomeListResponse(
+        items=repository.list_scenario_outcomes(scope=identity.scope, batch_id=batch_id)
+    )
+
 
 @router.get(
     "/simulation-batches/{batch_id}/scenario-assessments",
@@ -662,7 +712,11 @@ def list_simulation_batch_scenario_assessments(
     identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_READ)),
     repository: InMemorySimulationRepository = Depends(get_simulation_repository),
 ) -> AssessmentListResponse:
-    return AssessmentListResponse(items=repository.list_strategy_assessments(scope=identity.scope, batch_id=batch_id))
+    return AssessmentListResponse(
+        items=repository.list_strategy_assessments(scope=identity.scope, batch_id=batch_id)
+    )
+
+
 # ===== Optimization =====
 @router.post(
     "/simulation-batches/{batch_id}/optimization-runs",
@@ -688,9 +742,12 @@ def create_optimization_run(
         policy_threshold=body.policy_threshold,
         blueprints=_blueprints_from_request(body.blueprints),
         stress_axes=list(body.stress_axes),
-        stress_scenarios=_stress_scenarios_from_request(body.stress_scenarios, stress_axes=body.stress_axes),
+        stress_scenarios=_stress_scenarios_from_request(
+            body.stress_scenarios, stress_axes=body.stress_axes
+        ),
         request_id=request.state.request_id,
     )
+
 
 @router.get(
     "/simulation-batches/{batch_id}/optimization-runs",
@@ -705,6 +762,7 @@ def list_optimization_runs(
 ) -> OptimizationRunListResponse:
     return OptimizationRunListResponse(items=service.list(identity=identity, batch_id=batch_id))
 
+
 @router.get(
     "/optimization-runs/{run_id}",
     operation_id="get_optimization_run",
@@ -717,6 +775,7 @@ def get_optimization_run(
     service: OptimizationService = Depends(get_optimization_service),
 ) -> OptimizationRun:
     return service.get(identity=identity, run_id=run_id)
+
 
 @router.post(
     "/optimization-runs/{run_id}/finalize",
@@ -739,6 +798,7 @@ def finalize_optimization_run(
         request_id=request.state.request_id,
     )
 
+
 @router.post(
     "/optimization-runs/{run_id}/invalidate",
     operation_id="invalidate_optimization_run",
@@ -760,6 +820,7 @@ def invalidate_optimization_run(
         request_id=request.state.request_id,
     )
 
+
 @router.get(
     "/optimization-runs/{run_id}/stress-test-assessments",
     operation_id="list_optimization_stress_test_assessments",
@@ -772,6 +833,7 @@ def list_optimization_stress_test_assessments(
     service: OptimizationService = Depends(get_optimization_service),
 ) -> StressAssessmentListResponse:
     return StressAssessmentListResponse(items=service.list_stress(identity=identity, run_id=run_id))
+
 
 @router.get(
     "/optimization-runs/{run_id}/strategy-plans",
@@ -786,6 +848,7 @@ def list_optimization_strategy_plans(
 ) -> StrategyPlanListResponse:
     return StrategyPlanListResponse(items=service.list_plans(identity=identity, run_id=run_id))
 
+
 @router.get(
     "/optimization-runs/{run_id}/merge-assessments",
     operation_id="list_optimization_merge_assessments",
@@ -797,7 +860,10 @@ def list_optimization_merge_assessments(
     identity: IdentityContext = Depends(PermissionGuard(Permission.SIMULATION_BATCH_READ)),
     service: OptimizationService = Depends(get_optimization_service),
 ) -> MergeAssessmentListResponse:
-    return MergeAssessmentListResponse(items=service.list_merge_assessments(identity=identity, run_id=run_id))
+    return MergeAssessmentListResponse(
+        items=service.list_merge_assessments(identity=identity, run_id=run_id)
+    )
+
 
 @router.post(
     "/strategy-plans/{strategy_plan_id}/publish",
@@ -820,6 +886,7 @@ def publish_strategy_plan(
         request_id=request.state.request_id,
     )
 
+
 @router.post(
     "/strategy-plans/{strategy_plan_id}/invalidate",
     operation_id="invalidate_strategy_plan",
@@ -840,6 +907,7 @@ def invalidate_strategy_plan(
         plan_id=strategy_plan_id,
         request_id=request.state.request_id,
     )
+
 
 # ===== Eligibility =====
 @router.post(
@@ -874,6 +942,7 @@ def create_recommendation_eligibility(
         request_id=request.state.request_id,
     )
 
+
 @router.get(
     "/decision-units/{unit_id}/recommendation-eligibilities",
     operation_id="list_recommendation_eligibilities",
@@ -887,6 +956,7 @@ def list_recommendation_eligibilities(
 ) -> EligibilityListResponse:
     return EligibilityListResponse(items=service.list(identity=identity, decision_unit_id=unit_id))
 
+
 @router.get(
     "/recommendation-eligibilities/{recommendation_eligibilitie_id}",
     operation_id="get_recommendation_eligibilitie",
@@ -899,6 +969,7 @@ def get_recommendation_eligibility(
     service: EligibilityService = Depends(get_eligibility_service),
 ) -> RecommendationEligibility:
     return service.get(identity=identity, eligibility_id=recommendation_eligibilitie_id)
+
 
 # ===== Snapshots =====
 @router.post(
@@ -924,6 +995,7 @@ def create_simulation_assessment_snapshot(
         request_id=request.state.request_id,
     )
 
+
 @router.get(
     "/decision-units/{unit_id}/simulation-assessment-snapshots",
     operation_id="list_simulation_assessment_snapshots",
@@ -937,6 +1009,7 @@ def list_simulation_assessment_snapshots(
 ) -> SnapshotListResponse:
     return SnapshotListResponse(items=service.list(identity=identity, decision_unit_id=unit_id))
 
+
 @router.get(
     "/simulation-assessment-snapshots/{simulation_assessment_snapshot_id}",
     operation_id="get_simulation_assessment_snapshot",
@@ -949,6 +1022,7 @@ def get_simulation_assessment_snapshot(
     service: SnapshotService = Depends(get_snapshot_service),
 ) -> SimulationAssessmentSnapshot:
     return service.get(identity=identity, snapshot_id=simulation_assessment_snapshot_id)
+
 
 @router.get(
     "/simulation-assessment-snapshots/{simulation_assessment_snapshot_id}/download",

@@ -63,9 +63,7 @@ def test_adding_required_parameter_breaks_but_making_it_optional_does_not() -> N
     new_operation = copy.deepcopy(old_operation)
     new_operation["parameters"][0]["required"] = True
 
-    failures = checker.find_breaking_changes(
-        _document(old_operation), _document(new_operation)
-    )
+    failures = checker.find_breaking_changes(_document(old_operation), _document(new_operation))
     assert any("new required parameters [('query', 'limit')]" in item for item in failures)
 
     reverse_failures = checker.find_breaking_changes(
@@ -88,21 +86,15 @@ def test_request_schema_cannot_add_a_required_property() -> None:
         },
     }
     new_operation = copy.deepcopy(old_operation)
-    new_operation["requestBody"]["content"]["application/json"]["schema"][
-        "required"
-    ] = ["query"]
+    new_operation["requestBody"]["content"]["application/json"]["schema"]["required"] = ["query"]
 
-    failures = checker.find_breaking_changes(
-        _document(old_operation), _document(new_operation)
-    )
+    failures = checker.find_breaking_changes(_document(old_operation), _document(new_operation))
     assert any("new required request properties ['query']" in item for item in failures)
 
 
 def test_response_schema_cannot_remove_a_property_or_expand_an_enum() -> None:
     old_operation = _operation()
-    response_schema = old_operation["responses"]["200"]["content"]["application/json"][
-        "schema"
-    ]
+    response_schema = old_operation["responses"]["200"]["content"]["application/json"]["schema"]
     response_schema["properties"]["status"] = {
         "type": "string",
         "enum": ["ready"],
@@ -110,16 +102,12 @@ def test_response_schema_cannot_remove_a_property_or_expand_an_enum() -> None:
     response_schema["required"].append("status")
 
     new_operation = copy.deepcopy(old_operation)
-    new_schema = new_operation["responses"]["200"]["content"]["application/json"][
-        "schema"
-    ]
+    new_schema = new_operation["responses"]["200"]["content"]["application/json"]["schema"]
     del new_schema["properties"]["id"]
     new_schema["required"].remove("id")
     new_schema["properties"]["status"]["enum"].append("pending")
 
-    failures = checker.find_breaking_changes(
-        _document(old_operation), _document(new_operation)
-    )
+    failures = checker.find_breaking_changes(_document(old_operation), _document(new_operation))
     assert any("removed response properties ['id']" in item for item in failures)
     assert any("incompatible response enum" in item for item in failures)
 
@@ -134,9 +122,7 @@ def test_response_status_and_media_type_removal_break() -> None:
         }
     }
 
-    failures = checker.find_breaking_changes(
-        _document(old_operation), _document(new_operation)
-    )
+    failures = checker.find_breaking_changes(_document(old_operation), _document(new_operation))
     assert "createWidget: removed success responses ['200']" in failures
 
     media_operation = copy.deepcopy(old_operation)
@@ -206,9 +192,7 @@ def test_contract_only_stub_graduation_is_not_a_breaking_change() -> None:
         },
     }
 
-    failures = checker.find_breaking_changes(
-        _document(old_operation), _document(new_operation)
-    )
+    failures = checker.find_breaking_changes(_document(old_operation), _document(new_operation))
     assert failures == []
 
     # Still-stub updates remain subject to compatibility checks.
@@ -216,9 +200,7 @@ def test_contract_only_stub_graduation_is_not_a_breaking_change() -> None:
     stub_schema = still_stub["responses"]["200"]["content"]["application/json"]["schema"]
     del stub_schema["properties"]["owner"]
     stub_schema["required"].remove("owner")
-    stub_failures = checker.find_breaking_changes(
-        _document(old_operation), _document(still_stub)
-    )
+    stub_failures = checker.find_breaking_changes(_document(old_operation), _document(still_stub))
     assert any("removed response properties ['owner']" in item for item in stub_failures)
 
 

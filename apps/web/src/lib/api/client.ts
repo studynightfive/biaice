@@ -51,14 +51,21 @@ export interface BiaiceProblem extends Error {
   details?: unknown;
 }
 
-const DEFAULT_BASE = process.env.BIAICE_API_BASE ?? "http://localhost:8000";
+// Browser calls must stay on the same origin so the BFF can attach the
+// HttpOnly OIDC session. The browser must never call the backend directly.
+const DEFAULT_BASE = "";
 
 function buildProblem(
   status: number,
   payload: unknown,
   fallback: string,
 ): BiaiceProblem {
-  const problem: BiaiceProblem = Object.assign(new Error(fallback), {
+  const detail =
+    typeof payload === "object" && payload !== null
+      ? (payload as { detail?: unknown }).detail
+      : undefined;
+  const message = typeof detail === "string" && detail ? detail : fallback;
+  const problem: BiaiceProblem = Object.assign(new Error(message), {
     name: "BiaiceProblem",
     status,
     type: typeof payload === "object" && payload !== null
@@ -111,7 +118,7 @@ class HttpBiaiceClient implements BiaiceClient {
   ): Promise<TResponse> {
     const url = appendQuery(this.base + path, options.query);
     const headers: Record<string, string> = {
-      Accept: "application/json",
+      Accept: "application/json, application/problem+json",
     };
     if (options.body !== undefined) {
       headers["Content-Type"] = "application/json";
@@ -125,6 +132,7 @@ class HttpBiaiceClient implements BiaiceClient {
 
     const response = await fetch(url, {
       method,
+      credentials: "include",
       headers,
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
       cache: options.cache ?? "no-store",

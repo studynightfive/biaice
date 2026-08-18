@@ -11,4 +11,3 @@ __all__ = [
     "configure_market_privacy_services",
     "get_market_resource_service",
 ]
-

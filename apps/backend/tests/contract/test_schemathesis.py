@@ -11,9 +11,10 @@ from schemathesis.specs.openapi.checks import (
     positive_data_acceptance,
 )
 
-from biaice.api.model_lifecycle import MODEL_LIFECYCLE_OPERATION_IDS
+from biaice.api.contract_stubs import (
+    IMPLEMENTED_OPERATION_IDS as IMPLEMENTED_CATALOG_OPERATION_IDS,
+)
 from biaice.api.operation_catalog import OPERATION_CATALOG
-from biaice.api.provider_management import PROVIDER_MANAGEMENT_OPERATION_IDS
 from biaice.core.auth import Authenticator, IdentityContext, Role, TenantScope
 from biaice.core.config import Settings
 from biaice.core.jobs import JobEvent, JobPort, JobState, JobView
@@ -113,121 +114,16 @@ APP = create_app(
 )
 OPENAPI = APP.openapi()
 
-MEMBER7_IMPLEMENTED_OPERATION_IDS = frozenset(
-    {
-        "create_risk_acceptance",
-        "list_risk_acceptances",
-        "get_risk_acceptance",
-        "revoke_risk_acceptance",
-    }
-)
-MEMBER3_IMPLEMENTED_OPERATION_IDS = frozenset(
-    {
-        "create_project_document_upload_session",
-        "create_unit_document_upload_session",
-        "get_document_upload_session",
-        "put_document_upload_chunk",
-        "complete_document_upload_session",
-        "cancel_document_upload_session",
-        "list_project_documents",
-        "list_unit_documents",
-        "get_document",
-        "review_document",
-        "release_from_quarantine_document",
-        "quarantine_document",
-        "download_document",
-        "inherit_to_unit_document_link",
-        "override_document_link",
-        "resolve_conflict_document_link",
-        "detach_document_link",
-        "create_project_parse_job",
-        "create_unit_parse_job",
-        "get_parse_job",
-        "retry_parse_job",
-        "cancel_parse_job",
-        "list_document_derived_assets",
-        "get_derived_asset",
-        "list_replicas",
-    }
-)
-FR05_IMPLEMENTED_OPERATION_IDS = frozenset(
-    operation.operation_id for operation in OPERATION_CATALOG if operation.fr == "FR-05"
-)
-FR12_IMPLEMENTED_OPERATION_IDS = frozenset(
-    operation.operation_id for operation in OPERATION_CATALOG if operation.fr == "FR-12"
-)
-MEMBER6_IMPLEMENTED_OPERATION_IDS = frozenset(
-    {
-        "list_decision_baselines",
-        "freeze_decision_baseline",
-        "get_decision_baseline",
-        "list_candidate_search_spaces",
-        "create_candidate_search_space",
-        "get_candidate_search_space",
-        "list_scenario_sets",
-        "create_scenario_set",
-        "get_scenario_set",
-        "freeze_scenario_set",
-        "create_simulation_batch",
-        "list_simulation_batches",
-        "get_simulation_batch",
-        "cancel_simulation_batch",
-        "retry_simulation_batch",
-        "list_simulation_batch_candidates",
-        "list_simulation_batch_static_validations",
-        "list_simulation_batch_scenario_outcomes",
-        "list_simulation_batch_scenario_assessments",
-        "create_optimization_run",
-        "list_optimization_runs",
-        "get_optimization_run",
-        "finalize_optimization_run",
-        "invalidate_optimization_run",
-        "list_optimization_stress_test_assessments",
-        "list_optimization_strategy_plans",
-        "list_optimization_merge_assessments",
-        "publish_strategy_plan",
-        "invalidate_strategy_plan",
-        "create_recommendation_eligibilitie",
-        "list_recommendation_eligibilities",
-        "get_recommendation_eligibilitie",
-        "create_simulation_assessment_snapshot",
-        "list_simulation_assessment_snapshots",
-        "get_simulation_assessment_snapshot",
-        "download_simulation_assessment_snapshot",
-        "create_recommendation_eligibilitie",
-        "get_recommendation_eligibilitie",
-    }
-)
-IMPLEMENTED_CATALOG_OPERATION_IDS = (
-    MEMBER7_IMPLEMENTED_OPERATION_IDS
-    | MEMBER3_IMPLEMENTED_OPERATION_IDS
-    | FR05_IMPLEMENTED_OPERATION_IDS
-    | FR12_IMPLEMENTED_OPERATION_IDS
-    | MODEL_LIFECYCLE_OPERATION_IDS
-    | PROVIDER_MANAGEMENT_OPERATION_IDS
-    | MEMBER6_IMPLEMENTED_OPERATION_IDS
-)
-
-FR12_LIST_OPERATION_IDS = frozenset(
-    operation.operation_id
-    for operation in OPERATION_CATALOG
-    if operation.fr == "FR-12" and operation.operation_id.startswith("list_")
-)
-MODEL_LIFECYCLE_LIST_OPERATION_IDS = frozenset(
-    operation_id
-    for operation_id in MODEL_LIFECYCLE_OPERATION_IDS
-    if operation_id.startswith("list_")
-)
-PROVIDER_LIST_OPERATION_IDS = frozenset(
-    {
-        "list_ai_provider_configurations",
-        "list_provider_invocations",
-    }
-)
-SIGNED_CURSOR_LIST_OPERATION_IDS = (
-    FR12_LIST_OPERATION_IDS
-    | MODEL_LIFECYCLE_LIST_OPERATION_IDS
-    | PROVIDER_LIST_OPERATION_IDS
+OPAQUE_CURSOR_LIST_OPERATION_IDS = frozenset(
+    operation["operationId"]
+    for path_item in OPENAPI["paths"].values()
+    for operation in path_item.values()
+    if isinstance(operation, dict)
+    and "operationId" in operation
+    and any(
+        parameter.get("in") == "query" and parameter.get("name") == "cursor"
+        for parameter in operation.get("parameters", [])
+    )
 )
 FR12_MISSING_RESOURCE_OPERATION_IDS = frozenset(
     operation.operation_id
@@ -272,45 +168,53 @@ EXPECTED_FOUNDATION_UNAVAILABLE: dict[str, frozenset[int]] = {
 # answer; only the generic "positive data must be accepted" check is waived
 # for these operations. Positive and negative paths are covered by explicit
 # contract tests.
-EXPECTED_BUSINESS_RULE_422: frozenset[str] = frozenset(
-    {
-        "create_risk_acceptance",
-        "create_project_document_upload_session",
-        "create_unit_document_upload_session",
-        "put_document_upload_chunk",
-        "complete_document_upload_session",
-        "cancel_document_upload_session",
-        "review_document",
-        "release_from_quarantine_document",
-        "quarantine_document",
-        "create_project_parse_job",
-        "create_unit_parse_job",
-        "retry_parse_job",
-        "cancel_parse_job",
-        "inherit_to_unit_document_link",
-        "override_document_link",
-        "resolve_conflict_document_link",
-        "detach_document_link",
-        "create_competitor",
-        "update_competitor_draft",
-        "create_market_prior",
-        "create_unknown_entrant_profile",
-        "create_dataset",
-        "create_feature_schema",
-        "create_evaluation_protocol",
-        "create_monitoring_snapshot",
-        "create_ai_provider_catalog_version",
-        "create_ai_provider_configuration",
-        "publish_ai_provider_catalog_version",
-        "revoke_ai_provider_catalog_version",
-        "create_ai_provider_configuration_successor",
-        "revoke_ai_provider_credential",
-        "suspend_ai_provider_configuration",
-        "revoke_ai_provider_configuration",
-    }
+OWNER_VALIDATED_WRITE_OPERATION_IDS = frozenset(
+    operation.operation_id
+    for operation in OPERATION_CATALOG
+    if operation.owner in {"member-2", "member-4"} and operation.method != "GET"
+)
+EXPECTED_BUSINESS_RULE_422: frozenset[str] = (
+    frozenset(
+        {
+            "create_risk_acceptance",
+            "create_project_document_upload_session",
+            "create_unit_document_upload_session",
+            "put_document_upload_chunk",
+            "complete_document_upload_session",
+            "cancel_document_upload_session",
+            "review_document",
+            "release_from_quarantine_document",
+            "quarantine_document",
+            "create_project_parse_job",
+            "create_unit_parse_job",
+            "retry_parse_job",
+            "cancel_parse_job",
+            "inherit_to_unit_document_link",
+            "override_document_link",
+            "resolve_conflict_document_link",
+            "detach_document_link",
+            "create_competitor",
+            "update_competitor_draft",
+            "create_market_prior",
+            "create_unknown_entrant_profile",
+            "create_dataset",
+            "create_feature_schema",
+            "create_evaluation_protocol",
+            "create_monitoring_snapshot",
+            "create_ai_provider_catalog_version",
+            "create_ai_provider_configuration",
+            "publish_ai_provider_catalog_version",
+            "revoke_ai_provider_catalog_version",
+            "create_ai_provider_configuration_successor",
+            "revoke_ai_provider_credential",
+            "suspend_ai_provider_configuration",
+            "revoke_ai_provider_configuration",
+        }
+    )
+    | OWNER_VALIDATED_WRITE_OPERATION_IDS
 )
 EXPECTED_ETAG_PRECONDITION: frozenset[str] = frozenset(
-    {"update_competitor_draft", "update_ai_provider_configuration"}
+    operation.operation_id for operation in OPERATION_CATALOG if operation.etag_required
 )
 EXPECTED_MISSING_RESOURCE: frozenset[str] = (
     frozenset(
@@ -437,9 +341,9 @@ def test_implemented_operations_conform_to_openapi(case: schemathesis.Case) -> N
         excluded_checks.append(schemathesis.checks.not_a_server_error)
     if response.status_code == 422 and operation_id in EXPECTED_BUSINESS_RULE_422:
         excluded_checks.append(positive_data_acceptance)
-    if response.status_code == 400 and operation_id in SIGNED_CURSOR_LIST_OPERATION_IDS:
-        # Cursor is an HMAC-signed capability. Arbitrary schema-valid strings
-        # must fail closed; explicit domain tests cover valid and tampered cursors.
+    if response.status_code == 400 and operation_id in OPAQUE_CURSOR_LIST_OPERATION_IDS:
+        # Cursors are opaque capabilities. Arbitrary schema-valid strings must
+        # fail closed; explicit domain tests cover valid and tampered cursors.
         excluded_checks.append(positive_data_acceptance)
     if response.status_code in {412, 428} and operation_id in EXPECTED_ETAG_PRECONDITION:
         excluded_checks.extend((positive_data_acceptance, negative_data_rejection))

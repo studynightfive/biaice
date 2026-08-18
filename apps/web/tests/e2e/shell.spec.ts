@@ -38,6 +38,30 @@ test("deep feature route restores the unit shell from the URL", async ({ page })
   await expect(page.getByRole("heading", { level: 1, name: "访问、审计与数据处置" })).toBeVisible();
 });
 
+test("simulation route forwards the URL unit through the same-origin BFF", async ({ page }) => {
+  const requestedPaths: string[] = [];
+  await page.route("**/api/v1/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    requestedPaths.push(path);
+    const body = path === "/api/v1/me"
+      ? { mfa_verified: true }
+      : { items: [] };
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+  });
+
+  await page.goto("/projects/demo-project/units/demo-unit/baseline-scenarios");
+
+  await expect(page.getByRole("heading", { level: 1, name: "决策基线与场景" })).toBeVisible();
+  await expect(page.getByText("尚无冻结基线")).toBeVisible();
+  await expect.poll(() => requestedPaths).toContain(
+    "/api/v1/decision-units/demo-unit/decision-baselines",
+  );
+});
+
 test("member 5 writes are usable while BYOK remains fail-closed", async ({ page }) => {
   await page.goto("/projects/demo-project/units/demo-unit/market");
   await expect(page.getByRole("heading", { level: 1, name: "竞对与市场治理" })).toBeVisible();

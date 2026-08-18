@@ -27,9 +27,7 @@ def main() -> int:
         (CONTRACTS / "traceability.generated.json").read_text(encoding="utf-8")
     )
     rows = {
-        row["operation_id"]: row
-        for group in traceability.values()
-        for row in group
+        row["operation_id"]: row for group in traceability.values() for row in group
     }
     failures: list[str] = []
     counts: Counter[str] = Counter()
@@ -66,13 +64,17 @@ def main() -> int:
             if row.get("schema_status") != "STUB_FIELDS_PENDING_OWNER_FREEZE":
                 failures.append(f"{operation_id}: contract-only schema is not blocked")
             if row.get("test_status") != "M0_CONTRACT_TEST_ONLY":
-                failures.append(f"{operation_id}: contract-only test status is ambiguous")
+                failures.append(
+                    f"{operation_id}: contract-only test status is ambiguous"
+                )
         else:
             counts["FOUNDATION_IMPLEMENTED"] += 1
             if row.get("schema_status") != "FROZEN":
                 failures.append(f"{operation_id}: implemented schema is not frozen")
             if row.get("test_status") != "FOUNDATION_TESTED":
-                failures.append(f"{operation_id}: implemented operation lacks test mapping")
+                failures.append(
+                    f"{operation_id}: implemented operation lacks test mapping"
+                )
 
     extra = set(rows) - seen
     if extra:
