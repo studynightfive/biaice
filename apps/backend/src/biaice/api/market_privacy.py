@@ -95,9 +95,7 @@ RESOURCE_SPECS = (
         "dsr_policy_id",
         "dsr_policie",
     ),
-    ResourceSpec(
-        "load-profiles", "load_profiles", "load_profile", "load_profile_id"
-    ),
+    ResourceSpec("load-profiles", "load_profiles", "load_profile", "load_profile_id"),
     ResourceSpec(
         "data-subject-requests",
         "data_subject_requests",
@@ -166,14 +164,10 @@ READ_ROLES = frozenset(
         Role.TENANT_AI_ADMIN,
     }
 )
-WRITE_ROLES = frozenset(
-    {Role.GOVERNANCE_ADMIN, Role.LEGAL_PRIVACY, Role.PRIVACY_OFFICER}
-)
+WRITE_ROLES = frozenset({Role.GOVERNANCE_ADMIN, Role.LEGAL_PRIVACY, Role.PRIVACY_OFFICER})
 
 
-def _authorize(
-    identity: IdentityContext, *, write: bool, require_mfa: bool = False
-) -> None:
+def _authorize(identity: IdentityContext, *, write: bool, require_mfa: bool = False) -> None:
     allowed = WRITE_ROLES if write else READ_ROLES
     if not identity.roles.intersection(allowed):
         raise BiaiceError("PERMISSION_DENIED")

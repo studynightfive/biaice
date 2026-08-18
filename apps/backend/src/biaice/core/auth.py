@@ -55,6 +55,30 @@ class Permission(StrEnum):
     AUDIT_INTEGRITY_RUN = "audit:integrity:run"
     SENSITIVE_CONTENT_READ = "sensitive-content:read"
     COST_READ = "cost:read"
+    FR01_READ = "fr-01:read"
+    FR01_CREATE = "fr-01:create"
+    FR01_UPDATE = "fr-01:update"
+    FR01_ARCHIVE = "fr-01:archive"
+    FR01_PUBLISH = "fr-01:publish"
+    FR01_SUPERSEDE = "fr-01:supersede"
+    FR01_TRANSITION = "fr-01:transition"
+    FR01_CONFIRM = "fr-01:confirm"
+    FR01_SUBMIT = "fr-01:submit"
+    FR03_READ = "fr-03:read"
+    FR03_CREATE = "fr-03:create"
+    FR03_UPDATE = "fr-03:update"
+    FR03_PUBLISH = "fr-03:publish"
+    FR03_SUPERSEDE = "fr-03:supersede"
+    FR03_REVIEW = "fr-03:review"
+    FR03_REVOKE = "fr-03:revoke"
+    FR03_SATISFY = "fr-03:satisfy"
+    FR03_WAIVE = "fr-03:waive"
+    FR03_FAIL = "fr-03:fail"
+    FR03_EXPIRE = "fr-03:expire"
+    FR04_READ = "fr-04:read"
+    FR04_CREATE = "fr-04:create"
+    FR04_APPROVE = "fr-04:approve"
+    FR04_PUBLISH = "fr-04:publish"
     APPROVALS_RISK_READ = "fr-09b:read"
     APPROVALS_RISK_CREATE = "fr-09b:create"
     APPROVALS_RISK_REVOKE = "fr-09b:revoke"
@@ -314,6 +338,85 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
 }
 
 
+FR01_WRITE_PERMISSIONS = frozenset(
+    {
+        Permission.FR01_CREATE,
+        Permission.FR01_UPDATE,
+        Permission.FR01_ARCHIVE,
+        Permission.FR01_SUPERSEDE,
+        Permission.FR01_TRANSITION,
+        Permission.FR01_CONFIRM,
+        Permission.FR01_SUBMIT,
+    }
+)
+FR03_AUTHOR_PERMISSIONS = frozenset(
+    {
+        Permission.FR03_CREATE,
+        Permission.FR03_UPDATE,
+        Permission.FR03_PUBLISH,
+        Permission.FR03_SUPERSEDE,
+    }
+)
+FR03_REVIEW_PERMISSIONS = frozenset({Permission.FR03_REVIEW, Permission.FR03_REVOKE})
+FR03_CONDITION_PERMISSIONS = frozenset(
+    {
+        Permission.FR03_SATISFY,
+        Permission.FR03_WAIVE,
+        Permission.FR03_FAIL,
+        Permission.FR03_EXPIRE,
+    }
+)
+
+# Domain roles were implemented on parallel branches with local fail-closed
+# guards. Keep the public identity projection synchronized with those guards
+# so `/me` reports every permission named by the frozen OpenAPI contract.
+DOMAIN_ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
+    Role.PROJECT_MANAGER: frozenset(
+        {
+            Permission.FR01_READ,
+            Permission.FR01_PUBLISH,
+            Permission.FR03_READ,
+            Permission.FR04_READ,
+        }
+    )
+    | FR01_WRITE_PERMISSIONS,
+    Role.RULE_EDITOR: frozenset({Permission.FR01_READ, Permission.FR01_PUBLISH})
+    | FR01_WRITE_PERMISSIONS,
+    Role.BID_MANAGER: frozenset(
+        {
+            Permission.FR01_READ,
+            Permission.FR01_PUBLISH,
+            Permission.FR03_READ,
+            Permission.FR04_READ,
+        }
+    )
+    | FR01_WRITE_PERMISSIONS
+    | FR03_CONDITION_PERMISSIONS,
+    Role.TENANT_ADMIN: frozenset({Permission.FR01_READ}) | FR01_WRITE_PERMISSIONS,
+    Role.DOCUMENT_STEWARD: frozenset({Permission.FR01_READ, Permission.FR03_READ})
+    | FR03_REVIEW_PERMISSIONS,
+    Role.LEGAL_PRIVACY: frozenset({Permission.FR01_READ, Permission.FR01_PUBLISH}),
+    Role.AUDITOR: frozenset({Permission.FR01_READ}),
+    Role.APPROVER: frozenset({Permission.FR01_READ, Permission.FR03_READ})
+    | FR03_CONDITION_PERMISSIONS,
+    Role.COMMERCIAL_ANALYST: frozenset(
+        {Permission.FR03_READ, Permission.FR04_READ, Permission.FR04_CREATE}
+    ),
+    Role.PRIVACY_OFFICER: frozenset({Permission.FR03_READ, Permission.FR04_READ})
+    | FR03_CONDITION_PERMISSIONS,
+    Role.DOCUMENT_SPECIALIST: frozenset({Permission.FR03_READ}) | FR03_AUTHOR_PERMISSIONS,
+    Role.TECHNICAL_LEAD: frozenset({Permission.FR03_READ}) | FR03_AUTHOR_PERMISSIONS,
+    Role.FINANCE_AUTHOR: frozenset({Permission.FR04_READ, Permission.FR04_CREATE}),
+    Role.FINANCE_APPROVER: frozenset(
+        {
+            Permission.FR04_READ,
+            Permission.FR04_APPROVE,
+            Permission.FR04_PUBLISH,
+        }
+    ),
+}
+
+
 class TenantScope(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -335,11 +438,7 @@ class TenantScope(BaseModel):
         # A scope mismatch deliberately looks like a missing resource.
         if tenant_id != self.tenant_id or data_domain_id != self.data_domain_id:
             raise BiaiceError("TENANT_SCOPE_VIOLATION")
-        if (
-            project_id is not None
-            and not self.all_projects
-            and project_id not in self.project_ids
-        ):
+        if project_id is not None and not self.all_projects and project_id not in self.project_ids:
             raise BiaiceError("TENANT_SCOPE_VIOLATION")
         if (
             decision_unit_id is not None
@@ -366,6 +465,7 @@ class IdentityContext(BaseModel):
         permissions: set[Permission] = set()
         for role in self.roles:
             permissions.update(ROLE_PERMISSIONS.get(role, frozenset()))
+            permissions.update(DOMAIN_ROLE_PERMISSIONS.get(role, frozenset()))
         return frozenset(permissions)
 
 
@@ -399,9 +499,7 @@ class OidcJwtAuthenticator:
                 options={"require": ["exp", "iat", "iss", "aud", "sub"]},
             )
             realm_roles = claims.get("realm_access", {}).get("roles", [])
-            roles = frozenset(
-                Role(role) for role in realm_roles if role in Role._value2member_map_
-            )
+            roles = frozenset(Role(role) for role in realm_roles if role in Role._value2member_map_)
             if not roles:
                 raise BiaiceError("PERMISSION_DENIED")
             amr = set(claims.get("amr", []))
@@ -413,9 +511,7 @@ class OidcJwtAuthenticator:
                 scope=TenantScope(
                     tenant_id=UUID(claims["tenant_id"]),
                     data_domain_id=UUID(claims["data_domain_id"]),
-                    project_ids=frozenset(
-                        UUID(value) for value in claims.get("project_ids", [])
-                    ),
+                    project_ids=frozenset(UUID(value) for value in claims.get("project_ids", [])),
                     decision_unit_ids=frozenset(
                         UUID(value) for value in claims.get("decision_unit_ids", [])
                     ),
@@ -423,9 +519,7 @@ class OidcJwtAuthenticator:
                     all_decision_units=claims.get("all_decision_units", False) is True,
                 ),
                 mfa_verified=bool({"mfa", "otp", "webauthn"} & amr),
-                authenticated_at=datetime.fromtimestamp(
-                    int(claims["iat"]), tz=timezone.utc
-                ),
+                authenticated_at=datetime.fromtimestamp(int(claims["iat"]), tz=timezone.utc),
                 session_id=claims.get("sid"),
             )
         except BiaiceError:

@@ -1,4 +1,5 @@
 """Unit tests for candidate generation, ranking and selection."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -61,8 +62,12 @@ def test_generate_candidates_assigns_unique_ids() -> None:
         project_id=None,
         decision_unit_id=uuid4(),
         blueprints=(
-            CandidateBlueprint(label="a", parameters={}, expected_cost=Decimal("1"), expected_margin=Decimal("10")),
-            CandidateBlueprint(label="b", parameters={}, expected_cost=Decimal("2"), expected_margin=Decimal("20")),
+            CandidateBlueprint(
+                label="a", parameters={}, expected_cost=Decimal("1"), expected_margin=Decimal("10")
+            ),
+            CandidateBlueprint(
+                label="b", parameters={}, expected_cost=Decimal("2"), expected_margin=Decimal("20")
+            ),
         ),
         created_at=NOW,
     )
@@ -75,7 +80,11 @@ def test_rank_candidates_orders_by_margin_max() -> None:
     b = _candidate(margin="3")
     c = _candidate(margin="2")
     ranked = rank_candidates([a, b, c], objective_kind=ObjectiveKind.MARGIN_MAX)
-    assert [r.candidate.candidate_id for r in ranked] == [b.candidate_id, c.candidate_id, a.candidate_id]
+    assert [r.candidate.candidate_id for r in ranked] == [
+        b.candidate_id,
+        c.candidate_id,
+        a.candidate_id,
+    ]
 
 
 def test_select_objective_candidates_caps_at_four_for_multi() -> None:

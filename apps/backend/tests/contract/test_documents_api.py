@@ -174,9 +174,7 @@ def test_upload_complete_review_and_independent_release(client):
     assert forbidden.status_code == 403
     assert forbidden.json()["code"] == "PERMISSION_DENIED"
 
-    checker = _client(
-        _identity(actor=CHECKER, roles=frozenset({Role.DOCUMENT_STEWARD}))
-    )
+    checker = _client(_identity(actor=CHECKER, roles=frozenset({Role.DOCUMENT_STEWARD})))
     # Separate app/state: the document lives on the first app. Reuse the first
     # app by swapping identity is not available, so release through the same
     # process requires sharing repository. Use the first client only after
@@ -366,9 +364,7 @@ def test_document_link_inherit_and_detach(client):
     assert inherited.json()["relation"] == "INHERITED"
     listed = client.get(f"/api/v1/decision-units/{unit}/documents")
     assert listed.status_code == 200
-    assert [item["document_id"] for item in listed.json()["items"]] == [
-        document["document_id"]
-    ]
+    assert [item["document_id"] for item in listed.json()["items"]] == [document["document_id"]]
     detached = client.post(
         "/api/v1/document-links/detach",
         json={"link_id": inherited.json()["link_id"]},

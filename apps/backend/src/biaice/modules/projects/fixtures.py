@@ -224,9 +224,27 @@ def seed_gold_projects(
     repository.upsert_unit(lowest_unit)
     repository.upsert_rule_set(lowest_set)
     for spec in (
-        (RuleClauseKind.SUBSTANTIVE, "substantive.delivery", "must:delivery_days<=30", 10, "交货期实质性要求"),
-        (RuleClauseKind.ABNORMALLY_LOW, "price.abnormally_low", "flag:below_80pct_mean", 20, "异常低价识别"),
-        (RuleClauseKind.VALID_SUPPLIER_COUNT, "supplier.valid_count", "min:3", 30, "有效供应商不少于 3"),
+        (
+            RuleClauseKind.SUBSTANTIVE,
+            "substantive.delivery",
+            "must:delivery_days<=30",
+            10,
+            "交货期实质性要求",
+        ),
+        (
+            RuleClauseKind.ABNORMALLY_LOW,
+            "price.abnormally_low",
+            "flag:below_80pct_mean",
+            20,
+            "异常低价识别",
+        ),
+        (
+            RuleClauseKind.VALID_SUPPLIER_COUNT,
+            "supplier.valid_count",
+            "min:3",
+            30,
+            "有效供应商不少于 3",
+        ),
     ):
         kind, key, expr, priority, text = spec
         repository.upsert_clause(

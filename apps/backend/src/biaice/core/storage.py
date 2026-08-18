@@ -61,9 +61,7 @@ class StoragePort(Protocol):
 
     def open(self, *, scope: TenantScope, object_ref: StorageObjectRef) -> BinaryIO: ...
 
-    def logically_block(
-        self, *, scope: TenantScope, object_ref: StorageObjectRef
-    ) -> None: ...
+    def logically_block(self, *, scope: TenantScope, object_ref: StorageObjectRef) -> None: ...
 
 
 class DeniedStoragePort:

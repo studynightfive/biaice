@@ -4,6 +4,7 @@ Production deployments wire a real numpy/pandas evaluator into the same
 Protocol; the default implementation here exists so unit tests, the contract
 test, and the worker smoke can run without external services.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -36,7 +37,9 @@ class DefaultSimulationRuntime:
         match = batches.get(batch_id)
         if match is None:
             return {"batch_id": str(batch_id), "state": BatchState.FAILED_TERMINAL.value}
-        updated = match.model_copy(update={"state": BatchState.SUCCEEDED, "last_updated_at": self.clock.now()})
+        updated = match.model_copy(
+            update={"state": BatchState.SUCCEEDED, "last_updated_at": self.clock.now()}
+        )
         self.repository.upsert_batch(updated)
         return {"batch_id": str(updated.batch_id), "state": updated.state.value}
 
@@ -45,7 +48,9 @@ class DefaultSimulationRuntime:
         match = runs.get(run_id)
         if match is None:
             return {"run_id": str(run_id), "state": OptimizationState.FAILED.value}
-        updated = match.model_copy(update={"state": OptimizationState.SUCCEEDED, "finalized_at": self.clock.now()})
+        updated = match.model_copy(
+            update={"state": OptimizationState.SUCCEEDED, "finalized_at": self.clock.now()}
+        )
         self.repository.upsert_optimization_run(updated)
         return {"run_id": str(updated.run_id), "state": updated.state.value}
 
@@ -72,6 +77,8 @@ class DefaultSimulationRuntime:
                 "state": SnapshotState.DRAFT.value,
                 "watermark": match.watermark,
             }
-        locked = match.model_copy(update={"state": SnapshotState.LOCKED, "locked_at": self.clock.now()})
+        locked = match.model_copy(
+            update={"state": SnapshotState.LOCKED, "locked_at": self.clock.now()}
+        )
         self.repository.upsert_snapshot(locked)
         return {"snapshot_id": str(locked.snapshot_id), "state": locked.state.value}

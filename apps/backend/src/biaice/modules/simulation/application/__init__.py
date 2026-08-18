@@ -7,6 +7,7 @@ Composition root rules:
     * every write action emits an AuditEvent and an OutboxEventRecord when the
       aggregate is committed.
 """
+
 from biaice.modules.simulation.application.repository import InMemorySimulationRepository
 from biaice.modules.simulation.application.services import (
     BaselineService,

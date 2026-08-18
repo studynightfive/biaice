@@ -44,9 +44,7 @@ class LocalReplicaDeletionAdapter:
     def supported_kinds(self) -> frozenset[ReplicaKind]:
         return frozenset({ReplicaKind.OBJECT_STORAGE, ReplicaKind.TEMPORARY_FILE})
 
-    def delete(
-        self, *, scope: TenantScope, command: DeletionReplicaCommand
-    ) -> DeletionReceipt:
+    def delete(self, *, scope: TenantScope, command: DeletionReplicaCommand) -> DeletionReceipt:
         replica = command.replica
         now = self.clock.now()
         holds = self.legal_holds.list_active_holds(scope=scope, target=replica.target)

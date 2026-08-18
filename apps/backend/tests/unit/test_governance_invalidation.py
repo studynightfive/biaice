@@ -19,9 +19,7 @@ from biaice.modules.governance.domain.models import (
 )
 
 
-def edge(
-    dependency_type: DependencyType, affected_fields: frozenset[str]
-) -> DataLineageEdge:
+def edge(dependency_type: DependencyType, affected_fields: frozenset[str]) -> DataLineageEdge:
     return DataLineageEdge(
         edge_id=uuid4(),
         tenant_id=TENANT_A,

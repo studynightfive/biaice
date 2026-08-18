@@ -1,4 +1,5 @@
 """Unit tests for recommendation eligibility assessment."""
+
 from __future__ import annotations
 
 import pytest

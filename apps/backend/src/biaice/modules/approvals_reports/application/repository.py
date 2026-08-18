@@ -31,10 +31,7 @@ def _scope_matches(item: RiskAcceptance, scope: TenantScope) -> bool:
         and item.project_id not in scope.project_ids
     ):
         return False
-    if (
-        not scope.all_decision_units
-        and item.decision_unit_id not in scope.decision_unit_ids
-    ):
+    if not scope.all_decision_units and item.decision_unit_id not in scope.decision_unit_ids:
         return False
     return True
 
@@ -66,9 +63,7 @@ class InMemoryApprovalsReportsRepository:
             items = [
                 item
                 for item in self._risk_acceptances.values()
-                if _scope_matches(item, scope)
-                and item.decision_unit_id == decision_unit_id
+                if _scope_matches(item, scope) and item.decision_unit_id == decision_unit_id
             ]
         items.sort(key=lambda item: (item.created_at, str(item.version_id)))
         return tuple(items)
-

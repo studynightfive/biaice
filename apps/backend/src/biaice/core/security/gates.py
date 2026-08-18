@@ -128,9 +128,7 @@ class InMemoryGateEvidenceProvider:
     """Test/contract provider; secure deployment replaces this with signed evidence storage."""
 
     def __init__(self, assessments: Sequence[GateAssessment] = ()) -> None:
-        self._assessments = {
-            assessment.gate_name: assessment for assessment in assessments
-        }
+        self._assessments = {assessment.gate_name: assessment for assessment in assessments}
 
     def current(self, gate_name: GateName) -> GateAssessment | None:
         return self._assessments.get(gate_name)
@@ -154,9 +152,7 @@ def build_machine_assessment(
     required = required_evidence(gate_name)
     missing = sorted(required - supplied.keys())
     failed = sorted(
-        key
-        for key in required
-        if key in supplied and supplied[key].status == EvidenceStatus.FAIL
+        key for key in required if key in supplied and supplied[key].status == EvidenceStatus.FAIL
     )
     unknown = sorted(
         key
@@ -164,9 +160,7 @@ def build_machine_assessment(
         if key in supplied and supplied[key].status == EvidenceStatus.UNKNOWN
     )
     expired = sorted(
-        key
-        for key in required
-        if key in supplied and supplied[key].expires_at <= assessed_at
+        key for key in required if key in supplied and supplied[key].expires_at <= assessed_at
     )
     if failed:
         status = GateStatus.FAIL
@@ -187,17 +181,15 @@ def build_machine_assessment(
         for item in sorted(evidence, key=lambda item: item.evidence_key)
     ]
     evidence_hash = hashlib.sha256(
-        json.dumps(
-            canonical, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-        ).encode("utf-8")
+        json.dumps(canonical, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+            "utf-8"
+        )
     ).hexdigest()
     return GateAssessment(
         assessment_id=uuid4(),
         gate_name=gate_name,
         status=status,
-        validity=GateValidity.CURRENT
-        if expires_at > assessed_at
-        else GateValidity.STALE,
+        validity=GateValidity.CURRENT if expires_at > assessed_at else GateValidity.STALE,
         assessed_at=assessed_at,
         expires_at=expires_at,
         responsible_party=responsible_party,
@@ -209,9 +201,7 @@ def build_machine_assessment(
 
 
 class GateService:
-    def __init__(
-        self, settings: Settings, provider: GateEvidenceProvider | None = None
-    ) -> None:
+    def __init__(self, settings: Settings, provider: GateEvidenceProvider | None = None) -> None:
         self.settings = settings
         self.provider = provider or NullGateEvidenceProvider()
 

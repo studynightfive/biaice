@@ -8,7 +8,9 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-REALM = json.loads((ROOT / "infra/keycloak/biaice-realm.json").read_text(encoding="utf-8"))
+REALM = json.loads(
+    (ROOT / "infra/keycloak/biaice-realm.json").read_text(encoding="utf-8")
+)
 USER_PROFILE = json.loads(
     (ROOT / "infra/keycloak/user-profile.json").read_text(encoding="utf-8")
 )
@@ -17,7 +19,9 @@ INIT_SCRIPT = (ROOT / "infra/keycloak/init.sh").read_text(encoding="utf-8")
 
 class KeycloakContractTests(unittest.TestCase):
     def test_web_client_emits_api_identity_contract(self) -> None:
-        web = next(client for client in REALM["clients"] if client["clientId"] == "biaice-web")
+        web = next(
+            client for client in REALM["clients"] if client["clientId"] == "biaice-web"
+        )
         self.assertTrue(web["publicClient"])
         self.assertTrue(web["standardFlowEnabled"])
         self.assertFalse(web["directAccessGrantsEnabled"])
@@ -56,11 +60,18 @@ class KeycloakContractTests(unittest.TestCase):
     def test_synthetic_bootstrap_covers_all_roles_and_scope_fields(self) -> None:
         realm_roles = {role["name"] for role in REALM["roles"]["realm"]}
         assigned_roles: set[str] = set()
-        for roles_csv in re.findall(r'ensure_user\s+\S+\s+\S+\s+"\$\S+"\s+"([A-Z_,]+)"', INIT_SCRIPT):
+        for roles_csv in re.findall(
+            r'ensure_user\s+\S+\s+\S+\s+"\$\S+"\s+"([A-Z_,]+)"', INIT_SCRIPT
+        ):
             assigned_roles.update(roles_csv.split(","))
         self.assertTrue(assigned_roles)
         self.assertLessEqual(assigned_roles, realm_roles)
-        for claim in ("tenant_id", "data_domain_id", "project_ids", "decision_unit_ids"):
+        for claim in (
+            "tenant_id",
+            "data_domain_id",
+            "project_ids",
+            "decision_unit_ids",
+        ):
             self.assertIn(f'"{claim}"', INIT_SCRIPT)
         self.assertIn("sed 's/\\r$//'", INIT_SCRIPT)
         self.assertIn("invalidPasswordHistoryMessage", INIT_SCRIPT)

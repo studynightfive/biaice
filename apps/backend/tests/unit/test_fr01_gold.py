@@ -89,9 +89,7 @@ def _app(repository=None, *, codec: CursorCodec | None = None) -> FastAPI:
     app.add_middleware(RequestContextMiddleware)
     install_error_handlers(app)
     app.state.authenticator = StaticAuthenticator(_identity())
-    app.state.audit_writer = HashChainAuditWriter(
-        InMemoryAppendOnlyAuditSink(), clock=FixedClock()
-    )
+    app.state.audit_writer = HashChainAuditWriter(InMemoryAppendOnlyAuditSink(), clock=FixedClock())
     app.state.outbox_port = None
     if codec is not None:
         app.state.cursor_codec = codec
@@ -296,9 +294,7 @@ def test_list_projects_uses_signed_cursor() -> None:
     assert len(body["items"]) == 2
     assert body["has_more"] is True
     assert body["next_cursor"]
-    second = client.get(
-        "/api/v1/projects", params={"limit": 2, "cursor": body["next_cursor"]}
-    )
+    second = client.get("/api/v1/projects", params={"limit": 2, "cursor": body["next_cursor"]})
     assert second.status_code == 200
     assert len(second.json()["items"]) == 1
     assert second.json()["has_more"] is False

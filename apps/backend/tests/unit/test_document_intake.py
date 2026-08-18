@@ -111,9 +111,7 @@ def _complete_payload(
         declared_chunk_sha256=digest,
         request_id="req-2",
     )
-    return service.complete(
-        identity=identity, session_id=session.session_id, request_id="req-3"
-    )
+    return service.complete(identity=identity, session_id=session.session_id, request_id="req-3")
 
 
 def test_complete_pdf_upload_scans_clean_and_is_not_released() -> None:
@@ -153,9 +151,7 @@ def test_eicar_payload_stays_quarantined_and_cannot_be_reviewed() -> None:
     assert document.status is DocumentStatus.SCAN_FAILED
     assert document.scan_result is ScanResult.INFECTED
     with pytest.raises(BiaiceError) as error:
-        service.review(
-            identity=_identity(), document_id=document.document_id, request_id="req-4"
-        )
+        service.review(identity=_identity(), document_id=document.document_id, request_id="req-4")
     assert error.value.code == "DOCUMENT_SCAN_FAILED"
 
 
@@ -182,9 +178,7 @@ def test_release_requires_review_and_independent_checker() -> None:
     )
     assert reviewed.status is DocumentStatus.UNDER_REVIEW
     with pytest.raises(BiaiceError) as maker:
-        service.release(
-            identity=identity, document_id=document.document_id, request_id="req-6"
-        )
+        service.release(identity=identity, document_id=document.document_id, request_id="req-6")
     assert maker.value.code == "MAKER_CHECKER_REQUIRED"
 
     released = service.release(
@@ -273,18 +267,12 @@ def test_cancel_is_idempotent_and_drops_partial_parts() -> None:
         declared_chunk_sha256=digest,
         request_id="req-2",
     )
-    cancelled = service.cancel(
-        identity=identity, session_id=session.session_id, request_id="req-3"
-    )
-    again = service.cancel(
-        identity=identity, session_id=session.session_id, request_id="req-4"
-    )
+    cancelled = service.cancel(identity=identity, session_id=session.session_id, request_id="req-3")
+    again = service.cancel(identity=identity, session_id=session.session_id, request_id="req-4")
     assert cancelled.status is UploadSessionStatus.CANCELLED
     assert again.status is UploadSessionStatus.CANCELLED
     with pytest.raises(BiaiceError) as error:
-        service.complete(
-            identity=identity, session_id=session.session_id, request_id="req-5"
-        )
+        service.complete(identity=identity, session_id=session.session_id, request_id="req-5")
     assert error.value.code == "UPLOAD_SESSION_NOT_ACTIVE"
 
 
@@ -304,9 +292,7 @@ def test_download_denied_for_infected_payload() -> None:
         service.download(identity=_identity(), document_id=infected.document_id)
     assert error.value.code == "DOCUMENT_NOT_DOWNLOADABLE"
     _, clean = _complete_payload(service, PDF_BYTES)
-    document, payload = service.download(
-        identity=_identity(), document_id=clean.document_id
-    )
+    document, payload = service.download(identity=_identity(), document_id=clean.document_id)
     assert document.document_id == clean.document_id
     assert payload == PDF_BYTES
 
@@ -325,13 +311,9 @@ def test_parse_pdf_registers_derived_asset_and_image_requires_manual_entry() -> 
     )
     assert job.status.value == "SUCCEEDED"
     assert job.progress_percent == 100
-    assets = service.list_derived_assets(
-        identity=identity, document_id=document.document_id
-    )
+    assets = service.list_derived_assets(identity=identity, document_id=document.document_id)
     assert len(assets) == 1
-    assert "Hello tender" in (
-        service.repository.get_blob(assets[0].storage_key) or b""
-    ).decode()
+    assert "Hello tender" in (service.repository.get_blob(assets[0].storage_key) or b"").decode()
 
     png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 24
     _, image = _complete_payload(service, png, filename="scan.png", identity=identity)
@@ -346,9 +328,7 @@ def test_parse_pdf_registers_derived_asset_and_image_requires_manual_entry() -> 
     assert failed.retryable is not None
     assert failed.retryable.value == "NO_MANUAL_ENTRY_REQUIRED"
     with pytest.raises(BiaiceError) as error:
-        service.retry_parse_job(
-            identity=identity, job_id=failed.job_id, request_id="req-retry"
-        )
+        service.retry_parse_job(identity=identity, job_id=failed.job_id, request_id="req-retry")
     assert error.value.code == "JOB_NOT_RETRYABLE"
 
 
@@ -364,9 +344,7 @@ def test_cancel_queued_parse_job() -> None:
         request_id="req-q",
         execute=False,
     )
-    cancelled = service.cancel_parse_job(
-        identity=identity, job_id=job.job_id, request_id="req-c"
-    )
+    cancelled = service.cancel_parse_job(identity=identity, job_id=job.job_id, request_id="req-c")
     assert cancelled.status.value == "CANCELLED"
 
 
@@ -425,8 +403,7 @@ def test_read_port_hides_unreleased_documents() -> None:
     _, document = _complete_payload(service, PDF_BYTES, identity=identity)
     port = DocumentReadService(repository)
     assert (
-        port.get_released_document(scope=identity.scope, document_id=document.document_id)
-        is None
+        port.get_released_document(scope=identity.scope, document_id=document.document_id) is None
     )
     service.review(identity=identity, document_id=document.document_id, request_id="r")
     released = service.release(
@@ -434,8 +411,6 @@ def test_read_port_hides_unreleased_documents() -> None:
         document_id=document.document_id,
         request_id="rel",
     )
-    view = port.get_released_document(
-        scope=identity.scope, document_id=released.document_id
-    )
+    view = port.get_released_document(scope=identity.scope, document_id=released.document_id)
     assert view is not None
     assert view.content_hash == released.content_hash

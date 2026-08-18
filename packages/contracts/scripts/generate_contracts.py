@@ -177,7 +177,9 @@ def generate_types(openapi: dict[str, Any]) -> str:
                 lines.append("  readonly [key: string]: unknown;")
             lines.append("}")
         else:
-            lines.append(f"export type {sanitize_ts_identifier(name)} = {ts_type(schema)};")
+            lines.append(
+                f"export type {sanitize_ts_identifier(name)} = {ts_type(schema)};"
+            )
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 

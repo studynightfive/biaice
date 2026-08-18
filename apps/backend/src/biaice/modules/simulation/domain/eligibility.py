@@ -12,6 +12,7 @@ recommendation MUST NOT be ELIGIBLE. The mapping mirrors the public docs:
     condition          -> simulation:eligibility:assess
     risk acceptance    -> risk-acceptance:read
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

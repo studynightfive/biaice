@@ -48,9 +48,7 @@ def test_missing_or_unknown_evidence_never_passes() -> None:
 def test_complete_machine_evidence_can_build_pass_assessment() -> None:
     assessment = build_machine_assessment(
         gate_name=GateName.BYOK_SECRET_GATE,
-        evidence=[
-            evidence(key) for key in required_evidence(GateName.BYOK_SECRET_GATE)
-        ],
+        evidence=[evidence(key) for key in required_evidence(GateName.BYOK_SECRET_GATE)],
         responsible_party="security-owner",
         assessed_at=NOW,
         expires_at=NOW + timedelta(hours=1),
@@ -59,9 +57,7 @@ def test_complete_machine_evidence_can_build_pass_assessment() -> None:
 
 
 def test_default_gate_provider_is_unknown_and_require_fails_closed() -> None:
-    service = GateService(
-        Settings(environment="test", deployment_profile="secure_https")
-    )
+    service = GateService(Settings(environment="test", deployment_profile="secure_https"))
     assert service.current(GateName.REAL_DATA_MODE).status == GateStatus.UNKNOWN
     with pytest.raises(BiaiceError) as error:
         service.require(GateName.REAL_DATA_MODE)

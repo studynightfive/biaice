@@ -77,22 +77,14 @@ class RiskAcceptance(FrozenModel):
         elif self.state is RiskAcceptanceState.REVOKED:
             if self.validity is not RiskAcceptanceValidity.INVALIDATED:
                 raise ValueError("REVOKED risk acceptance must be INVALIDATED")
-            if (
-                self.revoked_at is None
-                or self.revoked_by is None
-                or not self.revocation_reason
-            ):
-                raise ValueError(
-                    "REVOKED risk acceptance requires revocation metadata"
-                )
+            if self.revoked_at is None or self.revoked_by is None or not self.revocation_reason:
+                raise ValueError("REVOKED risk acceptance requires revocation metadata")
         elif self.validity is not RiskAcceptanceValidity.EXPIRED:
             raise ValueError("EXPIRED risk acceptance must be EXPIRED")
         return self
 
 
-def effective_risk_acceptance(
-    item: RiskAcceptance, *, now: datetime
-) -> RiskAcceptance:
+def effective_risk_acceptance(item: RiskAcceptance, *, now: datetime) -> RiskAcceptance:
     """Return the read-time projection without mutating persisted history."""
     if item.state is RiskAcceptanceState.ACTIVE and now >= item.valid_until:
         return item.model_copy(
@@ -102,4 +94,3 @@ def effective_risk_acceptance(
             }
         )
     return item
-

@@ -14,6 +14,7 @@ HTTP handlers. Error semantics are inherited from the domain helpers: any
 violation produces a :class:`BiaiceError` whose `code` matches the M0
 catalog.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -162,12 +163,16 @@ class SimulationServices:
         )
 
 
-def configure_simulation(app, *, repository: InMemorySimulationRepository | None = None) -> SimulationServices:
+def configure_simulation(
+    app, *, repository: InMemorySimulationRepository | None = None
+) -> SimulationServices:
     """Attach the simulation services to the FastAPI app state."""
     repository = repository or InMemorySimulationRepository()
     services = SimulationServices(
         repository=repository,
-        clock=app.state.settings.__class__.clock() if hasattr(app.state.settings, "clock") else SystemClock(),
+        clock=app.state.settings.__class__.clock()
+        if hasattr(app.state.settings, "clock")
+        else SystemClock(),
         audit_writer=app.state.audit_writer,
         outbox_port=getattr(app.state, "outbox_port", None),
     )
@@ -195,8 +200,12 @@ def _emit_event(
         schema_version=1,
         tenant_id=identity.scope.tenant_id,
         data_domain_id=identity.scope.data_domain_id,
-        project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
-        decision_unit_id=identity.scope.decision_unit_ids.__iter__().__next__() if identity.scope.decision_unit_ids else None,
+        project_id=identity.scope.project_ids.__iter__().__next__()
+        if identity.scope.project_ids
+        else None,
+        decision_unit_id=identity.scope.decision_unit_ids.__iter__().__next__()
+        if identity.scope.decision_unit_ids
+        else None,
         aggregate_type=aggregate_type,
         aggregate_id=aggregate_id,
         occurred_at=datetime.now(timezone.utc),
@@ -260,7 +269,9 @@ class BaselineService:
             version_id=new_uuid(),
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
-            project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
+            project_id=identity.scope.project_ids.__iter__().__next__()
+            if identity.scope.project_ids
+            else None,
             decision_unit_id=decision_unit_id,
             manifest=manifest,
             state=BaselineState.FROZEN,
@@ -299,13 +310,17 @@ class BaselineService:
         )
         return baseline
 
-    def list(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[DecisionBaseline, ...]:
+    def list(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[DecisionBaseline, ...]:
         identity.scope.assert_allows(
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
             decision_unit_id=decision_unit_id,
         )
-        return self.repository.list_baselines(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_baselines(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get(self, *, identity: IdentityContext, baseline_id: UUID) -> DecisionBaseline:
         baseline = self.repository.get_baseline(scope=identity.scope, baseline_id=baseline_id)
@@ -365,17 +380,19 @@ class SearchSpaceService:
             version_id=new_uuid(),
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
-            project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
+            project_id=identity.scope.project_ids.__iter__().__next__()
+            if identity.scope.project_ids
+            else None,
             decision_unit_id=decision_unit_id,
             baseline_version_id=baseline.version_id,
             description=description,
-            state=SearchSpaceState.DRAFT,
+            state=SearchSpaceState.FROZEN,
             dimension_axes=tuple(dimension_axes),
             candidate_count_lower_bound=candidate_count_lower_bound,
             created_at=self.clock.now(),
             created_by=identity.subject_id,
-            frozen_at=None,
-            frozen_by=None,
+            frozen_at=self.clock.now(),
+            frozen_by=identity.subject_id,
         )
         self.repository.upsert_search_space(space)
         self.audit_writer.write(
@@ -384,22 +401,28 @@ class SearchSpaceService:
             object_type="CandidateSearchSpace",
             object_id=space.search_space_id,
             request_id=request_id,
-            reason_code="SEARCH_SPACE_DRAFT",
+            reason_code="SEARCH_SPACE_FROZEN",
             outcome="ACCEPTED",
             object_version_id=space.version_id,
         )
         return space
 
-    def list(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[CandidateSearchSpace, ...]:
+    def list(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[CandidateSearchSpace, ...]:
         identity.scope.assert_allows(
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
             decision_unit_id=decision_unit_id,
         )
-        return self.repository.list_search_spaces(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_search_spaces(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get(self, *, identity: IdentityContext, search_space_id: UUID) -> CandidateSearchSpace:
-        space = self.repository.get_search_space(scope=identity.scope, search_space_id=search_space_id)
+        space = self.repository.get_search_space(
+            scope=identity.scope, search_space_id=search_space_id
+        )
         if space is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
@@ -452,7 +475,9 @@ class ScenarioSetService:
                     "scenario set can be created."
                 ),
             )
-        space = self.repository.get_search_space(scope=identity.scope, search_space_id=search_space_id)
+        space = self.repository.get_search_space(
+            scope=identity.scope, search_space_id=search_space_id
+        )
         if space is None or space.state != SearchSpaceState.FROZEN:
             raise BiaiceError(
                 "SCENARIO_SET_INVALID",
@@ -470,11 +495,15 @@ class ScenarioSetService:
             version_id=new_uuid(),
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
-            project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
+            project_id=identity.scope.project_ids.__iter__().__next__()
+            if identity.scope.project_ids
+            else None,
             decision_unit_id=decision_unit_id,
             baseline_version_id=baseline.version_id,
             search_space_version_id=space.version_id,
-            evaluation_space_version_id=evaluation_space_obj.version_id if evaluation_space_obj else None,
+            evaluation_space_version_id=evaluation_space_obj.version_id
+            if evaluation_space_obj
+            else None,
             members=members,
             stress_axes=stress_axes,
             search_space_state=space.state,
@@ -503,16 +532,22 @@ class ScenarioSetService:
         request_id: str,
     ) -> ScenarioSet:
         require_audit(self.audit_writer)
-        scenario_set = self.repository.get_scenario_set(scope=identity.scope, scenario_set_id=scenario_set_id)
+        scenario_set = self.repository.get_scenario_set(
+            scope=identity.scope, scenario_set_id=scenario_set_id
+        )
         if scenario_set is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
-                detail=(
-                    f"场景集不存在 / Scenario set {scenario_set_id} not found in scope."
-                ),
+                detail=(f"场景集不存在 / Scenario set {scenario_set_id} not found in scope."),
             )
         validate_search_eval_independence(scenario_set)
-        frozen = scenario_set.model_copy(update={"state": ScenarioSetState.FROZEN, "frozen_at": self.clock.now(), "frozen_by": identity.subject_id})
+        frozen = scenario_set.model_copy(
+            update={
+                "state": ScenarioSetState.FROZEN,
+                "frozen_at": self.clock.now(),
+                "frozen_by": identity.subject_id,
+            }
+        )
         self.repository.upsert_scenario_set(frozen)
         self.audit_writer.write(
             identity=identity,
@@ -545,16 +580,18 @@ class ScenarioSetService:
             data_domain_id=identity.scope.data_domain_id,
             decision_unit_id=decision_unit_id,
         )
-        return self.repository.list_scenario_sets(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_scenario_sets(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get(self, *, identity: IdentityContext, scenario_set_id: UUID) -> ScenarioSet:
-        scenario_set = self.repository.get_scenario_set(scope=identity.scope, scenario_set_id=scenario_set_id)
+        scenario_set = self.repository.get_scenario_set(
+            scope=identity.scope, scenario_set_id=scenario_set_id
+        )
         if scenario_set is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
-                detail=(
-                    f"场景集不存在 / Scenario set {scenario_set_id} not found in scope."
-                ),
+                detail=(f"场景集不存在 / Scenario set {scenario_set_id} not found in scope."),
             )
         return scenario_set
 
@@ -599,7 +636,9 @@ class SimulationBatchService:
                     "决策基线必须处于 FROZEN 状态 / Decision baseline must be in FROZEN state."
                 ),
             )
-        scenario_set = self.repository.get_scenario_set(scope=identity.scope, scenario_set_id=scenario_set_id)
+        scenario_set = self.repository.get_scenario_set(
+            scope=identity.scope, scenario_set_id=scenario_set_id
+        )
         if scenario_set is None or scenario_set.state != ScenarioSetState.FROZEN:
             raise BiaiceError(
                 "SCENARIO_SET_INVALID",
@@ -612,7 +651,9 @@ class SimulationBatchService:
             version_id=new_uuid(),
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
-            project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
+            project_id=identity.scope.project_ids.__iter__().__next__()
+            if identity.scope.project_ids
+            else None,
             decision_unit_id=decision_unit_id,
             baseline_version_id=baseline.version_id,
             scenario_set_version_id=scenario_set.version_id,
@@ -678,7 +719,9 @@ class SimulationBatchService:
                     f"仿真批次不可取消（state={batch.state}）/ Simulation batch cannot be cancelled."
                 ),
             )
-        cancelled = batch.model_copy(update={"state": BatchState.CANCELLED, "last_updated_at": self.clock.now()})
+        cancelled = batch.model_copy(
+            update={"state": BatchState.CANCELLED, "last_updated_at": self.clock.now()}
+        )
         self.repository.upsert_batch(cancelled)
         self.audit_writer.write(
             identity=identity,
@@ -713,7 +756,9 @@ class SimulationBatchService:
                     f"仿真批次不可重试（state={batch.state}）/ Simulation batch cannot be retried."
                 ),
             )
-        retried = batch.model_copy(update={"state": BatchState.PENDING, "last_updated_at": self.clock.now()})
+        retried = batch.model_copy(
+            update={"state": BatchState.PENDING, "last_updated_at": self.clock.now()}
+        )
         self.repository.upsert_batch(retried)
         self.audit_writer.write(
             identity=identity,
@@ -727,7 +772,9 @@ class SimulationBatchService:
         )
         return retried
 
-    def list(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[SimulationBatch, ...]:
+    def list(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[SimulationBatch, ...]:
         identity.scope.assert_allows(
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
@@ -887,7 +934,9 @@ class OptimizationService:
             version_id=new_uuid(),
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
-            project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
+            project_id=identity.scope.project_ids.__iter__().__next__()
+            if identity.scope.project_ids
+            else None,
             decision_unit_id=batch.decision_unit_id,
             state=OptimizationState.RUNNING,
             award_mode=award_mode,
@@ -940,9 +989,7 @@ class OptimizationService:
                 object_version_id=failed_run.version_id,
             )
             return failed_run
-        assert_no_stress_axis_in_probability(
-            {axis: Decimal("0") for axis in stress_axes}
-        )
+        assert_no_stress_axis_in_probability({axis: Decimal("0") for axis in stress_axes})
         return run
 
     def finalize(
@@ -967,7 +1014,9 @@ class OptimizationService:
                     "ready to be finalized."
                 ),
             )
-        finalized = run.model_copy(update={"state": OptimizationState.FINALIZED, "finalized_at": self.clock.now()})
+        finalized = run.model_copy(
+            update={"state": OptimizationState.FINALIZED, "finalized_at": self.clock.now()}
+        )
         self.repository.upsert_optimization_run(finalized)
         self.audit_writer.write(
             identity=identity,
@@ -1047,7 +1096,9 @@ class OptimizationService:
             MergeRequest(
                 plan_id=plan_id,
                 run_id=run_id,
-                baseline_version_id=run.linked_run_version_id() if hasattr(run, "linked_run_version_id") else run.version_id,
+                baseline_version_id=run.linked_run_version_id()
+                if hasattr(run, "linked_run_version_id")
+                else run.version_id,
                 candidate_ids=tuple(candidate_ids),
                 linkage=linkage,
                 tau_b=DecimalStr.coerce(tau_b),
@@ -1084,13 +1135,17 @@ class OptimizationService:
             )
         return run
 
-    def list_stress(self, *, identity: IdentityContext, run_id: UUID) -> tuple[StressTestAssessment, ...]:
+    def list_stress(
+        self, *, identity: IdentityContext, run_id: UUID
+    ) -> tuple[StressTestAssessment, ...]:
         return self.repository.list_stress_assessments(scope=identity.scope, run_id=run_id)
 
     def list_plans(self, *, identity: IdentityContext, run_id: UUID) -> tuple[StrategyPlan, ...]:
         return self.repository.list_strategy_plans(scope=identity.scope, run_id=run_id)
 
-    def list_merge_assessments(self, *, identity: IdentityContext, run_id: UUID) -> tuple[MergeAssessment, ...]:
+    def list_merge_assessments(
+        self, *, identity: IdentityContext, run_id: UUID
+    ) -> tuple[MergeAssessment, ...]:
         return self.repository.list_merge_assessments(scope=identity.scope, run_id=run_id)
 
     def publish_plan(
@@ -1113,7 +1168,11 @@ class OptimizationService:
                 detail=(f"方案不可发布（state={plan.state}）/ Strategy plan cannot be published."),
             )
         published = plan.model_copy(
-            update={"state": PlanState.PUBLISHED, "published_at": self.clock.now(), "published_by": identity.subject_id}
+            update={
+                "state": PlanState.PUBLISHED,
+                "published_at": self.clock.now(),
+                "published_by": identity.subject_id,
+            }
         )
         self.repository.upsert_strategy_plan(published)
         self.audit_writer.write(
@@ -1195,7 +1254,10 @@ class EligibilityService:
             decision_unit_id=decision_unit_id,
         )
         baseline = self.repository.get_baseline(scope=identity.scope, baseline_id=baseline_id)
-        if baseline is None or baseline.state not in {BaselineState.FROZEN, BaselineState.SUPERSEDED}:
+        if baseline is None or baseline.state not in {
+            BaselineState.FROZEN,
+            BaselineState.SUPERSEDED,
+        }:
             raise BiaiceError(
                 "ELIGIBILITY_INPUT_UNKNOWN",
                 detail=(
@@ -1219,14 +1281,18 @@ class EligibilityService:
             version_id=new_uuid(),
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
-            project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
+            project_id=identity.scope.project_ids.__iter__().__next__()
+            if identity.scope.project_ids
+            else None,
             decision_unit_id=decision_unit_id,
             state=result.state,
             blocked_reason_codes=result.blocked_reason_codes,
             upstream_validity=dict(result.upstream_validity),
             baseline_version_id=baseline.version_id,
             snapshot_version_id=(
-                self.repository.get_snapshot(scope=identity.scope, snapshot_id=snapshot_id).version_id
+                self.repository.get_snapshot(
+                    scope=identity.scope, snapshot_id=snapshot_id
+                ).version_id
                 if snapshot_id is not None
                 else None
             ),
@@ -1260,20 +1326,28 @@ class EligibilityService:
         assert_eligibility_for_recommendation(result)
         return eligibility
 
-    def list(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[RecommendationEligibility, ...]:
+    def list(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[RecommendationEligibility, ...]:
         identity.scope.assert_allows(
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
             decision_unit_id=decision_unit_id,
         )
-        return self.repository.list_recommendation_eligibilities(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_recommendation_eligibilities(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get(self, *, identity: IdentityContext, eligibility_id: UUID) -> RecommendationEligibility:
-        eligibility = self.repository.get_recommendation_eligibility(scope=identity.scope, eligibility_id=eligibility_id)
+        eligibility = self.repository.get_recommendation_eligibility(
+            scope=identity.scope, eligibility_id=eligibility_id
+        )
         if eligibility is None:
             raise BiaiceError(
                 "RESOURCE_NOT_FOUND",
-                detail=(f"推荐资格不存在 / Recommendation eligibility {eligibility_id} not found in scope."),
+                detail=(
+                    f"推荐资格不存在 / Recommendation eligibility {eligibility_id} not found in scope."
+                ),
             )
         return eligibility
 
@@ -1313,7 +1387,9 @@ class SnapshotService:
                 version_id=new_uuid(),
                 tenant_id=identity.scope.tenant_id,
                 data_domain_id=identity.scope.data_domain_id,
-                project_id=identity.scope.project_ids.__iter__().__next__() if identity.scope.project_ids else None,
+                project_id=identity.scope.project_ids.__iter__().__next__()
+                if identity.scope.project_ids
+                else None,
                 decision_unit_id=decision_unit_id,
                 payload=payload,
                 created_at=self.clock.now(),
@@ -1348,13 +1424,17 @@ class SnapshotService:
         )
         return snapshot
 
-    def list(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[SimulationAssessmentSnapshot, ...]:
+    def list(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[SimulationAssessmentSnapshot, ...]:
         identity.scope.assert_allows(
             tenant_id=identity.scope.tenant_id,
             data_domain_id=identity.scope.data_domain_id,
             decision_unit_id=decision_unit_id,
         )
-        return self.repository.list_snapshots(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_snapshots(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get(self, *, identity: IdentityContext, snapshot_id: UUID) -> SimulationAssessmentSnapshot:
         snapshot = self.repository.get_snapshot(scope=identity.scope, snapshot_id=snapshot_id)
@@ -1365,7 +1445,9 @@ class SnapshotService:
             )
         return snapshot
 
-    def download(self, *, identity: IdentityContext, snapshot_id: UUID) -> SimulationAssessmentSnapshot:
+    def download(
+        self, *, identity: IdentityContext, snapshot_id: UUID
+    ) -> SimulationAssessmentSnapshot:
         snapshot = self.get(identity=identity, snapshot_id=snapshot_id)
         assert_shadow_watermark(snapshot)
         return snapshot

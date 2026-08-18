@@ -32,7 +32,9 @@ def apply_rounding(expression: str, value: Decimal) -> Decimal:
     return value.quantize(quantum, rounding=rounding)
 
 
-def apply_tie(expression: str, rows: tuple[Mapping[str, object], ...]) -> tuple[Mapping[str, object], ...]:
+def apply_tie(
+    expression: str, rows: tuple[Mapping[str, object], ...]
+) -> tuple[Mapping[str, object], ...]:
     kind, rest = expression.split(":", 1)
     if kind != "order":
         raise ValueError(f"unsupported gold tie: {kind}")

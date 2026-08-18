@@ -1,333 +1,410 @@
-/**
- * /baseline-scenarios page block.
- *
- * The block is composed of three sections:
- *   1. Frozen baseline   — the DecisionBaselineVersion (and any superseded
- *      siblings) together with input_manifest_hash, as-of and the list of
- *      frozen references.
- *   2. Candidate search space — the latest CandidateSearchSpaceVersion and
- *      an action to request a new one (MFA is required; the button is
- *      disabled until the current baseline is COMPLETE + CURRENT).
- *   3. Scenario set      — PROBABILITY scenarios, STRESS scenarios and the
- *      ScenarioSetVersion state.
- *
- * The block is a server component (no "use client") because every fetch
- * goes through the server-only getBiaiceClient() wrapper and the page
- * must always reflect the latest backend state.
- */
+"use client";
 
-import { Card, EmptyState, Notice, type StatusTone } from "@/components/ui";
-// Member 1 owns the page frame component; we consume it through the shared alias.
+import { useCallback, useState } from "react";
+
 import { PageFrame } from "@/components/shell/page-frame";
+import { Button, EmptyState, Notice, StatusBadge } from "@/components/ui";
+import type {
+  CandidateSearchSpace,
+  DecisionBaseline,
+  ScenarioSet,
+} from "@biaice/contracts";
 
-import styles from "./styles/feature-simulation.module.css";
-
-import { loadBaselineBundle } from "./api";
-import { ScenarioWeightBar } from "./components/scenario-weight-bar";
-import { CopyHashButton } from "./components/copy-hash-button";
-import { formatHash, formatMoney } from "./format";
 import {
-  deriveBaselineReadiness,
+  createScenarioSet,
+  createSearchSpace,
+  getCurrentIdentity,
+  loadBaselineBundle,
   type BaselineBundle,
-  type CandidateSearchSpaceVersion,
-  type DecisionBaselineVersion,
-  type Readiness,
-  type ScenarioSetVersion,
-  type ValidityState,
-} from "./types";
+} from "./api";
+import { CopyHashButton } from "./components/copy-hash-button";
+import styles from "./styles/feature-simulation.module.css";
+import { useApiResource } from "./use-api-resource";
 
 export interface BaselineScenariosProps {
-  unitId: string;
-  /**
-   * true when the active session is multi-factor authenticated. The page
-   * uses this to gate the create-search-space action (member 7's RiskAcceptance
-   * port and member 1's MFA guard are both required for freeze actions).
-   */
-  mfaVerified: boolean;
+  readonly unitId: string;
 }
 
-const READINESS_TONE: Record<Readiness, StatusTone> = {
-  READY: "success",
-  STALE: "warning",
-  INCOMPLETE: "warning",
-  INDETERMINATE: "neutral",
-  FAIL: "critical",
-  NOT_PRESENT: "neutral",
-};
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "请求失败，请稍后重试。";
+}
 
-const READINESS_LABEL: Record<Readiness, string> = {
-  READY: "Ready",
-  STALE: "Stale",
-  INCOMPLETE: "Incomplete",
-  INDETERMINATE: "Indeterminate",
-  FAIL: "Failed",
-  NOT_PRESENT: "Not present",
-};
+export default function BaselineScenariosBlock({ unitId }: BaselineScenariosProps) {
+  const loader = useCallback(async () => {
+    const [bundle, identity] = await Promise.all([
+        loadBaselineBundle(unitId),
+        getCurrentIdentity(),
+      ]);
+    return { bundle, mfaVerified: identity.mfa_verified };
+  }, [unitId]);
+  const { data, error, refresh } = useApiResource(loader);
+  const bundle = data?.bundle ?? null;
+  const mfaVerified = data?.mfaVerified ?? false;
 
-const VALIDITY_TONE: Record<ValidityState, StatusTone> = {
-  CURRENT: "success",
-  STALE: "warning",
-  EXPIRED: "warning",
-  INVALIDATED: "critical",
-  UNKNOWN: "neutral",
-};
-
-export default async function BaselineScenariosBlock({ unitId, mfaVerified }: BaselineScenariosProps) {
-  const bundle = await loadBaselineBundle(unitId);
-  const readiness = deriveBaselineReadiness(bundle.current, bundle.superseded);
   return (
-    <PageFrame title="Decision baseline & scenario set" eyebrow="member 6" description="Freeze the search/evaluation scenario set so the simulation batch can run on stable inputs.">
-      <ReadinessBar readiness={readiness} bundle={bundle} />
-      {!bundle.current ? (
-        <Notice tone="danger" title="No frozen baseline">
-          The unit has not produced a DecisionBaselineVersion yet. Without a frozen baseline the simulation feature cannot create batches. Open the upstream readiness workstream first.
+    <PageFrame
+      title="决策基线与场景"
+      eyebrow="FR-06"
+      description="核对冻结的输入清单，并建立与该基线严格关联的搜索空间和场景集。"
+    >
+      {error ? (
+        <Notice tone="danger" title="无法读取仿真基线">
+          {errorMessage(error)}
         </Notice>
       ) : null}
-      {bundle.current && !bundle.current.is_complete ? (
-        <Notice tone="danger" title="Baseline is incomplete">
-          The current baseline lists at least one missing frozen input. Simulation batches are blocked until the baseline reaches <strong>is_complete = true</strong>.
+      {!bundle && !error ? (
+        <Notice tone="info" title="正在加载">
+          正在读取最新基线、搜索空间和场景集。
         </Notice>
       ) : null}
-      <BaselineSection current={bundle.current} superseded={bundle.superseded} />
-      <SearchSpaceSection unitId={unitId} spaces={bundle.searchSpaces} canRequest={mfaVerified && readiness.status === "READY"} />
-      <ScenarioSetSection sets={bundle.scenarioSets} canFreeze={readiness.status === "READY"} />
+      {bundle ? (
+        <>
+          <Summary bundle={bundle} />
+          <BaselineSection current={bundle.current} superseded={bundle.superseded} />
+          <SearchSpaceSection
+            unitId={unitId}
+            baseline={bundle.current}
+            spaces={bundle.searchSpaces}
+            mfaVerified={mfaVerified}
+            onChanged={refresh}
+          />
+          <ScenarioSetSection
+            unitId={unitId}
+            baseline={bundle.current}
+            spaces={bundle.searchSpaces}
+            sets={bundle.scenarioSets}
+            mfaVerified={mfaVerified}
+            onChanged={refresh}
+          />
+        </>
+      ) : null}
     </PageFrame>
   );
 }
 
-function ReadinessBar({ readiness, bundle }: { readiness: { status: Readiness; reason_codes: string[] }; bundle: BaselineBundle }) {
-  const readinessTone = READINESS_TONE[readiness.status];
-  const readinessClass =
-    readinessTone === "success" ? styles.statusIsOk
-      : readinessTone === "warning" ? styles.statusIsWarn
-        : readinessTone === "critical" ? styles.statusIsFail
-          : styles.statusIsInfo;
+function Summary({ bundle }: { readonly bundle: BaselineBundle }) {
   return (
-    <div className={styles.readinessBar} role="status" aria-live="polite">
-      <Card>
-        <div className={styles.field}>
-          <span className={styles.fieldLabel}>Baseline</span>
-          <span className={styles.fieldValue + " " + readinessClass}>{READINESS_LABEL[readiness.status]}</span>
-        </div>
-      </Card>
-      <Card>
-        <div className={styles.field}>
-          <span className={styles.fieldLabel}>Search spaces</span>
-          <span className={styles.fieldValue}>{bundle.searchSpaces.length} version(s)</span>
-        </div>
-      </Card>
-      <Card>
-        <div className={styles.field}>
-          <span className={styles.fieldLabel}>Scenario sets</span>
-          <span className={styles.fieldValue}>{bundle.scenarioSets.length} version(s)</span>
-        </div>
-      </Card>
-      <Card>
-        <div className={styles.field}>
-          <span className={styles.fieldLabel}>Reason codes</span>
-          <span className={styles.fieldValue}>{readiness.reason_codes.length === 0 ? "—" : readiness.reason_codes.join(", ")}</span>
-        </div>
-      </Card>
+    <div className={styles.readinessBar} role="status">
+      <SummaryField label="基线就绪状态" value={bundle.readiness.status} />
+      <SummaryField label="搜索空间" value={String(bundle.searchSpaces.length)} />
+      <SummaryField label="场景集" value={String(bundle.scenarioSets.length)} />
+      <SummaryField
+        label="阻塞原因"
+        value={bundle.readiness.reasonCodes.join(", ") || "—"}
+      />
     </div>
   );
 }
 
-function BaselineSection({ current, superseded }: { current: DecisionBaselineVersion | null; superseded: DecisionBaselineVersion[] }) {
-  if (!current && superseded.length === 0) {
-    return (
-      <section className={styles.block} aria-label="frozen-baseline">
-        <h2 className={styles.blockTitle}>Frozen baseline</h2>
-        <EmptyState title="No baseline version" description="Create the first DecisionBaselineVersion to begin." />
-      </section>
-    );
-  }
+function SummaryField({ label, value }: { readonly label: string; readonly value: string }) {
   return (
-    <section className={styles.block} aria-label="frozen-baseline">
-      <h2 className={styles.blockTitle}>
-        Frozen baseline <small>{current ? current.version : "superseded"}</small>
-      </h2>
-      {current ? <BaselineDetails baseline={current} /> : null}
-      {superseded.length > 0 ? (
-        <div className={styles.gapLg}>
-          <h3 className={styles.blockTitle + " " + styles.caption} id="superseded-baselines">Superseded baselines</h3>
-          <table className={styles.table} aria-labelledby="superseded-baselines">
-            <thead>
-              <tr>
-                <th scope="col">Version</th>
-                <th scope="col">Validity</th>
-                <th scope="col">Created at</th>
-                <th scope="col">Hash</th>
-              </tr>
-            </thead>
-            <tbody>
-              {superseded.map((b) => {
-                const tone = VALIDITY_TONE[b.validity_state];
-                const cls =
-                  tone === "success" ? styles.statusIsOk
-                    : tone === "warning" ? styles.statusIsWarn
-                      : tone === "critical" ? styles.statusIsFail
-                        : styles.statusIsInfo;
-                return (
-                  <tr key={b.id} className={styles.tableRow}>
-                    <td>{b.version}</td>
-                    <td>
-                      <span className={styles.status + " " + cls}>{b.validity_state}</span>
-                    </td>
-                    <td>{b.created_at}</td>
-                    <td><span className={styles.hashMono}>{formatHash(b.input_manifest_hash)}</span></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          <p className={styles.caption + " " + styles.gapSm}>已过时，仅展示。</p>
+    <div className={styles.field}>
+      <span className={styles.fieldLabel}>{label}</span>
+      <span className={styles.fieldValue}>{value}</span>
+    </div>
+  );
+}
+
+function BaselineSection({
+  current,
+  superseded,
+}: {
+  readonly current: DecisionBaseline | null;
+  readonly superseded: ReadonlyArray<DecisionBaseline>;
+}) {
+  return (
+    <section className={styles.block} aria-label="decision-baseline">
+      <h2 className={styles.blockTitle}>当前冻结基线</h2>
+      {!current ? (
+        <EmptyState
+          title="尚无冻结基线"
+          description="请先从已发布的上游版本生成输入清单并冻结决策基线。"
+        />
+      ) : (
+        <div className={styles.blockGrid}>
+          <Field label="baseline_id">{current.baseline_id}</Field>
+          <Field label="version_id">{current.version_id}</Field>
+          <Field label="state">
+            <StatusBadge tone="success">{current.state}</StatusBadge>
+          </Field>
+          <Field label="frozen_at">{current.frozen_at ?? "—"}</Field>
+          <Field label="manifest_id">{current.manifest.manifest_id}</Field>
+          <Field label="manifest_hash">
+            <span className={styles.hashMono}>
+              {current.manifest.manifest_hash}
+              <CopyHashButton
+                value={current.manifest.manifest_hash}
+                label="copy-manifest-hash"
+              />
+            </span>
+          </Field>
+          <Field label="manifest items">{String(current.manifest.items.length)}</Field>
+          <Field label="created_at">{current.created_at}</Field>
         </div>
+      )}
+      {superseded.length > 0 ? (
+        <table className={`${styles.table} ${styles.gapMd}`}>
+          <thead>
+            <tr>
+              <th>baseline_id</th>
+              <th>state</th>
+              <th>created_at</th>
+            </tr>
+          </thead>
+          <tbody>
+            {superseded.map((baseline) => (
+              <tr key={baseline.version_id} className={styles.tableRow}>
+                <td>{baseline.baseline_id}</td>
+                <td>{baseline.state}</td>
+                <td>{baseline.created_at}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : null}
     </section>
   );
 }
 
-function BaselineDetails({ baseline }: { baseline: DecisionBaselineVersion }) {
+function SearchSpaceSection({
+  unitId,
+  baseline,
+  spaces,
+  mfaVerified,
+  onChanged,
+}: {
+  readonly unitId: string;
+  readonly baseline: DecisionBaseline | null;
+  readonly spaces: ReadonlyArray<CandidateSearchSpace>;
+  readonly mfaVerified: boolean;
+  readonly onChanged: () => Promise<void>;
+}) {
+  const latest = spaces[0] ?? null;
   return (
-    <div className={styles.blockGrid}>
-      <Field label="Rule set">{baseline.frozen_rule_set_version}</Field>
-      <Field label="Response profile">{baseline.frozen_response_profile_version}</Field>
-      <Field label="Cost baseline">{baseline.frozen_cost_baseline_version}</Field>
-      <Field label="Commercial policy">{baseline.frozen_commercial_policy_version}</Field>
-      <Field label="Model artifact">{baseline.frozen_model_artifact_version}</Field>
-      <Field label="as_of">{baseline.as_of}</Field>
-      <Field label="Competitor profiles">{baseline.frozen_competitor_profiles.length === 0 ? "none" : baseline.frozen_competitor_profiles.join(", ")}</Field>
-      <Field label="Market priors">{baseline.frozen_market_priors.length === 0 ? "none" : baseline.frozen_market_priors.join(", ")}</Field>
-      <Field label="Unknown entrant profile">{baseline.frozen_unknown_entrant_profile ?? "none"}</Field>
-      <Field label="is_complete">{baseline.is_complete ? "yes" : "no"}</Field>
-      <Field label="Validity">{baseline.validity_state}</Field>
-      <Field label="Input manifest hash">
-        <span className={styles.hashMono}>
-          {formatHash(baseline.input_manifest_hash)}
-          <CopyHashButton value={baseline.input_manifest_hash} label="copy-baseline-hash" />
-        </span>
-      </Field>
+    <section className={styles.block} aria-label="candidate-search-space">
+      <h2 className={styles.blockTitle}>候选搜索空间</h2>
+      {latest ? (
+        <div className={styles.blockGrid}>
+          <Field label="search_space_id">{latest.search_space_id}</Field>
+          <Field label="state">{latest.state}</Field>
+          <Field label="description">{latest.description}</Field>
+          <Field label="dimension_axes">{latest.dimension_axes.join(", ")}</Field>
+          <Field label="candidate lower bound">
+            {String(latest.candidate_count_lower_bound)}
+          </Field>
+          <Field label="baseline_version_id">{latest.baseline_version_id}</Field>
+        </div>
+      ) : (
+        <EmptyState title="尚无搜索空间" description="冻结基线后可建立第一个候选搜索空间。" />
+      )}
+      <SearchSpaceForm
+        unitId={unitId}
+        baseline={baseline}
+        disabled={!mfaVerified}
+        onChanged={onChanged}
+      />
+    </section>
+  );
+}
+
+function SearchSpaceForm({
+  unitId,
+  baseline,
+  disabled,
+  onChanged,
+}: {
+  readonly unitId: string;
+  readonly baseline: DecisionBaseline | null;
+  readonly disabled: boolean;
+  readonly onChanged: () => Promise<void>;
+}) {
+  const [description, setDescription] = useState("价格与质量候选维度");
+  const [axes, setAxes] = useState("price, quality");
+  const [candidateCount, setCandidateCount] = useState(2);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!baseline) return;
+    setPending(true);
+    setError(null);
+    try {
+      const dimensionAxes = [...new Set(axes.split(",").map((axis) => axis.trim()).filter(Boolean))];
+      await createSearchSpace(unitId, {
+        decision_unit_id: unitId,
+        baseline_id: baseline.baseline_id,
+        description,
+        dimension_axes: dimensionAxes,
+        candidate_count_lower_bound: candidateCount,
+      });
+      await onChanged();
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <form className={`${styles.modalPanel} ${styles.gapMd}`} onSubmit={submit}>
+      <h3>建立搜索空间</h3>
+      <label>
+        描述
+        <input value={description} onChange={(event) => setDescription(event.target.value)} required />
+      </label>
+      <label>
+        维度（逗号分隔）
+        <input value={axes} onChange={(event) => setAxes(event.target.value)} required />
+      </label>
+      <label>
+        最少候选数
+        <input
+          type="number"
+          min={1}
+          value={candidateCount}
+          onChange={(event) => setCandidateCount(Number(event.target.value))}
+          required
+        />
+      </label>
+      {error ? <Notice tone="danger" title="创建失败">{error}</Notice> : null}
+      <Button type="submit" disabled={!baseline || disabled || pending}>
+        {pending ? "提交中…" : "创建并冻结"}
+      </Button>
+      {disabled ? <p className={styles.caption}>此操作需要 MFA 验证。</p> : null}
+    </form>
+  );
+}
+
+function ScenarioSetSection({
+  unitId,
+  baseline,
+  spaces,
+  sets,
+  mfaVerified,
+  onChanged,
+}: {
+  readonly unitId: string;
+  readonly baseline: DecisionBaseline | null;
+  readonly spaces: ReadonlyArray<CandidateSearchSpace>;
+  readonly sets: ReadonlyArray<ScenarioSet>;
+  readonly mfaVerified: boolean;
+  readonly onChanged: () => Promise<void>;
+}) {
+  const latest = sets[0] ?? null;
+  const frozenSpace = spaces.find((space) => space.state === "FROZEN") ?? null;
+  return (
+    <section className={styles.block} aria-label="scenario-set">
+      <h2 className={styles.blockTitle}>场景集</h2>
+      {latest ? (
+        <>
+          <div className={styles.blockGrid}>
+            <Field label="scenario_set_id">{latest.scenario_set_id}</Field>
+            <Field label="state">{latest.state}</Field>
+            <Field label="search_space_version_id">{latest.search_space_version_id}</Field>
+            <Field label="stress_axes">{latest.stress_axes.join(", ") || "—"}</Field>
+          </div>
+          <table className={`${styles.table} ${styles.gapMd}`}>
+            <thead>
+              <tr>
+                <th>kind</th>
+                <th>label</th>
+                <th>weight</th>
+              </tr>
+            </thead>
+            <tbody>
+              {latest.members.map((member) => (
+                <tr key={member.scenario_id} className={styles.tableRow}>
+                  <td>{member.scenario_kind}</td>
+                  <td>{member.label}</td>
+                  <td>{member.weight.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      ) : (
+        <EmptyState title="尚无场景集" description="搜索空间冻结后可建立搜索与评估场景。" />
+      )}
+      <ScenarioSetForm
+        unitId={unitId}
+        baseline={baseline}
+        searchSpace={frozenSpace}
+        disabled={!mfaVerified}
+        onChanged={onChanged}
+      />
+    </section>
+  );
+}
+
+function ScenarioSetForm({
+  unitId,
+  baseline,
+  searchSpace,
+  disabled,
+  onChanged,
+}: {
+  readonly unitId: string;
+  readonly baseline: DecisionBaseline | null;
+  readonly searchSpace: CandidateSearchSpace | null;
+  readonly disabled: boolean;
+  readonly onChanged: () => Promise<void>;
+}) {
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit() {
+    if (!baseline || !searchSpace) return;
+    setPending(true);
+    setError(null);
+    try {
+      await createScenarioSet(unitId, {
+        decision_unit_id: unitId,
+        baseline_id: baseline.baseline_id,
+        search_space_id: searchSpace.search_space_id,
+        members: [
+          {
+            scenario_id: globalThis.crypto.randomUUID(),
+            scenario_kind: "SEARCH",
+            weight: "0.5",
+            label: "Search scenario",
+          },
+          {
+            scenario_id: globalThis.crypto.randomUUID(),
+            scenario_kind: "EVALUATION",
+            weight: "0.5",
+            label: "Evaluation scenario",
+          },
+        ],
+        stress_axes: ["PRICE_BAND"],
+      });
+      await onChanged();
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className={`${styles.actions} ${styles.gapMd}`}>
+      <Button
+        type="button"
+        onClick={() => void submit()}
+        disabled={!baseline || !searchSpace || disabled || pending}
+      >
+        {pending ? "提交中…" : "创建标准场景集"}
+      </Button>
+      {error ? <Notice tone="danger" title="创建失败">{error}</Notice> : null}
     </div>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { readonly label: string; readonly children: React.ReactNode }) {
   return (
     <div className={styles.field}>
       <span className={styles.fieldLabel}>{label}</span>
       <span className={styles.fieldValue}>{children}</span>
     </div>
   );
-}
-
-function SearchSpaceSection({ unitId, spaces, canRequest }: { unitId: string; spaces: CandidateSearchSpaceVersion[]; canRequest: boolean }) {
-  const latest = spaces[0] ?? null;
-  return (
-    <section className={styles.block} aria-label="candidate-search-space">
-      <h2 className={styles.blockTitle}>
-        Candidate search space <small>{latest ? latest.version : "none"}</small>
-      </h2>
-      {latest ? (
-        <div className={styles.blockGrid}>
-          <Field label="Lower bound">{formatMoney(latest.lower_bound, latest.currency)}</Field>
-          <Field label="Upper bound">{formatMoney(latest.upper_bound, latest.currency)}</Field>
-          <Field label="Step">{latest.step}</Field>
-          <Field label="Precision">{latest.precision}</Field>
-          <Field label="Rounding">{latest.rounding_mode}</Field>
-          <Field label="Tax passthrough">{latest.tax_passthrough ? "yes" : "no"}</Field>
-          <Field label="Abnormal low jump points">
-            {latest.abnormal_low_jump_points.length === 0 ? "—" : latest.abnormal_low_jump_points.join(", ")}
-          </Field>
-          <Field label="Commercial exploration bounds">
-            {formatMoney(latest.commercial_exploration_bounds.lower, latest.currency)} → {formatMoney(latest.commercial_exploration_bounds.upper, latest.currency)}
-          </Field>
-          <Field label="Baseline">{latest.baseline_version_id}</Field>
-          <Field label="Validity">{latest.validity_state}</Field>
-        </div>
-      ) : (
-        <EmptyState title="No search space yet" description="Request the first CandidateSearchSpaceVersion once the baseline is ready." />
-      )}
-      <div className={styles.actions}>
-        <RequestSearchSpaceButton unitId={unitId} disabled={!canRequest} />
-      </div>
-      {!canRequest ? (
-        <p className={styles.caption + " " + styles.gapSm}>
-          {!latest && spaces.length === 0
-            ? "需要先有一个已完成、当前生效的决策基线。" 
-            : "请确保决策基线状态为 READY、会话 MFA 已验证。"}
-        </p>
-      ) : null}
-    </section>
-  );
-}
-
-function ScenarioSetSection({ sets, canFreeze }: { sets: ScenarioSetVersion[]; canFreeze: boolean }) {
-  const latest = sets[0] ?? null;
-  return (
-    <section className={styles.block} aria-label="scenario-set">
-      <h2 className={styles.blockTitle}>
-        Scenario set <small>{latest ? latest.version : "none"}</small>
-      </h2>
-      {latest ? (
-        <div className={styles.blockGrid + " " + styles.gapMd}>
-          <Field label="Search seed">{latest.random_seed}</Field>
-          <Field label="Search set">{latest.search_set_id ?? "—"}</Field>
-          <Field label="Evaluation set">{latest.evaluation_set_id ?? "—"}</Field>
-          <Field label="Total probability weight">{String(latest.total_probability_weight)}</Field>
-          <Field label="Baseline">{latest.baseline_version_id}</Field>
-          <Field label="Validity">{latest.validity_state}</Field>
-        </div>
-      ) : null}
-      {latest ? (
-        <div className={styles.gapLg}>
-          <ScenarioWeightBar
-            probability={latest.probability_scenarios}
-            stress={latest.stress_scenarios}
-            totalProbabilityWeight={String(latest.total_probability_weight)}
-          />
-          <h3 className={styles.blockTitle + " " + styles.caption} id="probability-scenarios">Probability scenarios (in denominator)</h3>
-          <ScenarioTable scenarios={latest.probability_scenarios} />
-          <h3 className={styles.blockTitle + " " + styles.caption + " " + styles.gapMd} id="stress-scenarios">Stress scenarios (not in probability denominator)</h3>
-          <ScenarioTable scenarios={latest.stress_scenarios} />
-          <p className={styles.caption + " " + styles.gapSm}>
-            STRESS 权重从不进入概率分母，仅进入强制压力轴集。
-          </p>
-        </div>
-      ) : (
-        <EmptyState title="No scenario set yet" description="Freeze the first ScenarioSetVersion once the baseline is ready." />
-      )}
-    </section>
-  );
-}
-
-function ScenarioTable({ scenarios }: { scenarios: ScenarioSetVersion["probability_scenarios"] }) {
-  if (scenarios.length === 0) {
-    return <EmptyState title="No scenarios of this kind" description="The frozen scenario set contains no entries of this kind." />;
-  }
-  return (
-    <table className={styles.table} aria-label="scenario-table">
-      <thead>
-        <tr>
-          <th scope="col">scenario_id</th>
-          <th scope="col">weight</th>
-          <th scope="col">generator_parameters</th>
-        </tr>
-      </thead>
-      <tbody>
-        {scenarios.map((spec) => (
-          <tr key={spec.scenario_id} className={styles.tableRow}>
-            <td>{spec.scenario_id}</td>
-            <td>{String(spec.weight)}</td>
-            <td><code>{JSON.stringify(spec.generator_parameters)}</code></td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-// Freeze action is implemented in a small client island; see baseline-scenarios.client.tsx
-async function RequestSearchSpaceButton({ unitId, disabled }: { unitId: string; disabled: boolean }) {
-  const mod = await import("./baseline-scenarios.client");
-  return <mod.RequestSearchSpaceButtonClient unitId={unitId} disabled={disabled} />;
 }

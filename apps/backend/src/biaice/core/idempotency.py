@@ -23,9 +23,7 @@ def require_idempotency_key(
     return idempotency_key
 
 
-IdempotencyKey = Annotated[
-    str, Header(alias="Idempotency-Key", min_length=16, max_length=128)
-]
+IdempotencyKey = Annotated[str, Header(alias="Idempotency-Key", min_length=16, max_length=128)]
 
 
 class IdempotencyRepository(Protocol):

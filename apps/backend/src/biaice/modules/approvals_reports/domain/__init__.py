@@ -13,4 +13,3 @@ __all__ = [
     "RiskAcceptanceValidity",
     "effective_risk_acceptance",
 ]
-

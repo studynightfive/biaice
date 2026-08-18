@@ -7,6 +7,7 @@ These tests assert that every immutable model:
       version_id / created_at / created_by / frozen_at / frozen_by;
     * enforces the 13 enumerations defined in models.py.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -83,9 +84,7 @@ def test_decision_baseline_is_frozen_and_carries_required_projection() -> None:
         data_domain_id=uuid4(),
         project_id=None,
         decision_unit_id=uuid4(),
-        manifest=InputManifest(
-            manifest_id=uuid4(), manifest_hash="0" * 64, items=(item,)
-        ),
+        manifest=InputManifest(manifest_id=uuid4(), manifest_hash="0" * 64, items=(item,)),
         state=BaselineState.FROZEN,
         frozen_at=datetime(2026, 8, 15, tzinfo=timezone.utc),
         frozen_by=uuid4(),
@@ -117,11 +116,21 @@ def test_thirteen_enumerations_present() -> None:
     assert {s.name for s in ScenarioSetState} == {"DRAFT", "FROZEN", "SUPERSEDED", "INVALIDATED"}
     assert {s.name for s in ScenarioKind} == {"SEARCH", "EVALUATION", "STRESS"}
     assert {s.name for s in BatchState} == {
-        "PENDING", "RUNNING", "SUCCEEDED", "INDETERMINATE",
-        "FAILED_RETRYABLE", "FAILED_TERMINAL", "CANCELLED",
+        "PENDING",
+        "RUNNING",
+        "SUCCEEDED",
+        "INDETERMINATE",
+        "FAILED_RETRYABLE",
+        "FAILED_TERMINAL",
+        "CANCELLED",
     }
     assert {s.name for s in OptimizationState} == {
-        "DRAFT", "RUNNING", "SUCCEEDED", "FAILED", "INVALIDATED", "FINALIZED"
+        "DRAFT",
+        "RUNNING",
+        "SUCCEEDED",
+        "FAILED",
+        "INVALIDATED",
+        "FINALIZED",
     }
     assert {s.name for s in PlanState} == {"DRAFT", "PUBLISHED", "INVALIDATED"}
     assert {s.name for s in EligibilityState} == {"ELIGIBLE", "INELIGIBLE", "INDETERMINATE"}
@@ -130,7 +139,11 @@ def test_thirteen_enumerations_present() -> None:
     assert {s.name for s in ReviewValidity} == {"CURRENT", "UNKNOWN", "EXPIRED", "INVALIDATED"}
     assert {s.name for s in ObjectiveKind} == {"COST_MIN", "MARGIN_MAX", "COVERAGE_MAX", "RISK_MIN"}
     assert {s.name for s in StressAxis} == {
-        "PRICE_BAND", "TIMING", "COMPLIANCE", "PROVIDER_OUTAGE", "UNIT_FAILURE"
+        "PRICE_BAND",
+        "TIMING",
+        "COMPLIANCE",
+        "PROVIDER_OUTAGE",
+        "UNIT_FAILURE",
     }
     assert {s.name for s in StaticValidationStatus} == {"PASS", "FAIL", "INDETERMINATE"}
 
@@ -145,9 +158,7 @@ def test_decision_baseline_rejects_missing_frozen_projection() -> None:
             data_domain_id=uuid4(),
             project_id=None,
             decision_unit_id=uuid4(),
-            manifest=InputManifest(
-                manifest_id=uuid4(), manifest_hash="0" * 64, items=(item,)
-            ),
+            manifest=InputManifest(manifest_id=uuid4(), manifest_hash="0" * 64, items=(item,)),
             state=BaselineState.FROZEN,
             frozen_at=None,
             frozen_by=None,
@@ -159,6 +170,7 @@ def test_decision_baseline_rejects_missing_frozen_projection() -> None:
 def test_frozen_model_rejects_extra_fields() -> None:
     class Tiny(FrozenModel):
         x: int
+
     Tiny(x=1)
     with pytest.raises(ValidationError):
         Tiny(x=1, y=2)  # type: ignore[call-arg]

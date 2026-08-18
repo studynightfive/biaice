@@ -12,6 +12,7 @@ Hard rules:
     * any (candidate_i, candidate_{i+1}) pair that crosses a tau threshold
       blocks the merge with PLAN_MERGE_BLOCKED.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -71,16 +72,12 @@ def merge_assessments(
     if tau_b < Decimal("0") or tau_b > Decimal("1"):
         raise BiaiceError(
             "PLAN_MERGE_BLOCKED",
-            detail=(
-                f"tau_b 必须在 [0, 1] 之间 / tau_b must be in [0, 1]; received {tau_b}."
-            ),
+            detail=(f"tau_b 必须在 [0, 1] 之间 / tau_b must be in [0, 1]; received {tau_b}."),
         )
     if tau_m < Decimal("0") or tau_m > Decimal("1"):
         raise BiaiceError(
             "PLAN_MERGE_BLOCKED",
-            detail=(
-                f"tau_m 必须在 [0, 1] 之间 / tau_m must be in [0, 1]; received {tau_m}."
-            ),
+            detail=(f"tau_m 必须在 [0, 1] 之间 / tau_m must be in [0, 1]; received {tau_m}."),
         )
 
     seen: set[UUID] = set()
@@ -137,8 +134,14 @@ def assert_merge_accepted(assessment: MergeAssessment) -> None:
         )
 
 
-def as_plan_members(assessment: MergeAssessment, candidates: Sequence[UUID]) -> tuple[StrategyPlanMember, ...]:
+def as_plan_members(
+    assessment: MergeAssessment, candidates: Sequence[UUID]
+) -> tuple[StrategyPlanMember, ...]:
     return tuple(
-        StrategyPlanMember(candidate_id=candidate_id, linkage=assessment.linkage, weight=DecimalStr.from_decimal(Decimal("0.25")))
+        StrategyPlanMember(
+            candidate_id=candidate_id,
+            linkage=assessment.linkage,
+            weight=DecimalStr.from_decimal(Decimal("0.25")),
+        )
         for candidate_id in candidates
     )

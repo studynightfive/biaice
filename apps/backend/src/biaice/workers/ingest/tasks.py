@@ -18,9 +18,7 @@ from biaice.workers.ingest.runtime import require_runtime
 )
 def parse_document(self, job_id: str, request_id: str = "ingest-worker") -> dict:
     del self
-    job = require_runtime().execute_parse_job_for_worker(
-        job_id=UUID(job_id), request_id=request_id
-    )
+    job = require_runtime().execute_parse_job_for_worker(job_id=UUID(job_id), request_id=request_id)
     return {"status": job.status.value, "job_id": str(job.job_id)}
 
 

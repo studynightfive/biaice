@@ -138,9 +138,7 @@ class ReferenceOnlySecretStore:
         self, *, scope: TenantScope, reference: SecretReference
     ) -> SecretReference:
         del scope
-        return reference.model_copy(
-            update={"usage_scope": CredentialUsageScope.DELETION_ONLY}
-        )
+        return reference.model_copy(update={"usage_scope": CredentialUsageScope.DELETION_ONLY})
 
     def destroy(self, *, scope: TenantScope, reference: SecretReference) -> None:
         del scope, reference
@@ -409,15 +407,21 @@ def test_provider_management_full_safe_flow_and_redaction() -> None:
         assert planned.status_code == 200, planned.text
         successor_id = planned.json()["config_id"]
         successor_key = "test-only-non-secret-fixture-0002"
-        assert client.put(
-            f"/api/v1/ai-provider-configurations/{successor_id}/credential",
-            headers=_headers("ai-admin", "provider-successor-credential-0001"),
-            json={"api_key": successor_key},
-        ).status_code == 200
-        assert client.post(
-            f"/api/v1/ai-provider-configurations/{successor_id}/test-connection",
-            headers=_headers("ai-admin", "provider-successor-test-0001"),
-        ).status_code == 200
+        assert (
+            client.put(
+                f"/api/v1/ai-provider-configurations/{successor_id}/credential",
+                headers=_headers("ai-admin", "provider-successor-credential-0001"),
+                json={"api_key": successor_key},
+            ).status_code
+            == 200
+        )
+        assert (
+            client.post(
+                f"/api/v1/ai-provider-configurations/{successor_id}/test-connection",
+                headers=_headers("ai-admin", "provider-successor-test-0001"),
+            ).status_code
+            == 200
+        )
         rotated = client.post(
             f"/api/v1/ai-provider-configurations/{successor_id}/activate",
             headers=_headers("ai-admin", "provider-successor-activate-0001"),

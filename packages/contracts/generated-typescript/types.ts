@@ -44,6 +44,25 @@ export interface ActionRequest {
 
 export type AdapterOwner = "MEMBER_1_GOVERNANCE" | "MEMBER_3_LOCAL_REPLICA" | "MEMBER_5_PROVIDER_REPLICA";
 
+export interface ApplicableRegime {
+  readonly applicable_regime_id: string;
+  readonly decision_unit_id: string;
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly regime_name: string;
+  readonly procurement_mode: ProcurementMode;
+  readonly evaluation_method: EvaluationMethod;
+  readonly round_kind: RoundKind;
+  readonly source?: SourceLocator | null;
+  readonly lifecycle_state: ResourceLifecycle;
+  readonly validity_state: ResourceValidity;
+  readonly version: VersionMetadata;
+  readonly effective_from?: string | null;
+  readonly confirmed_by?: string | null;
+  readonly confirmed_at?: string | null;
+}
+
 export type ApprovalState = "PENDING" | "APPROVED" | "REJECTED";
 
 export interface ArchiveCompetitorRequest {
@@ -67,6 +86,8 @@ export interface BatchListResponse {
 }
 
 export type BatchState = "PENDING" | "RUNNING" | "SUCCEEDED" | "INDETERMINATE" | "FAILED_RETRYABLE" | "FAILED_TERMINAL" | "CANCELLED";
+
+export type BlockingStage = "COMPUTE" | "FREEZE" | "APPROVAL" | "AUTHORIZATION" | "SUBMISSION";
 
 export interface BuildCompetitorProfileRequest {
   readonly source_ids: ReadonlyArray<string>;
@@ -144,6 +165,34 @@ export interface CandidateSearchSpace {
   readonly frozen_by: string | null;
 }
 
+export interface ClauseDraftPatchRequest {
+  readonly original_text?: string | null;
+  readonly structured_expression?: string | null;
+  readonly priority?: number | null;
+  readonly confidence?: number | null;
+}
+
+export interface ClauseListResponse {
+  readonly items: ReadonlyArray<RuleClause>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export interface ClauseSupersedeRequest {
+  readonly original_text: string;
+  readonly structured_expression?: string | null;
+}
+
+export interface ClauseWriteRequest {
+  readonly kind: RuleClauseKind;
+  readonly coverage_key: string;
+  readonly priority: number;
+  readonly original_text: string;
+  readonly structured_expression?: string | null;
+  readonly confidence: number;
+  readonly source?: SourceLocator | null;
+}
+
 export interface CommercialPolicy {
   readonly policy_id: string;
   readonly version_id: string;
@@ -167,6 +216,68 @@ export interface CommercialPolicy {
   readonly effective_from?: string | null;
   readonly effective_to?: string | null;
   readonly superseded_by_id?: string | null;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly published_at?: string | null;
+  readonly published_by?: string | null;
+}
+
+export interface CompanyEvidence {
+  readonly lifecycle_state: LifecycleState;
+  readonly review_state: ReviewState;
+  readonly validity_state: ValidityState;
+  readonly retention_state?: RetentionState;
+  readonly effective_from?: string | null;
+  readonly effective_to?: string | null;
+  readonly superseded_by_id?: string | null;
+  readonly evidence_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id?: string | null;
+  readonly decision_unit_id: string;
+  readonly category: EvidenceCategory;
+  readonly subject: string;
+  readonly summary: string;
+  readonly source: string;
+  readonly source_document_id?: string | null;
+  readonly fragment_ref?: string | null;
+  readonly content_hash?: string | null;
+  readonly valid_from: string;
+  readonly valid_to: string;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly reviewed_at?: string | null;
+  readonly reviewed_by?: string | null;
+  readonly published_at?: string | null;
+  readonly published_by?: string | null;
+  readonly revoked_at?: string | null;
+  readonly revoked_by?: string | null;
+  readonly revocation_reason?: string | null;
+}
+
+export interface CompanyResponseProfile {
+  readonly lifecycle_state: LifecycleState;
+  readonly review_state: ReviewState;
+  readonly validity_state: ValidityState;
+  readonly retention_state?: RetentionState;
+  readonly effective_from?: string | null;
+  readonly effective_to?: string | null;
+  readonly superseded_by_id?: string | null;
+  readonly profile_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id?: string | null;
+  readonly decision_unit_id: string;
+  readonly qualification_preparation: string;
+  readonly technical_response: string;
+  readonly service_response: string;
+  readonly objective_non_price_inputs?: Record<string, string>;
+  readonly subjective_variable_intervals?: Record<string, string>;
+  readonly evidence_ids?: ReadonlyArray<string>;
+  readonly valid_from: string;
+  readonly valid_to: string;
   readonly created_at: string;
   readonly created_by: string;
   readonly published_at?: string | null;
@@ -252,11 +363,57 @@ export interface CompleteUploadResponse {
   readonly document: SourceDocument;
 }
 
+export interface ComplianceReview {
+  readonly compliance_review_id: string;
+  readonly decision_unit_id: string;
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly state: ComplianceReviewState;
+  readonly finding: string;
+  readonly blocking: boolean;
+  readonly version: VersionMetadata;
+}
+
+export type ComplianceReviewState = "OPEN" | "BLOCKING" | "ACCEPTED_FOR_SIMULATION" | "RESOLVED" | "CLOSED";
+
 export interface ComponentHealth {
   readonly name: string;
   readonly status: "UP" | "DOWN" | "DEGRADED" | "DISABLED";
   readonly detail?: string | null;
 }
+
+export interface ConditionCommandRequest {
+  readonly reason: string;
+}
+
+export interface ConditionListResponse {
+  readonly items: ReadonlyArray<ConditionRequirement>;
+}
+
+export interface ConditionRequirement {
+  readonly condition_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id?: string | null;
+  readonly decision_unit_id: string;
+  readonly title: string;
+  readonly statement: string;
+  readonly state: ConditionState;
+  readonly owner_id: string;
+  readonly independent_reviewer_id: string;
+  readonly evidence_id?: string | null;
+  readonly due_at: string;
+  readonly blocking_stage: BlockingStage;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly closed_at?: string | null;
+  readonly closed_by?: string | null;
+  readonly close_reason?: string | null;
+}
+
+export type ConditionState = "OPEN" | "SATISFIED" | "WAIVED" | "FAILED" | "EXPIRED";
 
 export interface ContractOnlyCommand {
   readonly reason_code?: string | null;
@@ -331,6 +488,16 @@ export interface CreateCompetitorSourceRequest {
   readonly notes?: string | null;
 }
 
+export interface CreateConditionRequest {
+  readonly title: string;
+  readonly statement: string;
+  readonly owner_id: string;
+  readonly independent_reviewer_id: string;
+  readonly evidence_id?: string | null;
+  readonly due_at: string;
+  readonly blocking_stage: BlockingStage;
+}
+
 export interface CreateCostRequest {
   readonly currency: string;
   readonly tax_mode: TaxMode;
@@ -343,6 +510,17 @@ export interface CreateCostRequest {
   readonly cashflow_out: MoneyInput;
 }
 
+export interface CreateEvidenceRequest {
+  readonly category: EvidenceCategory;
+  readonly subject: string;
+  readonly summary: string;
+  readonly source: string;
+  readonly source_document_id?: string | null;
+  readonly fragment_ref?: string | null;
+  readonly valid_from: string;
+  readonly valid_to: string;
+}
+
 export interface CreateMarketPriorRequest {
   readonly evidence_refs: ReadonlyArray<string>;
   readonly purpose: string;
@@ -350,6 +528,13 @@ export interface CreateMarketPriorRequest {
   readonly valid_from: string;
   readonly expires_at: string;
   readonly distribution: Record<string, number>;
+}
+
+export interface CreateMatchRequest {
+  readonly requirement_id: string;
+  readonly evidence_id?: string | null;
+  readonly state?: MatchState;
+  readonly rationale: string;
 }
 
 export interface CreateOptimizationRunRequest {
@@ -375,6 +560,27 @@ export interface CreatePolicyRequest {
   readonly objective_weights?: Record<string, string>;
   readonly merge_tolerance: string;
   readonly exception_authority: string;
+}
+
+export interface CreateProfileRequest {
+  readonly qualification_preparation: string;
+  readonly technical_response: string;
+  readonly service_response: string;
+  readonly objective_non_price_inputs?: Record<string, string>;
+  readonly subjective_variable_intervals?: Record<string, string>;
+  readonly evidence_ids?: ReadonlyArray<string>;
+  readonly valid_from: string;
+  readonly valid_to: string;
+}
+
+export interface CreateRequirementRequest {
+  readonly title: string;
+  readonly statement: string;
+  readonly mandatory?: boolean;
+  readonly rule_clause_id?: string | null;
+  readonly source_document_id?: string | null;
+  readonly source_page?: string | null;
+  readonly source_section?: string | null;
 }
 
 export interface CreateRiskAcceptanceRequest {
@@ -425,6 +631,31 @@ export interface CreateUploadSessionRequest {
 }
 
 export type CredentialUsageScope = "TEST_ONLY" | "BUSINESS_AND_DELETION" | "DELETION_ONLY" | "NONE";
+
+export interface CrossLotConstraint {
+  readonly cross_lot_constraint_id: string;
+  readonly decision_unit_id: string;
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly related_unit_ids: ReadonlyArray<string>;
+  readonly description: string;
+  readonly confirmed: boolean;
+  readonly confirmed_by?: string | null;
+  readonly confirmed_at?: string | null;
+  readonly version: VersionMetadata;
+}
+
+export interface CrossLotListResponse {
+  readonly items: ReadonlyArray<CrossLotConstraint>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export interface CrossLotWriteRequest {
+  readonly related_unit_ids?: ReadonlyArray<string>;
+  readonly description: string;
+}
 
 export type DataClassification = "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "PERSONAL" | "SENSITIVE_PERSONAL";
 
@@ -484,6 +715,75 @@ export interface DecisionBaseline {
   readonly superseded_by?: string | null;
   readonly invalidated_at?: string | null;
   readonly invalidated_by?: string | null;
+}
+
+export interface DecisionUnit {
+  readonly decision_unit_id: string;
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly name: string;
+  readonly lot_code?: string | null;
+  readonly timezone: string;
+  readonly budget?: MoneyOutput | null;
+  readonly price_ceiling?: MoneyOutput | null;
+  readonly deadline_at?: string | null;
+  readonly cross_unit_group_id?: string | null;
+  readonly lifecycle_state: DecisionUnitLifecycleState;
+  readonly resource_lifecycle: ResourceLifecycle;
+  readonly validity_state: ResourceValidity;
+  readonly version: VersionMetadata;
+  readonly current_scope_assessment_id?: string | null;
+  readonly current_regime_id?: string | null;
+  readonly current_rule_set_id?: string | null;
+  readonly gap_summary?: string | null;
+}
+
+export interface DecisionUnitDraftPatchRequest {
+  readonly name?: string | null;
+  readonly lot_code?: string | null;
+  readonly timezone?: string | null;
+  readonly budget?: MoneyInput | null;
+  readonly price_ceiling?: MoneyInput | null;
+  readonly deadline_at?: string | null;
+  readonly cross_unit_group_id?: string | null;
+}
+
+export interface DecisionUnitLifecycleEvent {
+  readonly event_id: string;
+  readonly decision_unit_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string;
+  readonly sequence: number;
+  readonly command: string;
+  readonly from_state: DecisionUnitLifecycleState;
+  readonly to_state: DecisionUnitLifecycleState;
+  readonly reopened?: boolean;
+  readonly reason: string;
+  readonly basis?: string | null;
+  readonly earliest_affected_stage?: string | null;
+  readonly actor_id: string;
+  readonly occurred_at: string;
+  readonly request_id: string;
+}
+
+export type DecisionUnitLifecycleState = "DRAFT" | "DOCUMENTS_PARSING" | "REGIME_AND_SCOPE_PENDING" | "PORTFOLIO_REVIEW_REQUIRED" | "MULTI_ROUND_UNSUPPORTED" | "RULES_PENDING_CONFIRMATION" | "EVIDENCE_MATCHING" | "PRECHECK_PENDING" | "PRECHECK_BLOCKED" | "PRECHECK_UNKNOWN" | "PRECHECK_PASSED" | "PRECHECK_CONDITIONAL" | "REMEDIATION" | "STRATEGY_READINESS_PENDING" | "NOT_READY" | "STRATEGY_READY" | "STRATEGY_READY_WITH_CONDITIONS" | "COMPUTING" | "SIMULATION_FAILED" | "NO_FEASIBLE_STRATEGY" | "RECOMMENDATION_REVIEW" | "ELIGIBILITY_PENDING" | "INELIGIBLE" | "INDETERMINATE" | "ELIGIBLE" | "ELIGIBLE_WITH_ACCEPTED_RISK" | "ELIGIBLE_WITH_CONDITIONS" | "APPROVAL_PACKAGE_FROZEN" | "APPROVAL_PENDING" | "REJECTED" | "PACKAGE_INVALIDATED" | "APPROVED_CONDITIONAL" | "CONDITION_CLOSURE" | "SUBMISSION_AUTHORIZED" | "DECISION_FROZEN" | "EXTERNAL_SUBMISSION_PENDING" | "SUBMISSION_DECLARED" | "SUBMISSION_MISMATCH" | "SUBMISSION_FAILED" | "SUBMISSION_VERIFIED" | "OUTCOME_PENDING" | "OUTCOME_UNVERIFIED" | "OUTCOME_CONFLICTING" | "OUTCOME_VERIFIED" | "AWARDED" | "LOST" | "DISQUALIFIED" | "NO_BID" | "WITHDRAWN" | "CANCELLED" | "PROCUREMENT_FAILED" | "REWORK" | "CLOSED" | "ARCHIVED";
+
+export interface DecisionUnitListResponse {
+  readonly items: ReadonlyArray<DecisionUnit>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export interface DecisionUnitWriteRequest {
+  readonly name: string;
+  readonly lot_code?: string | null;
+  readonly timezone: string;
+  readonly budget?: MoneyInput | null;
+  readonly price_ceiling?: MoneyInput | null;
+  readonly deadline_at?: string | null;
+  readonly cross_unit_group_id?: string | null;
 }
 
 export type DeploymentState = "DRAFT" | "ACTIVE" | "SUPERSEDED" | "ROLLED_BACK";
@@ -557,6 +857,8 @@ export interface EligibilityListResponse {
 
 export type EligibilityState = "ELIGIBLE" | "INELIGIBLE" | "INDETERMINATE";
 
+export type EvaluationMethod = "COMPREHENSIVE_SCORING" | "LOWEST_EVALUATED_PRICE" | "OTHER_UNSUPPORTED";
+
 export interface EvaluationMetricDefinition {
   readonly code: string;
   readonly direction: MetricDirection;
@@ -597,6 +899,31 @@ export interface EvaluationProtocolVersion {
   readonly relative_tolerance: number;
   readonly aggregation_protocol: string;
   readonly cluster_unit: "DECISION_UNIT" | "PROJECT" | "BUYER";
+}
+
+export type EvidenceCategory = "QUALIFICATION" | "CASE" | "PERSONNEL" | "TECHNICAL" | "SERVICE" | "COMMITMENT";
+
+export interface EvidenceListResponse {
+  readonly items: ReadonlyArray<CompanyEvidence>;
+}
+
+export interface EvidenceMatch {
+  readonly match_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id?: string | null;
+  readonly decision_unit_id: string;
+  readonly requirement_id: string;
+  readonly evidence_id?: string | null;
+  readonly state: MatchState;
+  readonly rationale: string;
+  readonly original_etag?: string | null;
+  readonly reviewed_at?: string | null;
+  readonly reviewed_by?: string | null;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly validity_state?: ValidityState;
 }
 
 export type EvidenceStatus = "PASS" | "FAIL" | "UNKNOWN";
@@ -736,6 +1063,12 @@ export interface JobView {
   readonly events_url: string;
 }
 
+export interface LifecycleEventListResponse {
+  readonly items: ReadonlyArray<DecisionUnitLifecycleEvent>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
 export type LifecycleState = "DRAFT" | "PUBLISHED" | "ARCHIVED" | "DELETED";
 
 export interface ManifestItem {
@@ -840,6 +1173,12 @@ export interface MarketResourceRecord {
 }
 
 export type MarketResourceState = "APPROVED" | "ARCHIVED" | "CLOSED" | "COMPLETED" | "CONTAINED" | "CURRENT" | "DRAFT" | "EXPIRED" | "FROZEN" | "IDENTITY_VERIFIED" | "IN_PROGRESS" | "NOT_REQUIRED" | "OPEN" | "PUBLISHED" | "READY_TO_COMPLETE" | "RECEIVED" | "RECORDED" | "REJECTED" | "REMEDIATING" | "RESOLVED" | "REVOKED" | "TRIAGED" | "WAITING_FOR_INFORMATION";
+
+export interface MatchListResponse {
+  readonly items: ReadonlyArray<EvidenceMatch>;
+}
+
+export type MatchState = "SATISFIED" | "PARTIAL" | "UNSATISFIED" | "UNKNOWN";
 
 export interface MeResponse {
   readonly subject_id: string;
@@ -1132,6 +1471,39 @@ export interface PolicyListResponse {
   readonly items: ReadonlyArray<CommercialPolicy>;
 }
 
+export interface PrecheckAssessment {
+  readonly precheck_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id?: string | null;
+  readonly decision_unit_id: string;
+  readonly decision: PrecheckDecision;
+  readonly validity_state: ValidityState;
+  readonly rules_available: boolean | null;
+  readonly subject_qualification: MatchState;
+  readonly substantive_response: MatchState;
+  readonly evidence_coverage: MatchState;
+  readonly deadline_closure: boolean | null;
+  readonly unmapped_mandatory_count: number;
+  readonly condition_ids?: ReadonlyArray<string>;
+  readonly checks?: ReadonlyArray<PrecheckCheck>;
+  readonly created_at: string;
+  readonly created_by: string;
+}
+
+export interface PrecheckCheck {
+  readonly code: string;
+  readonly passed: boolean | null;
+  readonly reason_code: string;
+}
+
+export type PrecheckDecision = "PASS" | "CONDITIONAL" | "BLOCKED" | "UNKNOWN";
+
+export interface PrecheckListResponse {
+  readonly items: ReadonlyArray<PrecheckAssessment>;
+}
+
 export interface ProblemDetails {
   readonly type: string;
   readonly title: string;
@@ -1143,6 +1515,59 @@ export interface ProblemDetails {
   readonly errors?: ReadonlyArray<FieldProblem>;
   readonly recoverable?: boolean;
   readonly remediation?: string | null;
+}
+
+export type ProcurementMode = "OPEN_TENDERING" | "INVITED_TENDERING" | "OTHER_UNSUPPORTED";
+
+export interface ProcurementProject {
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly name: string;
+  readonly purchaser_name: string;
+  readonly timezone: string;
+  readonly budget?: MoneyOutput | null;
+  readonly price_ceiling?: MoneyOutput | null;
+  readonly deadline_at?: string | null;
+  readonly cross_unit_group_id?: string | null;
+  readonly notes?: string | null;
+  readonly lifecycle_state: ResourceLifecycle;
+  readonly validity_state: ResourceValidity;
+  readonly version: VersionMetadata;
+  readonly archived_at?: string | null;
+  readonly archived_by?: string | null;
+}
+
+export interface ProfileListResponse {
+  readonly items: ReadonlyArray<CompanyResponseProfile>;
+}
+
+export interface ProjectDraftPatchRequest {
+  readonly name?: string | null;
+  readonly purchaser_name?: string | null;
+  readonly timezone?: string | null;
+  readonly budget?: MoneyInput | null;
+  readonly price_ceiling?: MoneyInput | null;
+  readonly deadline_at?: string | null;
+  readonly cross_unit_group_id?: string | null;
+  readonly notes?: string | null;
+}
+
+export interface ProjectListResponse {
+  readonly items: ReadonlyArray<ProcurementProject>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export interface ProjectWriteRequest {
+  readonly name: string;
+  readonly purchaser_name: string;
+  readonly timezone: string;
+  readonly budget?: MoneyInput | null;
+  readonly price_ceiling?: MoneyInput | null;
+  readonly deadline_at?: string | null;
+  readonly cross_unit_group_id?: string | null;
+  readonly notes?: string | null;
 }
 
 export interface ProviderActionCommand {
@@ -1379,6 +1804,20 @@ export interface RecommendationEligibilityRequest {
   readonly risk_acceptance: ReviewValidity;
 }
 
+export interface RegimeListResponse {
+  readonly items: ReadonlyArray<ApplicableRegime>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export interface RegimeWriteRequest {
+  readonly regime_name: string;
+  readonly procurement_mode: ProcurementMode;
+  readonly evaluation_method: EvaluationMethod;
+  readonly round_kind: RoundKind;
+  readonly source?: SourceLocator | null;
+}
+
 export type ReplicaKind = "DATABASE" | "OBJECT_STORAGE" | "SEARCH_INDEX" | "VECTOR_INDEX" | "CACHE" | "TEMPORARY_FILE" | "PROVIDER_EXTERNAL" | "BACKUP" | "AUDIT_DERIVED";
 
 export interface ReplicaListResponse {
@@ -1397,11 +1836,49 @@ export interface ReplicaLocation {
   readonly retention_expires_at?: string | null;
 }
 
+export interface Requirement {
+  readonly lifecycle_state: LifecycleState;
+  readonly review_state: ReviewState;
+  readonly validity_state: ValidityState;
+  readonly retention_state?: RetentionState;
+  readonly effective_from?: string | null;
+  readonly effective_to?: string | null;
+  readonly superseded_by_id?: string | null;
+  readonly requirement_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id?: string | null;
+  readonly decision_unit_id: string;
+  readonly rule_clause_id?: string | null;
+  readonly title: string;
+  readonly statement: string;
+  readonly mandatory: boolean;
+  readonly source_document_id?: string | null;
+  readonly source_page?: string | null;
+  readonly source_section?: string | null;
+  readonly etag: string;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly published_at?: string | null;
+  readonly published_by?: string | null;
+}
+
+export interface RequirementListResponse {
+  readonly items: ReadonlyArray<Requirement>;
+}
+
+export type ResolutionStatus = "RESOLVED" | "CONFLICT_REQUIRES_CONFIRMATION";
+
 export interface ResolveConflictDocumentLinkRequest {
   readonly link_id: string;
   readonly chosen_document_id: string;
   readonly reason: string;
 }
+
+export type ResourceLifecycle = "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
+export type ResourceValidity = "CURRENT" | "STALE" | "INVALIDATED";
 
 export type RetentionState = "RETAIN" | "DISPOSITION_DUE" | "DISPOSITION_RUNNING" | "DISPOSED";
 
@@ -1410,9 +1887,33 @@ export interface ReviewCompetitorSourceRequest {
   readonly notes?: string | null;
 }
 
+export interface ReviewListResponse {
+  readonly items: ReadonlyArray<ComplianceReview>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export interface ReviewMatchRequest {
+  readonly state: MatchState;
+  readonly rationale: string;
+}
+
 export type ReviewState = "PENDING" | "APPROVED" | "NOT_REQUIRED" | "REJECTED" | "QUARANTINED";
 
+export interface ReviewTransitionRequest {
+  readonly target: ComplianceReviewState;
+}
+
 export type ReviewValidity = "CURRENT" | "UNKNOWN" | "EXPIRED" | "INVALIDATED";
+
+export interface ReviewWriteRequest {
+  readonly finding: string;
+  readonly blocking?: boolean;
+}
+
+export interface RevokeRequest {
+  readonly reason: string;
+}
 
 export interface RevokeRiskAcceptanceRequest {
   readonly revocation_reason: string;
@@ -1479,6 +1980,78 @@ export interface RollbackEventListResponse {
   readonly next_cursor?: string | null;
   readonly has_more?: boolean;
   readonly items: ReadonlyArray<RollbackEvent>;
+}
+
+export type RoundKind = "SINGLE_ROUND" | "MULTI_ROUND";
+
+export interface RuleClause {
+  readonly rule_clause_id: string;
+  readonly rule_set_id: string;
+  readonly decision_unit_id: string;
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly kind: RuleClauseKind;
+  readonly coverage_key: string;
+  readonly priority: number;
+  readonly original_text: string;
+  readonly structured_expression?: string | null;
+  readonly confidence: number;
+  readonly source?: SourceLocator | null;
+  readonly supersedes_clause_id?: string | null;
+  readonly lifecycle_state: ResourceLifecycle;
+  readonly validity_state: ResourceValidity;
+  readonly version: VersionMetadata;
+  readonly confirmed_by?: string | null;
+  readonly confirmed_at?: string | null;
+}
+
+export type RuleClauseKind = "QUALIFICATION" | "SUBSTANTIVE" | "SCORING" | "FORMULA" | "ROUNDING" | "TIE" | "CANDIDATE" | "VALID_SUPPLIER_COUNT" | "SAME_BRAND" | "ABNORMALLY_LOW" | "CONTRACT" | "SUBMISSION";
+
+export interface RuleResolution {
+  readonly coverage_key: string;
+  readonly status: ResolutionStatus;
+  readonly winning_clause_id?: string | null;
+  readonly conflicting_clause_ids?: ReadonlyArray<string>;
+  readonly detail: string;
+}
+
+export interface RuleResolutionListResponse {
+  readonly items: ReadonlyArray<RuleResolution>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export type RuleScopeLevel = "PROJECT" | "DECISION_UNIT";
+
+export interface RuleSet {
+  readonly rule_set_id: string;
+  readonly decision_unit_id: string;
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly title: string;
+  readonly scope_level: RuleScopeLevel;
+  readonly lifecycle_state: ResourceLifecycle;
+  readonly validity_state: ResourceValidity;
+  readonly version: VersionMetadata;
+  readonly effective_from?: string | null;
+  readonly effective_until?: string | null;
+  readonly confirmed_by?: string | null;
+  readonly confirmed_at?: string | null;
+}
+
+export interface RuleSetListResponse {
+  readonly items: ReadonlyArray<RuleSet>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export interface RuleSetWriteRequest {
+  readonly title: string;
+  readonly scope_level?: RuleScopeLevel;
+  readonly effective_from?: string | null;
+  readonly effective_until?: string | null;
 }
 
 export type ScanResult = "CLEAN" | "INFECTED" | "ERROR";
@@ -1557,6 +2130,51 @@ export interface ScenarioStrategyAssessment {
   readonly recommended: boolean;
   readonly assessed_at: string;
   readonly reason_code: string;
+}
+
+export interface ScopeAssessment {
+  readonly scope_assessment_id: string;
+  readonly decision_unit_id: string;
+  readonly project_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly support: ScopeSupport;
+  readonly round_kind: RoundKind;
+  readonly cross_lot: boolean;
+  readonly reason_codes?: ReadonlyArray<string>;
+  readonly source?: SourceLocator | null;
+  readonly applicability?: string | null;
+  readonly lifecycle_state: ResourceLifecycle;
+  readonly validity_state: ResourceValidity;
+  readonly version: VersionMetadata;
+  readonly effective_from?: string | null;
+  readonly confirmed_by?: string | null;
+  readonly confirmed_at?: string | null;
+}
+
+export interface ScopeDraftPatchRequest {
+  readonly support?: ScopeSupport | null;
+  readonly round_kind?: RoundKind | null;
+  readonly cross_lot?: boolean | null;
+  readonly reason_codes?: ReadonlyArray<string> | null;
+  readonly applicability?: string | null;
+}
+
+export interface ScopeListResponse {
+  readonly items: ReadonlyArray<ScopeAssessment>;
+  readonly next_cursor?: string | null;
+  readonly has_more?: boolean;
+}
+
+export type ScopeSupport = "SUPPORTED" | "UNSUPPORTED" | "PORTFOLIO_REVIEW_REQUIRED" | "MULTI_ROUND_UNSUPPORTED";
+
+export interface ScopeWriteRequest {
+  readonly support: ScopeSupport;
+  readonly round_kind: RoundKind;
+  readonly cross_lot?: boolean;
+  readonly reason_codes?: ReadonlyArray<string>;
+  readonly source?: SourceLocator | null;
+  readonly applicability?: string | null;
 }
 
 export interface ScopedObjectRef {
@@ -1671,6 +2289,13 @@ export interface SourceDocument {
   readonly released_by?: string | null;
   readonly upload_session_id: string;
   readonly source_filename?: string | null;
+}
+
+export interface SourceLocator {
+  readonly document_id?: string | null;
+  readonly page?: number | null;
+  readonly section?: string | null;
+  readonly excerpt?: string | null;
 }
 
 export type SourceReviewState = "DRAFT" | "REVIEWED" | "QUARANTINED" | "EXPIRED";
@@ -1789,6 +2414,14 @@ export type SubjectDeduplicationState = "SUCCEEDED";
 
 export type TaxMode = "INCLUSIVE" | "EXCLUSIVE";
 
+export interface TransitionCommandRequest {
+  readonly command: string;
+  readonly reason: string;
+  readonly basis?: string | null;
+  readonly earliest_affected_stage?: string | null;
+  readonly resume_state?: string | null;
+}
+
 export interface UnknownEntrantProfileListResponse {
   readonly items: ReadonlyArray<UnknownEntrantProfileVersion>;
 }
@@ -1814,6 +2447,12 @@ export interface UpdateCompetitorDraftRequest {
   readonly legal_name?: string | null;
   readonly canonical_subject_key?: string | null;
   readonly aliases?: ReadonlyArray<string> | null;
+}
+
+export interface UpdateRequirementRequest {
+  readonly title: string;
+  readonly statement: string;
+  readonly mandatory?: boolean;
 }
 
 export interface UploadChunkResponse {
@@ -1846,6 +2485,15 @@ export interface UploadSessionResponse {
 }
 
 export type ValidityState = "CURRENT" | "STALE" | "INVALIDATED";
+
+export interface VersionMetadata {
+  readonly version_id: string;
+  readonly version_number: number;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly content_hash: string;
+  readonly supersedes_version_id?: string | null;
+}
 
 export type WaiverPolicy = "PROHIBITED" | "ALLOWED";
 

@@ -182,7 +182,9 @@ class CommercialService:
         _assert_unit(identity, decision_unit_id)
         return self.repository.list_costs(scope=identity.scope, decision_unit_id=decision_unit_id)
 
-    def get_cost_baseline(self, *, identity: IdentityContext, cost_baseline_id: UUID) -> CostBaseline:
+    def get_cost_baseline(
+        self, *, identity: IdentityContext, cost_baseline_id: UUID
+    ) -> CostBaseline:
         item = self.repository.get_cost(scope=identity.scope, cost_baseline_id=cost_baseline_id)
         if item is None:
             raise BiaiceError("RESOURCE_NOT_FOUND")
@@ -313,9 +315,13 @@ class CommercialService:
         )
         return item
 
-    def list_policies(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[CommercialPolicy, ...]:
+    def list_policies(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[CommercialPolicy, ...]:
         _assert_unit(identity, decision_unit_id)
-        return self.repository.list_policies(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_policies(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get_policy(self, *, identity: IdentityContext, policy_id: UUID) -> CommercialPolicy:
         item = self.repository.get_policy(scope=identity.scope, policy_id=policy_id)
@@ -376,7 +382,9 @@ class CommercialService:
             scope=identity.scope, decision_unit_id=decision_unit_id
         )
         costs = self.repository.list_costs(scope=identity.scope, decision_unit_id=decision_unit_id)
-        policies = self.repository.list_policies(scope=identity.scope, decision_unit_id=decision_unit_id)
+        policies = self.repository.list_policies(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
         current_cost = next(
             (item for item in reversed(costs) if formal_input_allowed(item, now=now).allowed),
             None,
@@ -387,7 +395,9 @@ class CommercialService:
             None,
         )
 
-        def item(code: str, decision: ReadinessDecision, reason: str, commercial: bool = False) -> ReadinessItem:
+        def item(
+            code: str, decision: ReadinessDecision, reason: str, commercial: bool = False
+        ) -> ReadinessItem:
             return ReadinessItem(
                 code=code,
                 decision=decision,
@@ -413,13 +423,17 @@ class CommercialService:
 
         response_item = item(
             "response",
-            ReadinessDecision.READY if evidence_view.response_profile_current else ReadinessDecision.NOT_READY,
+            ReadinessDecision.READY
+            if evidence_view.response_profile_current
+            else ReadinessDecision.NOT_READY,
             "RESPONSE_CURRENT" if evidence_view.response_profile_current else "RESPONSE_MISSING",
         )
         if current_cost is not None:
             cost_item = item("cost", ReadinessDecision.READY, "COST_PUBLISHED", commercial=True)
         elif draft_cost is not None:
-            cost_item = item("cost", ReadinessDecision.NOT_READY, "COST_EXPLORATION_ONLY", commercial=True)
+            cost_item = item(
+                "cost", ReadinessDecision.NOT_READY, "COST_EXPLORATION_ONLY", commercial=True
+            )
         else:
             cost_item = item("cost", ReadinessDecision.UNKNOWN, "COST_MISSING", commercial=True)
         policy_item = item(
@@ -435,20 +449,30 @@ class CommercialService:
         else:
             market_item = item(
                 "market",
-                ReadinessDecision.READY if market_view.prior_current else ReadinessDecision.NOT_READY,
+                ReadinessDecision.READY
+                if market_view.prior_current
+                else ReadinessDecision.NOT_READY,
                 "PRESSURE_ONLY" if market_view.pressure_only else "MARKET_PRIOR_CURRENT",
             )
             data_use_item = item(
                 "data_use",
-                ReadinessDecision.READY if market_view.data_use_authorized else ReadinessDecision.NOT_READY,
+                ReadinessDecision.READY
+                if market_view.data_use_authorized
+                else ReadinessDecision.NOT_READY,
                 "DATA_USE_OK" if market_view.data_use_authorized else "DATA_USE_BLOCKED",
             )
             model_item = item(
                 "model",
-                ReadinessDecision.READY if market_view.model_protocol_current else ReadinessDecision.NOT_READY,
-                "MODEL_PROTOCOL_CURRENT" if market_view.model_protocol_current else "MODEL_PROTOCOL_MISSING",
+                ReadinessDecision.READY
+                if market_view.model_protocol_current
+                else ReadinessDecision.NOT_READY,
+                "MODEL_PROTOCOL_CURRENT"
+                if market_view.model_protocol_current
+                else "MODEL_PROTOCOL_MISSING",
             )
-        scenario_item = item("scenario_protocol", ReadinessDecision.UNKNOWN, "SCENARIO_PORT_MEMBER_6")
+        scenario_item = item(
+            "scenario_protocol", ReadinessDecision.UNKNOWN, "SCENARIO_PORT_MEMBER_6"
+        )
 
         items = (
             rules_item,
@@ -514,7 +538,9 @@ class CommercialService:
         self, *, identity: IdentityContext, decision_unit_id: UUID
     ) -> tuple[StrategyReadinessAssessment, ...]:
         _assert_unit(identity, decision_unit_id)
-        return self.repository.list_readiness(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_readiness(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get_readiness(
         self, *, identity: IdentityContext, readiness_id: UUID

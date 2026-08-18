@@ -85,12 +85,12 @@ export async function test_ai_provider_connection(client: BiaiceClient, options:
   return client.request<Models.ProviderConnectionTestResult>("POST", "/api/v1/ai-provider-configurations/{config_id}/test-connection", options);
 }
 
-export async function get_applicable_regime(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/applicable-regimes/{applicable_regime_id}", options);
+export async function get_applicable_regime(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ApplicableRegime> {
+  return client.request<Models.ApplicableRegime>("GET", "/api/v1/applicable-regimes/{applicable_regime_id}", options);
 }
 
-export async function publish_applicable_regime(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/applicable-regimes/{applicable_regime_id}/publish", options);
+export async function publish_applicable_regime(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ApplicableRegime> {
+  return client.request<Models.ApplicableRegime>("POST", "/api/v1/applicable-regimes/{applicable_regime_id}/publish", options);
 }
 
 export async function get_approval_package(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
@@ -169,12 +169,12 @@ export async function get_candidate_search_space(client: BiaiceClient, options: 
   return client.request<Models.CandidateSearchSpace>("GET", "/api/v1/candidate-search-spaces/{candidate_search_space_id}", options);
 }
 
-export async function get_commercial_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/commercial-policies/{commercial_policie_id}", options);
+export async function get_commercial_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CommercialPolicy> {
+  return client.request<Models.CommercialPolicy>("GET", "/api/v1/commercial-policies/{commercial_policie_id}", options);
 }
 
-export async function publish_commercial_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/commercial-policies/{commercial_policy_id}/publish", options);
+export async function publish_commercial_policy(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CommercialPolicy> {
+  return client.request<Models.CommercialPolicy>("POST", "/api/v1/commercial-policies/{commercial_policy_id}/publish", options);
 }
 
 export async function get_competitor_profile(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompetitorProfile> {
@@ -233,48 +233,48 @@ export async function create_competitor_source(client: BiaiceClient, options: Re
   return client.request<Models.CompetitorSource>("POST", "/api/v1/competitors/{competitor_id}/sources", options);
 }
 
-export async function get_compliance_review(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/compliance-reviews/{compliance_review_id}", options);
+export async function get_compliance_review(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ComplianceReview> {
+  return client.request<Models.ComplianceReview>("GET", "/api/v1/compliance-reviews/{compliance_review_id}", options);
 }
 
-export async function transition_compliance_review(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/compliance-reviews/{compliance_review_id}/transition", options);
+export async function transition_compliance_review(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ComplianceReview> {
+  return client.request<Models.ComplianceReview>("POST", "/api/v1/compliance-reviews/{compliance_review_id}/transition", options);
 }
 
-export async function get_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/conditions/{condition_id}", options);
+export async function get_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ConditionRequirement> {
+  return client.request<Models.ConditionRequirement>("GET", "/api/v1/conditions/{condition_id}", options);
 }
 
-export async function expire_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/conditions/{condition_id}/expire", options);
+export async function expire_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ConditionRequirement> {
+  return client.request<Models.ConditionRequirement>("POST", "/api/v1/conditions/{condition_id}/expire", options);
 }
 
-export async function fail_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/conditions/{condition_id}/fail", options);
+export async function fail_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ConditionRequirement> {
+  return client.request<Models.ConditionRequirement>("POST", "/api/v1/conditions/{condition_id}/fail", options);
 }
 
-export async function satisfy_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/conditions/{condition_id}/satisfy", options);
+export async function satisfy_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ConditionRequirement> {
+  return client.request<Models.ConditionRequirement>("POST", "/api/v1/conditions/{condition_id}/satisfy", options);
 }
 
-export async function waive_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/conditions/{condition_id}/waive", options);
+export async function waive_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ConditionRequirement> {
+  return client.request<Models.ConditionRequirement>("POST", "/api/v1/conditions/{condition_id}/waive", options);
 }
 
 export async function append_consent_withdrawal(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourceRecord> {
   return client.request<Models.MarketResourceRecord>("POST", "/api/v1/consent-withdrawals", options);
 }
 
-export async function get_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/cost-baselines/{cost_baseline_id}", options);
+export async function get_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CostBaseline> {
+  return client.request<Models.CostBaseline>("GET", "/api/v1/cost-baselines/{cost_baseline_id}", options);
 }
 
-export async function approve_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/cost-baselines/{cost_baseline_id}/approve", options);
+export async function approve_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CostBaseline> {
+  return client.request<Models.CostBaseline>("POST", "/api/v1/cost-baselines/{cost_baseline_id}/approve", options);
 }
 
-export async function publish_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/cost-baselines/{cost_baseline_id}/publish", options);
+export async function publish_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CostBaseline> {
+  return client.request<Models.CostBaseline>("POST", "/api/v1/cost-baselines/{cost_baseline_id}/publish", options);
 }
 
 export async function list_cross_border_assessments(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourcePage> {
@@ -305,12 +305,12 @@ export async function revoke_cross_border_assessment(client: BiaiceClient, optio
   return client.request<Models.MarketResourceRecord>("POST", "/api/v1/cross-border-assessments/{cross_border_assessment_id}/revoke", options);
 }
 
-export async function get_cross_lot_constraint(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/cross-lot-constraints/{cross_lot_constraint_id}", options);
+export async function get_cross_lot_constraint(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CrossLotConstraint> {
+  return client.request<Models.CrossLotConstraint>("GET", "/api/v1/cross-lot-constraints/{cross_lot_constraint_id}", options);
 }
 
-export async function confirm_cross_lot_constraint(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/cross-lot-constraints/{cross_lot_constraint_id}/confirm", options);
+export async function confirm_cross_lot_constraint(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CrossLotConstraint> {
+  return client.request<Models.CrossLotConstraint>("POST", "/api/v1/cross-lot-constraints/{cross_lot_constraint_id}/confirm", options);
 }
 
 export async function list_data_subject_requests(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketResourcePage> {
@@ -365,20 +365,20 @@ export async function download_decision_report(client: BiaiceClient, options: Re
   return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-reports/{report_id}/download", options);
 }
 
-export async function get_decision_unit(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}", options);
+export async function get_decision_unit(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.DecisionUnit> {
+  return client.request<Models.DecisionUnit>("GET", "/api/v1/decision-units/{unit_id}", options);
 }
 
-export async function update_decision_unit_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("PATCH", "/api/v1/decision-units/{unit_id}", options);
+export async function update_decision_unit_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.DecisionUnit> {
+  return client.request<Models.DecisionUnit>("PATCH", "/api/v1/decision-units/{unit_id}", options);
 }
 
-export async function list_applicable_regimes(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/applicable-regimes", options);
+export async function list_applicable_regimes(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RegimeListResponse> {
+  return client.request<Models.RegimeListResponse>("GET", "/api/v1/decision-units/{unit_id}/applicable-regimes", options);
 }
 
-export async function create_applicable_regime(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/applicable-regimes", options);
+export async function create_applicable_regime(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ApplicableRegime> {
+  return client.request<Models.ApplicableRegime>("POST", "/api/v1/decision-units/{unit_id}/applicable-regimes", options);
 }
 
 export async function list_approval_packages(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
@@ -397,44 +397,44 @@ export async function create_candidate_search_space(client: BiaiceClient, option
   return client.request<Models.CandidateSearchSpace>("POST", "/api/v1/decision-units/{unit_id}/candidate-search-spaces", options);
 }
 
-export async function list_commercial_policies(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/commercial-policies", options);
+export async function list_commercial_policies(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.PolicyListResponse> {
+  return client.request<Models.PolicyListResponse>("GET", "/api/v1/decision-units/{unit_id}/commercial-policies", options);
 }
 
-export async function create_commercial_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/commercial-policies", options);
+export async function create_commercial_policie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CommercialPolicy> {
+  return client.request<Models.CommercialPolicy>("POST", "/api/v1/decision-units/{unit_id}/commercial-policies", options);
 }
 
-export async function list_compliance_reviews(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/compliance-reviews", options);
+export async function list_compliance_reviews(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ReviewListResponse> {
+  return client.request<Models.ReviewListResponse>("GET", "/api/v1/decision-units/{unit_id}/compliance-reviews", options);
 }
 
-export async function create_compliance_review(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/compliance-reviews", options);
+export async function create_compliance_review(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ComplianceReview> {
+  return client.request<Models.ComplianceReview>("POST", "/api/v1/decision-units/{unit_id}/compliance-reviews", options);
 }
 
-export async function list_conditions(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/conditions", options);
+export async function list_conditions(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ConditionListResponse> {
+  return client.request<Models.ConditionListResponse>("GET", "/api/v1/decision-units/{unit_id}/conditions", options);
 }
 
-export async function create_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/conditions", options);
+export async function create_condition(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ConditionRequirement> {
+  return client.request<Models.ConditionRequirement>("POST", "/api/v1/decision-units/{unit_id}/conditions", options);
 }
 
-export async function list_cost_baselines(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/cost-baselines", options);
+export async function list_cost_baselines(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CostListResponse> {
+  return client.request<Models.CostListResponse>("GET", "/api/v1/decision-units/{unit_id}/cost-baselines", options);
 }
 
-export async function create_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/cost-baselines", options);
+export async function create_cost_baseline(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CostBaseline> {
+  return client.request<Models.CostBaseline>("POST", "/api/v1/decision-units/{unit_id}/cost-baselines", options);
 }
 
-export async function list_cross_lot_constraints(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/cross-lot-constraints", options);
+export async function list_cross_lot_constraints(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CrossLotListResponse> {
+  return client.request<Models.CrossLotListResponse>("GET", "/api/v1/decision-units/{unit_id}/cross-lot-constraints", options);
 }
 
-export async function create_cross_lot_constraint(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/cross-lot-constraints", options);
+export async function create_cross_lot_constraint(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CrossLotConstraint> {
+  return client.request<Models.CrossLotConstraint>("POST", "/api/v1/decision-units/{unit_id}/cross-lot-constraints", options);
 }
 
 export async function list_decision_baselines(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.BaselineListResponse> {
@@ -461,24 +461,24 @@ export async function list_unit_documents(client: BiaiceClient, options: Request
   return client.request<Models.DocumentListResponse>("GET", "/api/v1/decision-units/{unit_id}/documents", options);
 }
 
-export async function list_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/evidence", options);
+export async function list_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.EvidenceListResponse> {
+  return client.request<Models.EvidenceListResponse>("GET", "/api/v1/decision-units/{unit_id}/evidence", options);
 }
 
-export async function create_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/evidence", options);
+export async function create_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyEvidence> {
+  return client.request<Models.CompanyEvidence>("POST", "/api/v1/decision-units/{unit_id}/evidence", options);
 }
 
-export async function list_evidence_matches(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/evidence-matches", options);
+export async function list_evidence_matches(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MatchListResponse> {
+  return client.request<Models.MatchListResponse>("GET", "/api/v1/decision-units/{unit_id}/evidence-matches", options);
 }
 
-export async function create_evidence_matche(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/evidence-matches", options);
+export async function create_evidence_matche(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.EvidenceMatch> {
+  return client.request<Models.EvidenceMatch>("POST", "/api/v1/decision-units/{unit_id}/evidence-matches", options);
 }
 
-export async function list_decision_unit_lifecycle_events(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/lifecycle-events", options);
+export async function list_decision_unit_lifecycle_events(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.LifecycleEventListResponse> {
+  return client.request<Models.LifecycleEventListResponse>("GET", "/api/v1/decision-units/{unit_id}/lifecycle-events", options);
 }
 
 export async function list_market_priors(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.MarketPriorListResponse> {
@@ -493,12 +493,12 @@ export async function create_unit_parse_job(client: BiaiceClient, options: Reque
   return client.request<Models.ParseJobResponse>("POST", "/api/v1/decision-units/{unit_id}/parse-jobs", options);
 }
 
-export async function list_precheck_assessments(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/precheck-assessments", options);
+export async function list_precheck_assessments(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.PrecheckListResponse> {
+  return client.request<Models.PrecheckListResponse>("GET", "/api/v1/decision-units/{unit_id}/precheck-assessments", options);
 }
 
-export async function create_precheck_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/precheck-assessments", options);
+export async function create_precheck_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.PrecheckAssessment> {
+  return client.request<Models.PrecheckAssessment>("POST", "/api/v1/decision-units/{unit_id}/precheck-assessments", options);
 }
 
 export async function list_precheck_reports(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
@@ -517,12 +517,12 @@ export async function create_procurement_outcome(client: BiaiceClient, options: 
   return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/procurement-outcomes", options);
 }
 
-export async function list_readiness_assessments(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/readiness-assessments", options);
+export async function list_readiness_assessments(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ReadinessListResponse> {
+  return client.request<Models.ReadinessListResponse>("GET", "/api/v1/decision-units/{unit_id}/readiness-assessments", options);
 }
 
-export async function create_readiness_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/readiness-assessments", options);
+export async function create_readiness_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.StrategyReadinessAssessment> {
+  return client.request<Models.StrategyReadinessAssessment>("POST", "/api/v1/decision-units/{unit_id}/readiness-assessments", options);
 }
 
 export async function list_recommendation_eligibilities(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.EligibilityListResponse> {
@@ -533,20 +533,20 @@ export async function create_recommendation_eligibilitie(client: BiaiceClient, o
   return client.request<Models.RecommendationEligibility>("POST", "/api/v1/decision-units/{unit_id}/recommendation-eligibilities", options);
 }
 
-export async function list_requirements(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/requirements", options);
+export async function list_requirements(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RequirementListResponse> {
+  return client.request<Models.RequirementListResponse>("GET", "/api/v1/decision-units/{unit_id}/requirements", options);
 }
 
-export async function create_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/requirements", options);
+export async function create_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.Requirement> {
+  return client.request<Models.Requirement>("POST", "/api/v1/decision-units/{unit_id}/requirements", options);
 }
 
-export async function list_response_profiles(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/response-profiles", options);
+export async function list_response_profiles(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ProfileListResponse> {
+  return client.request<Models.ProfileListResponse>("GET", "/api/v1/decision-units/{unit_id}/response-profiles", options);
 }
 
-export async function create_response_profile(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/response-profiles", options);
+export async function create_response_profile(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyResponseProfile> {
+  return client.request<Models.CompanyResponseProfile>("POST", "/api/v1/decision-units/{unit_id}/response-profiles", options);
 }
 
 export async function list_risk_acceptances(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RiskAcceptanceListResponse> {
@@ -557,12 +557,16 @@ export async function create_risk_acceptance(client: BiaiceClient, options: Requ
   return client.request<Models.RiskAcceptance>("POST", "/api/v1/decision-units/{unit_id}/risk-acceptances", options);
 }
 
-export async function list_rule_sets(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/rule-sets", options);
+export async function list_rule_resolutions(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleResolutionListResponse> {
+  return client.request<Models.RuleResolutionListResponse>("GET", "/api/v1/decision-units/{unit_id}/rule-resolutions", options);
 }
 
-export async function create_rule_set(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/rule-sets", options);
+export async function list_rule_sets(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleSetListResponse> {
+  return client.request<Models.RuleSetListResponse>("GET", "/api/v1/decision-units/{unit_id}/rule-sets", options);
+}
+
+export async function create_rule_set(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleSet> {
+  return client.request<Models.RuleSet>("POST", "/api/v1/decision-units/{unit_id}/rule-sets", options);
 }
 
 export async function list_scenario_sets(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ScenarioSetListResponse> {
@@ -573,12 +577,12 @@ export async function create_scenario_set(client: BiaiceClient, options: Request
   return client.request<Models.ScenarioSet>("POST", "/api/v1/decision-units/{unit_id}/scenario-sets", options);
 }
 
-export async function list_scope_assessments(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/decision-units/{unit_id}/scope-assessments", options);
+export async function list_scope_assessments(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ScopeListResponse> {
+  return client.request<Models.ScopeListResponse>("GET", "/api/v1/decision-units/{unit_id}/scope-assessments", options);
 }
 
-export async function create_scope_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/scope-assessments", options);
+export async function create_scope_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ScopeAssessment> {
+  return client.request<Models.ScopeAssessment>("POST", "/api/v1/decision-units/{unit_id}/scope-assessments", options);
 }
 
 export async function list_simulation_assessment_snapshots(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.SnapshotListResponse> {
@@ -617,8 +621,8 @@ export async function create_submission_record_draft(client: BiaiceClient, optio
   return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/submission-records", options);
 }
 
-export async function submit_decision_unit_transition_command(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/decision-units/{unit_id}/transition-commands", options);
+export async function submit_decision_unit_transition_command(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.DecisionUnitLifecycleEvent> {
+  return client.request<Models.DecisionUnitLifecycleEvent>("POST", "/api/v1/decision-units/{unit_id}/transition-commands", options);
 }
 
 export async function list_unknown_entrant_profiles(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.UnknownEntrantProfileListResponse> {
@@ -749,28 +753,28 @@ export async function publish_evaluation_protocol(client: BiaiceClient, options:
   return client.request<Models.EvaluationProtocolVersion>("POST", "/api/v1/evaluation-protocols/{evaluation_protocol_id}/publish", options);
 }
 
-export async function review_evidence_match(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/evidence-matches/{evidence_match_id}/review", options);
+export async function review_evidence_match(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.EvidenceMatch> {
+  return client.request<Models.EvidenceMatch>("POST", "/api/v1/evidence-matches/{evidence_match_id}/review", options);
 }
 
-export async function get_evidence_matche(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/evidence-matches/{evidence_matche_id}", options);
+export async function get_evidence_matche(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.EvidenceMatch> {
+  return client.request<Models.EvidenceMatch>("GET", "/api/v1/evidence-matches/{evidence_matche_id}", options);
 }
 
-export async function get_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/evidence/{evidence_id}", options);
+export async function get_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyEvidence> {
+  return client.request<Models.CompanyEvidence>("GET", "/api/v1/evidence/{evidence_id}", options);
 }
 
-export async function publish_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/evidence/{evidence_id}/publish", options);
+export async function publish_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyEvidence> {
+  return client.request<Models.CompanyEvidence>("POST", "/api/v1/evidence/{evidence_id}/publish", options);
 }
 
-export async function review_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/evidence/{evidence_id}/review", options);
+export async function review_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyEvidence> {
+  return client.request<Models.CompanyEvidence>("POST", "/api/v1/evidence/{evidence_id}/review", options);
 }
 
-export async function revoke_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/evidence/{evidence_id}/revoke", options);
+export async function revoke_evidence(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyEvidence> {
+  return client.request<Models.CompanyEvidence>("POST", "/api/v1/evidence/{evidence_id}/revoke", options);
 }
 
 export async function list_feature_schemas(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.FeatureSchemaListResponse> {
@@ -1093,8 +1097,8 @@ export async function revoke_ai_provider_catalog_version(client: BiaiceClient, o
   return client.request<Models.ProviderCatalogVersion>("POST", "/api/v1/platform/ai-provider-catalog-versions/{catalog_id}/revoke", options);
 }
 
-export async function get_precheck_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/precheck-assessments/{precheck_assessment_id}", options);
+export async function get_precheck_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.PrecheckAssessment> {
+  return client.request<Models.PrecheckAssessment>("GET", "/api/v1/precheck-assessments/{precheck_assessment_id}", options);
 }
 
 export async function get_precheck_report(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
@@ -1117,32 +1121,32 @@ export async function get_processing_record(client: BiaiceClient, options: Reque
   return client.request<Models.MarketResourceRecord>("GET", "/api/v1/processing-records/{processing_record_id}", options);
 }
 
-export async function list_projects(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/projects", options);
+export async function list_projects(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ProjectListResponse> {
+  return client.request<Models.ProjectListResponse>("GET", "/api/v1/projects", options);
 }
 
-export async function create_project(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/projects", options);
+export async function create_project(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ProcurementProject> {
+  return client.request<Models.ProcurementProject>("POST", "/api/v1/projects", options);
 }
 
-export async function get_project(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/projects/{project_id}", options);
+export async function get_project(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ProcurementProject> {
+  return client.request<Models.ProcurementProject>("GET", "/api/v1/projects/{project_id}", options);
 }
 
-export async function update_project_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("PATCH", "/api/v1/projects/{project_id}", options);
+export async function update_project_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ProcurementProject> {
+  return client.request<Models.ProcurementProject>("PATCH", "/api/v1/projects/{project_id}", options);
 }
 
-export async function archive_project(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/projects/{project_id}/archive", options);
+export async function archive_project(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ProcurementProject> {
+  return client.request<Models.ProcurementProject>("POST", "/api/v1/projects/{project_id}/archive", options);
 }
 
-export async function list_decision_units(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/projects/{project_id}/decision-units", options);
+export async function list_decision_units(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.DecisionUnitListResponse> {
+  return client.request<Models.DecisionUnitListResponse>("GET", "/api/v1/projects/{project_id}/decision-units", options);
 }
 
-export async function create_decision_unit(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/projects/{project_id}/decision-units", options);
+export async function create_decision_unit(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.DecisionUnit> {
+  return client.request<Models.DecisionUnit>("POST", "/api/v1/projects/{project_id}/decision-units", options);
 }
 
 export async function create_project_document_upload_session(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.UploadSessionResponse> {
@@ -1193,8 +1197,8 @@ export async function revoke_provider_policy(client: BiaiceClient, options: Requ
   return client.request<Models.MarketResourceRecord>("POST", "/api/v1/provider-policies/{provider_policy_id}/revoke", options);
 }
 
-export async function get_readiness_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/readiness-assessments/{readiness_assessment_id}", options);
+export async function get_readiness_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.StrategyReadinessAssessment> {
+  return client.request<Models.StrategyReadinessAssessment>("GET", "/api/v1/readiness-assessments/{readiness_assessment_id}", options);
 }
 
 export async function get_recommendation_eligibilitie(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RecommendationEligibility> {
@@ -1221,28 +1225,28 @@ export async function append_report_revocation_event(client: BiaiceClient, optio
   return client.request<Models.ContractOnlyResource>("POST", "/api/v1/reports/{report_id}/revocation-events", options);
 }
 
-export async function get_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/requirements/{requirement_id}", options);
+export async function get_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.Requirement> {
+  return client.request<Models.Requirement>("GET", "/api/v1/requirements/{requirement_id}", options);
 }
 
-export async function update_requirement_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("PATCH", "/api/v1/requirements/{requirement_id}", options);
+export async function update_requirement_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.Requirement> {
+  return client.request<Models.Requirement>("PATCH", "/api/v1/requirements/{requirement_id}", options);
 }
 
-export async function publish_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/requirements/{requirement_id}/publish", options);
+export async function publish_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.Requirement> {
+  return client.request<Models.Requirement>("POST", "/api/v1/requirements/{requirement_id}/publish", options);
 }
 
-export async function supersede_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/requirements/{requirement_id}/supersede", options);
+export async function supersede_requirement(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.Requirement> {
+  return client.request<Models.Requirement>("POST", "/api/v1/requirements/{requirement_id}/supersede", options);
 }
 
-export async function get_response_profile(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/response-profiles/{response_profile_id}", options);
+export async function get_response_profile(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyResponseProfile> {
+  return client.request<Models.CompanyResponseProfile>("GET", "/api/v1/response-profiles/{response_profile_id}", options);
 }
 
-export async function publish_response_profile(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/response-profiles/{response_profile_id}/publish", options);
+export async function publish_response_profile(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.CompanyResponseProfile> {
+  return client.request<Models.CompanyResponseProfile>("POST", "/api/v1/response-profiles/{response_profile_id}/publish", options);
 }
 
 export async function list_retention_jobs(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
@@ -1281,32 +1285,32 @@ export async function get_rollback_event(client: BiaiceClient, options: RequestO
   return client.request<Models.RollbackEvent>("GET", "/api/v1/rollback-events/{rollback_event_id}", options);
 }
 
-export async function get_rule_clause(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/rule-clauses/{rule_clause_id}", options);
+export async function get_rule_clause(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleClause> {
+  return client.request<Models.RuleClause>("GET", "/api/v1/rule-clauses/{rule_clause_id}", options);
 }
 
-export async function update_rule_clause_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("PATCH", "/api/v1/rule-clauses/{rule_clause_id}", options);
+export async function update_rule_clause_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleClause> {
+  return client.request<Models.RuleClause>("PATCH", "/api/v1/rule-clauses/{rule_clause_id}", options);
 }
 
-export async function supersede_rule_clause(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/rule-clauses/{rule_clause_id}/supersede", options);
+export async function supersede_rule_clause(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleClause> {
+  return client.request<Models.RuleClause>("POST", "/api/v1/rule-clauses/{rule_clause_id}/supersede", options);
 }
 
-export async function get_rule_set(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/rule-sets/{rule_set_id}", options);
+export async function get_rule_set(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleSet> {
+  return client.request<Models.RuleSet>("GET", "/api/v1/rule-sets/{rule_set_id}", options);
 }
 
-export async function list_rule_clauses(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/rule-sets/{rule_set_id}/clauses", options);
+export async function list_rule_clauses(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ClauseListResponse> {
+  return client.request<Models.ClauseListResponse>("GET", "/api/v1/rule-sets/{rule_set_id}/clauses", options);
 }
 
-export async function create_rule_clause(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/rule-sets/{rule_set_id}/clauses", options);
+export async function create_rule_clause(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleClause> {
+  return client.request<Models.RuleClause>("POST", "/api/v1/rule-sets/{rule_set_id}/clauses", options);
 }
 
-export async function publish_rule_set(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/rule-sets/{rule_set_id}/publish", options);
+export async function publish_rule_set(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.RuleSet> {
+  return client.request<Models.RuleSet>("POST", "/api/v1/rule-sets/{rule_set_id}/publish", options);
 }
 
 export async function get_scenario_set(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ScenarioSet> {
@@ -1317,16 +1321,16 @@ export async function freeze_scenario_set(client: BiaiceClient, options: Request
   return client.request<Models.ScenarioSet>("POST", "/api/v1/scenario-sets/{scenario_set_id}/freeze", options);
 }
 
-export async function get_scope_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("GET", "/api/v1/scope-assessments/{scope_assessment_id}", options);
+export async function get_scope_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ScopeAssessment> {
+  return client.request<Models.ScopeAssessment>("GET", "/api/v1/scope-assessments/{scope_assessment_id}", options);
 }
 
-export async function update_scope_assessment_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("PATCH", "/api/v1/scope-assessments/{scope_assessment_id}", options);
+export async function update_scope_assessment_draft(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ScopeAssessment> {
+  return client.request<Models.ScopeAssessment>("PATCH", "/api/v1/scope-assessments/{scope_assessment_id}", options);
 }
 
-export async function publish_scope_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ContractOnlyResource> {
-  return client.request<Models.ContractOnlyResource>("POST", "/api/v1/scope-assessments/{scope_assessment_id}/publish", options);
+export async function publish_scope_assessment(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.ScopeAssessment> {
+  return client.request<Models.ScopeAssessment>("POST", "/api/v1/scope-assessments/{scope_assessment_id}/publish", options);
 }
 
 export async function get_simulation_assessment_snapshot(client: BiaiceClient, options: RequestOptions = {}): Promise<Models.SimulationAssessmentSnapshot> {

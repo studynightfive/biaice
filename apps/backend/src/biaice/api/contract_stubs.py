@@ -18,9 +18,7 @@ from biaice.core.idempotency import require_idempotency_key
 
 router = APIRouter()
 PATH_PARAMETER = re.compile(r"{([A-Za-z_][A-Za-z0-9_]*)}")
-SCOPE_KEYS = frozenset(
-    {"tenant_id", "data_domain_id", "project_scope", "decision_unit_scope"}
-)
+SCOPE_KEYS = frozenset({"tenant_id", "data_domain_id", "project_scope", "decision_unit_scope"})
 
 
 def _reject_client_scope(value: Any, path: str = "payload") -> None:
@@ -122,16 +120,14 @@ def _make_endpoint(spec: OperationSpec):
                 default=Depends(require_if_match),
             )
         )
-    endpoint.__signature__ = inspect.Signature(
-        parameters, return_annotation=ContractOnlyResource
-    )
+    endpoint.__signature__ = inspect.Signature(parameters, return_annotation=ContractOnlyResource)
     return endpoint
 
 
-# Member-7 (FR-09b risk acceptance) owns the real implementation in
-# ``biaice.api.approvals_reports``; the router is registered BEFORE this one
-# in ``biaice.main.create_app`` so FastAPI first-match-wins routes those
-# operations to the real handler and never to a 501 stub.
+# Members 2, 4, and 5 have implemented their complete current catalog ownership.
+# Member 7 has implemented only the risk-acceptance slice listed below.
+# All real routers are registered before this one in ``biaice.main.create_app``.
+FULLY_IMPLEMENTED_OWNERS = frozenset({"member-2", "member-4", "member-5"})
 MEMBER7_IMPLEMENTED_OPERATIONS = frozenset(
     {
         "create_risk_acceptance",
@@ -180,7 +176,7 @@ MEMBER6_IMPLEMENTED_OPERATIONS = frozenset(
         "download_simulation_assessment_snapshot",
         "create_recommendation_eligibilitie",
         "get_recommendation_eligibilitie",
-            }
+    }
 )
 
 MEMBER3_IMPLEMENTED_OPERATIONS = frozenset(
@@ -213,19 +209,17 @@ MEMBER3_IMPLEMENTED_OPERATIONS = frozenset(
     }
 )
 
+IMPLEMENTED_OPERATION_IDS = frozenset(
+    operation.operation_id
+    for operation in OPERATION_CATALOG
+    if operation.owner in FULLY_IMPLEMENTED_OWNERS
+    or (operation.owner == "member-7" and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATIONS)
+    or (operation.owner == "member-3" and operation.operation_id in MEMBER3_IMPLEMENTED_OPERATIONS)
+    or (operation.owner == "member-6" and operation.operation_id in MEMBER6_IMPLEMENTED_OPERATIONS)
+)
+
 for operation in OPERATION_CATALOG:
-    if operation.fr in {"FR-05", "FR-12", "FR-13"}:
-        continue
-    if (
-        operation.owner == "member-7"
-        and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATIONS
-    ) or (
-        operation.owner == "member-3"
-        and operation.operation_id in MEMBER3_IMPLEMENTED_OPERATIONS
-    ) or (
-        operation.owner == "member-6"
-        and operation.operation_id in MEMBER6_IMPLEMENTED_OPERATIONS
-    ):
+    if operation.operation_id in IMPLEMENTED_OPERATION_IDS:
         continue
     responses = dict(PROBLEM_RESPONSES)
     responses[501] = {

@@ -15,7 +15,9 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 PROXY_PATH = ROOT / "infra" / "provider-egress" / "proxy.py"
-SPEC = importlib.util.spec_from_file_location("biaice_provider_egress_proxy", PROXY_PATH)
+SPEC = importlib.util.spec_from_file_location(
+    "biaice_provider_egress_proxy", PROXY_PATH
+)
 assert SPEC is not None and SPEC.loader is not None
 PROXY = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROXY
@@ -36,14 +38,16 @@ class SignedGateEvidenceTests(unittest.TestCase):
             "validity_state": "CURRENT",
             "assessment_id": "test-assessment",
             "expires_at": "2999-01-01T00:00:00Z",
-            "catalog_allowlist_sha256": hashlib.sha256(domains.encode("ascii")).hexdigest(),
+            "catalog_allowlist_sha256": hashlib.sha256(
+                domains.encode("ascii")
+            ).hexdigest(),
         }
         canonical = json.dumps(
             gate, sort_keys=True, separators=(",", ":"), ensure_ascii=False
         ).encode("utf-8")
-        gate["evidence_signature"] = "hmac-sha256:" + hmac.new(
-            key, canonical, hashlib.sha256
-        ).hexdigest()
+        gate["evidence_signature"] = (
+            "hmac-sha256:" + hmac.new(key, canonical, hashlib.sha256).hexdigest()
+        )
         gate_path = root / "byok-secret-gate.json"
         gate_path.write_text(json.dumps(gate), encoding="utf-8")
         return {
@@ -67,8 +71,9 @@ class SignedGateEvidenceTests(unittest.TestCase):
             gate = json.loads(gate_path.read_text(encoding="utf-8"))
             gate["assessment_id"] = "tampered"
             gate_path.write_text(json.dumps(gate), encoding="utf-8")
-            with patch.dict(os.environ, environment, clear=False), self.assertRaisesRegex(
-                PROXY.Denied, "BYOK_GATE_SIGNATURE_INVALID"
+            with (
+                patch.dict(os.environ, environment, clear=False),
+                self.assertRaisesRegex(PROXY.Denied, "BYOK_GATE_SIGNATURE_INVALID"),
             ):
                 PROXY.load_gate_state()
 

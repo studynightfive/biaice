@@ -1,393 +1,458 @@
-/**
- * Server-side data layer for the simulation feature.
- *
- * Every fetch in this file goes through `getBiaiceClient()` so the
- * generated client is the only place that knows about HTTP plumbing.
- * The simulation page block must run on the server (Server Components)
- * so it can call these fetchers directly with the Next.js 16
- * `no-store` cache policy and the most recent backend state.
- *
- * No fake data is permitted: when the backend is unreachable or
- * returns an error, the caller receives the raw `BiaiceProblem` and
- * the React error boundary renders the failure. We never fabricate
- * a successful response.
- */
-
-
-import { randomUUID } from "node:crypto";
+/** Contract-aligned browser data layer for the simulation feature. */
 
 import { getBiaiceClient, type BiaiceClient } from "@/lib/api/client";
-import {
-  deriveBaselineReadiness,
-  type CandidateSearchSpaceVersion,
-  CoverageInterval,
-  Decimal,
-  DecisionBaselineVersion,
+import type {
+  CandidateListResponse,
+  CandidateSearchSpace,
+  CreateBatchRequest,
+  CreateOptimizationRunRequest,
+  CreateScenarioSetRequest,
+  CreateSearchSpaceRequest,
+  DecisionBaseline,
+  FreezeBaselineRequest,
+  MeResponse,
   MergeAssessment,
-  OptimizationRunVersion,
-  RecommendationEligibilityVersion,
-  ScenarioAssessment,
+  OptimizationRun,
+  RecommendationEligibility,
+  RecommendationEligibilityRequest,
   ScenarioOutcome,
-  ScenarioSetVersion,
+  ScenarioSet,
+  ScenarioStrategyAssessment,
   SimulationAssessmentSnapshot,
-  SimulationBatchVersion,
-  StaticRuleResult,
-  StrategyPlanVersion,
+  SimulationBatch,
+  SnapshotDownloadResponse,
+  SnapshotRequest,
+  StaticCandidateValidation,
+  StrategyPlan,
   StressTestAssessment,
-  Uuid,
-  BaselineReadiness,
+} from "@biaice/contracts";
 
-} from "./types";
-
-/* -------------------------------------------------------------------------- */
-/*  Helpers                                                                    */
-/* -------------------------------------------------------------------------- */
+import { deriveBaselineReadiness, type BaselineReadiness, type Uuid } from "./types";
 
 const NO_STORE: RequestCache = "no-store";
 const NEXT_REVALIDATE = { revalidate: 0 } as const;
 
-/** Builds a stable idempotency key from a logical action + caller. */
-export function newIdempotencyKey(action: string, hint?: string): string {
-  const suffix = hint ? ":" + hint : "";
-  return action + ":" + randomUUID() + suffix;
-}
-
-function client(): BiaiceClient {
+function apiClient(): BiaiceClient {
   return getBiaiceClient();
-}
-
-function withIdempotency(opts: { idempotencyKey?: string }) {
-  return {
-    cache: NO_STORE,
-    next: NEXT_REVALIDATE,
-    idempotencyKey: opts.idempotencyKey,
-  };
 }
 
 function readOnly() {
   return { cache: NO_STORE, next: NEXT_REVALIDATE };
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Decision baselines (FR-06)                                                */
-/* -------------------------------------------------------------------------- */
-
-export function listDecisionBaselines(unitId: Uuid): Promise<DecisionBaselineVersion[]> {
-  return client().request<DecisionBaselineVersion[]>("GET", `/api/v1/decision-units/${unitId}/decision-baselines`, readOnly());
+function writeOptions(action: string, resourceId: string, idempotencyKey?: string) {
+  return {
+    cache: NO_STORE,
+    next: NEXT_REVALIDATE,
+    idempotencyKey: idempotencyKey ?? newIdempotencyKey(action, resourceId),
+  };
 }
 
-export function getDecisionBaseline(baselineId: Uuid): Promise<DecisionBaselineVersion> {
-  return client().request<DecisionBaselineVersion>("GET", `/api/v1/decision-baselines/${baselineId}`, readOnly());
+function segment(value: string): string {
+  return encodeURIComponent(value);
+}
+
+async function listItems<T>(path: string): Promise<T[]> {
+  const response = await apiClient().request<{ readonly items: ReadonlyArray<T> }>(
+    "GET",
+    path,
+    readOnly(),
+  );
+  return [...response.items];
+}
+
+export function newIdempotencyKey(action: string, hint?: string): string {
+  const suffix = hint ? `:${hint}` : "";
+  return `${action}:${globalThis.crypto.randomUUID()}${suffix}`;
+}
+
+export function getCurrentIdentity(): Promise<MeResponse> {
+  return apiClient().request<MeResponse>("GET", "/api/v1/me", readOnly());
+}
+
+export function listDecisionBaselines(unitId: Uuid): Promise<DecisionBaseline[]> {
+  return listItems(`/api/v1/decision-units/${segment(unitId)}/decision-baselines`);
+}
+
+export function getDecisionBaseline(baselineId: Uuid): Promise<DecisionBaseline> {
+  return apiClient().request<DecisionBaseline>(
+    "GET",
+    `/api/v1/decision-baselines/${segment(baselineId)}`,
+    readOnly(),
+  );
 }
 
 export function freezeDecisionBaseline(
   unitId: Uuid,
-  body: { input_manifest_hash?: string; as_of?: string },
+  body: FreezeBaselineRequest,
   idempotencyKey?: string,
-): Promise<DecisionBaselineVersion> {
-  return client().request<DecisionBaselineVersion>("POST", `/api/v1/decision-units/${unitId}/decision-baselines/freeze`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("freeze_decision_baseline", unitId) }),
-    body,
-  });
+): Promise<DecisionBaseline> {
+  return apiClient().request<DecisionBaseline>(
+    "POST",
+    `/api/v1/decision-units/${segment(unitId)}/decision-baselines/freeze`,
+    {
+      ...writeOptions("freeze_decision_baseline", unitId, idempotencyKey),
+      body,
+    },
+  );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Candidate search spaces (FR-06)                                           */
-/* -------------------------------------------------------------------------- */
-
-export function listSearchSpaces(unitId: Uuid): Promise<CandidateSearchSpaceVersion[]> {
-  return client().request<CandidateSearchSpaceVersion[]>("GET", `/api/v1/decision-units/${unitId}/candidate-search-spaces`, readOnly());
+export function listSearchSpaces(unitId: Uuid): Promise<CandidateSearchSpace[]> {
+  return listItems(`/api/v1/decision-units/${segment(unitId)}/candidate-search-spaces`);
 }
 
 export function createSearchSpace(
   unitId: Uuid,
-  body: {
-    baseline_version_id: Uuid;
-    lower_bound: Decimal;
-    upper_bound: Decimal;
-    step: Decimal;
-    currency: string;
-    precision: number;
-    rounding_mode: CandidateSearchSpaceVersion["rounding_mode"];
-    tax_passthrough: boolean;
-    abnormal_low_jump_points?: Decimal[];
-    commercial_exploration_bounds?: { lower: Decimal; upper: Decimal };
-  },
+  body: CreateSearchSpaceRequest,
   idempotencyKey?: string,
-): Promise<CandidateSearchSpaceVersion> {
-  return client().request<CandidateSearchSpaceVersion>("POST", `/api/v1/decision-units/${unitId}/candidate-search-spaces`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("create_candidate_search_space", unitId) }),
-    body,
-  });
+): Promise<CandidateSearchSpace> {
+  return apiClient().request<CandidateSearchSpace>(
+    "POST",
+    `/api/v1/decision-units/${segment(unitId)}/candidate-search-spaces`,
+    {
+      ...writeOptions("create_candidate_search_space", unitId, idempotencyKey),
+      body,
+    },
+  );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Scenario sets (FR-06)                                                     */
-/* -------------------------------------------------------------------------- */
-
-export function listScenarioSets(unitId: Uuid): Promise<ScenarioSetVersion[]> {
-  return client().request<ScenarioSetVersion[]>("GET", `/api/v1/decision-units/${unitId}/scenario-sets`, readOnly());
+export function listScenarioSets(unitId: Uuid): Promise<ScenarioSet[]> {
+  return listItems(`/api/v1/decision-units/${segment(unitId)}/scenario-sets`);
 }
 
-export function getScenarioSet(scenarioSetId: Uuid): Promise<ScenarioSetVersion> {
-  return client().request<ScenarioSetVersion>("GET", `/api/v1/scenario-sets/${scenarioSetId}`, readOnly());
+export function createScenarioSet(
+  unitId: Uuid,
+  body: CreateScenarioSetRequest,
+  idempotencyKey?: string,
+): Promise<ScenarioSet> {
+  return apiClient().request<ScenarioSet>(
+    "POST",
+    `/api/v1/decision-units/${segment(unitId)}/scenario-sets`,
+    {
+      ...writeOptions("create_scenario_set", unitId, idempotencyKey),
+      body,
+    },
+  );
+}
+
+export function getScenarioSet(scenarioSetId: Uuid): Promise<ScenarioSet> {
+  return apiClient().request<ScenarioSet>(
+    "GET",
+    `/api/v1/scenario-sets/${segment(scenarioSetId)}`,
+    readOnly(),
+  );
 }
 
 export function freezeScenarioSet(
   scenarioSetId: Uuid,
   idempotencyKey?: string,
-): Promise<ScenarioSetVersion> {
-  return client().request<ScenarioSetVersion>("POST", `/api/v1/scenario-sets/${scenarioSetId}/freeze`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("freeze_scenario_set", scenarioSetId) }),
-    body: {},
-  });
+): Promise<ScenarioSet> {
+  return apiClient().request<ScenarioSet>(
+    "POST",
+    `/api/v1/scenario-sets/${segment(scenarioSetId)}/freeze`,
+    writeOptions("freeze_scenario_set", scenarioSetId, idempotencyKey),
+  );
 }
 
-
-/* -------------------------------------------------------------------------- */
-/*  Simulation batches (FR-07)                                                */
-/* -------------------------------------------------------------------------- */
-
-export function listBatches(unitId: Uuid): Promise<SimulationBatchVersion[]> {
-  return client().request<SimulationBatchVersion[]>("GET", `/api/v1/decision-units/${unitId}/simulation-batches`, readOnly());
+export function listBatches(unitId: Uuid): Promise<SimulationBatch[]> {
+  return listItems(`/api/v1/decision-units/${segment(unitId)}/simulation-batches`);
 }
 
-export function getBatch(batchId: Uuid): Promise<SimulationBatchVersion> {
-  return client().request<SimulationBatchVersion>("GET", `/api/v1/simulation-batches/${batchId}`, readOnly());
+export function getBatch(batchId: Uuid): Promise<SimulationBatch> {
+  return apiClient().request<SimulationBatch>(
+    "GET",
+    `/api/v1/simulation-batches/${segment(batchId)}`,
+    readOnly(),
+  );
 }
 
 export function createBatch(
   unitId: Uuid,
-  body: {
-    baseline_version_id: Uuid;
-    search_space_version_id: Uuid;
-    scenario_set_version_id: Uuid;
-  },
+  body: CreateBatchRequest,
   idempotencyKey?: string,
-): Promise<SimulationBatchVersion> {
-  return client().request<SimulationBatchVersion>("POST", `/api/v1/decision-units/${unitId}/simulation-batches`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("create_simulation_batch", unitId) }),
-    body,
-  });
+): Promise<SimulationBatch> {
+  return apiClient().request<SimulationBatch>(
+    "POST",
+    `/api/v1/decision-units/${segment(unitId)}/simulation-batches`,
+    {
+      ...writeOptions("create_simulation_batch", unitId, idempotencyKey),
+      body,
+    },
+  );
 }
 
-export function cancelBatch(batchId: Uuid, idempotencyKey?: string): Promise<SimulationBatchVersion> {
-  return client().request<SimulationBatchVersion>("POST", `/api/v1/simulation-batches/${batchId}/cancel`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("cancel_simulation_batch", batchId) }),
-    body: {},
-  });
+export function cancelBatch(
+  batchId: Uuid,
+  idempotencyKey?: string,
+): Promise<SimulationBatch> {
+  return apiClient().request<SimulationBatch>(
+    "POST",
+    `/api/v1/simulation-batches/${segment(batchId)}/cancel`,
+    writeOptions("cancel_simulation_batch", batchId, idempotencyKey),
+  );
 }
 
-export function retryBatch(batchId: Uuid, idempotencyKey?: string): Promise<SimulationBatchVersion> {
-  return client().request<SimulationBatchVersion>("POST", `/api/v1/simulation-batches/${batchId}/retry`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("retry_simulation_batch", batchId) }),
-    body: {},
-  });
+export function retryBatch(
+  batchId: Uuid,
+  idempotencyKey?: string,
+): Promise<SimulationBatch> {
+  return apiClient().request<SimulationBatch>(
+    "POST",
+    `/api/v1/simulation-batches/${segment(batchId)}/retry`,
+    writeOptions("retry_simulation_batch", batchId, idempotencyKey),
+  );
 }
 
 export interface BatchChildren {
-  candidates: unknown[];
-  static_validations: Array<{ candidate_id: Uuid; rule_results: StaticRuleResult[]; baseline_commercial_passed: boolean; baseline_commercial_reason_code?: string }>;
-  scenario_outcomes: ScenarioOutcome[];
-  scenario_assessments: ScenarioAssessment[];
+  readonly candidates: SimulationCandidateList;
+  readonly staticValidations: StaticCandidateValidation[];
+  readonly scenarioOutcomes: ScenarioOutcome[];
+  readonly scenarioAssessments: ScenarioStrategyAssessment[];
 }
+
+type SimulationCandidateList = CandidateListResponse["items"] extends ReadonlyArray<infer T>
+  ? T[]
+  : never;
 
 export async function listBatchChildren(batchId: Uuid): Promise<BatchChildren> {
-  const [candidates, staticValidations, scenarioOutcomes, scenarioAssessments] = await Promise.all([
-    client().request<unknown[]>("GET", `/api/v1/simulation-batches/${batchId}/candidates`, readOnly()),
-    client().request<BatchChildren["static_validations"]>("GET", `/api/v1/simulation-batches/${batchId}/static-validations`, readOnly()),
-    client().request<ScenarioOutcome[]>("GET", `/api/v1/simulation-batches/${batchId}/scenario-outcomes`, readOnly()),
-    client().request<ScenarioAssessment[]>("GET", `/api/v1/simulation-batches/${batchId}/scenario-assessments`, readOnly()),
-  ]);
-  return {
-    candidates,
-    static_validations: staticValidations,
-    scenario_outcomes: scenarioOutcomes,
-    scenario_assessments: scenarioAssessments,
-  };
-}
-/* -------------------------------------------------------------------------- */
-/*  Optimization runs (FR-08)                                                */
-/* -------------------------------------------------------------------------- */
-
-export function listOptimizationRuns(batchId: Uuid): Promise<OptimizationRunVersion[]> {
-  return client().request<OptimizationRunVersion[]>("GET", `/api/v1/simulation-batches/${batchId}/optimization-runs`, readOnly());
+  const base = `/api/v1/simulation-batches/${segment(batchId)}`;
+  const [candidates, staticValidations, scenarioOutcomes, scenarioAssessments] =
+    await Promise.all([
+      listItems<SimulationCandidateList[number]>(`${base}/candidates`),
+      listItems<StaticCandidateValidation>(`${base}/static-validations`),
+      listItems<ScenarioOutcome>(`${base}/scenario-outcomes`),
+      listItems<ScenarioStrategyAssessment>(`${base}/scenario-assessments`),
+    ]);
+  return { candidates, staticValidations, scenarioOutcomes, scenarioAssessments };
 }
 
-export function getOptimizationRun(runId: Uuid): Promise<OptimizationRunVersion> {
-  return client().request<OptimizationRunVersion>("GET", `/api/v1/optimization-runs/${runId}`, readOnly());
+export function listOptimizationRuns(batchId: Uuid): Promise<OptimizationRun[]> {
+  return listItems(`/api/v1/simulation-batches/${segment(batchId)}/optimization-runs`);
+}
+
+export function getOptimizationRun(runId: Uuid): Promise<OptimizationRun> {
+  return apiClient().request<OptimizationRun>(
+    "GET",
+    `/api/v1/optimization-runs/${segment(runId)}`,
+    readOnly(),
+  );
 }
 
 export function createOptimizationRun(
   batchId: Uuid,
-  body: {
-    search_set_seed: string;
-    evaluation_set_seed: string;
-    objectives: ReadonlyArray<"RANK_LOWER_BOUND" | "PROXY_VALUE" | "EXPECTED_VALUE" | "CVAR_TAIL" | "BALANCED">;
-  },
+  body: CreateOptimizationRunRequest,
   idempotencyKey?: string,
-): Promise<OptimizationRunVersion> {
-  return client().request<OptimizationRunVersion>("POST", `/api/v1/simulation-batches/${batchId}/optimization-runs`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("create_optimization_run", batchId) }),
-    body,
-  });
+): Promise<OptimizationRun> {
+  return apiClient().request<OptimizationRun>(
+    "POST",
+    `/api/v1/simulation-batches/${segment(batchId)}/optimization-runs`,
+    {
+      ...writeOptions("create_optimization_run", batchId, idempotencyKey),
+      body,
+    },
+  );
 }
 
-export function finalizeOptimizationRun(runId: Uuid, idempotencyKey?: string): Promise<OptimizationRunVersion> {
-  return client().request<OptimizationRunVersion>("POST", `/api/v1/optimization-runs/${runId}/finalize`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("finalize_optimization_run", runId) }),
-    body: {},
-  });
+export function finalizeOptimizationRun(
+  runId: Uuid,
+  idempotencyKey?: string,
+): Promise<OptimizationRun> {
+  return apiClient().request<OptimizationRun>(
+    "POST",
+    `/api/v1/optimization-runs/${segment(runId)}/finalize`,
+    writeOptions("finalize_optimization_run", runId, idempotencyKey),
+  );
 }
 
-export function invalidateOptimizationRun(runId: Uuid, idempotencyKey?: string): Promise<OptimizationRunVersion> {
-  return client().request<OptimizationRunVersion>("POST", `/api/v1/optimization-runs/${runId}/invalidate`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("invalidate_optimization_run", runId) }),
-    body: {},
-  });
+export function invalidateOptimizationRun(
+  runId: Uuid,
+  idempotencyKey?: string,
+): Promise<OptimizationRun> {
+  return apiClient().request<OptimizationRun>(
+    "POST",
+    `/api/v1/optimization-runs/${segment(runId)}/invalidate`,
+    writeOptions("invalidate_optimization_run", runId, idempotencyKey),
+  );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Strategy plans (FR-08)                                                    */
-/* -------------------------------------------------------------------------- */
-
-export function listStrategyPlans(runId: Uuid): Promise<StrategyPlanVersion[]> {
-  return client().request<StrategyPlanVersion[]>("GET", `/api/v1/optimization-runs/${runId}/strategy-plans`, readOnly());
-}
-
-export function publishStrategyPlan(planId: Uuid, idempotencyKey?: string): Promise<StrategyPlanVersion> {
-  return client().request<StrategyPlanVersion>("POST", `/api/v1/strategy-plans/${planId}/publish`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("publish_strategy_plan", planId) }),
-    body: {},
-  });
-}
-
-export function invalidateStrategyPlan(planId: Uuid, idempotencyKey?: string): Promise<StrategyPlanVersion> {
-  return client().request<StrategyPlanVersion>("POST", `/api/v1/strategy-plans/${planId}/invalidate`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("invalidate_strategy_plan", planId) }),
-    body: {},
-  });
+export function listStrategyPlans(runId: Uuid): Promise<StrategyPlan[]> {
+  return listItems(`/api/v1/optimization-runs/${segment(runId)}/strategy-plans`);
 }
 
 export function listStressAssessments(runId: Uuid): Promise<StressTestAssessment[]> {
-  return client().request<StressTestAssessment[]>("GET", `/api/v1/optimization-runs/${runId}/stress-test-assessments`, readOnly());
+  return listItems(
+    `/api/v1/optimization-runs/${segment(runId)}/stress-test-assessments`,
+  );
 }
 
 export function listMergeAssessments(runId: Uuid): Promise<MergeAssessment[]> {
-  return client().request<MergeAssessment[]>("GET", `/api/v1/optimization-runs/${runId}/merge-assessments`, readOnly());
+  return listItems(`/api/v1/optimization-runs/${segment(runId)}/merge-assessments`);
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Recommendation eligibility (FR-09a)                                       */
-/* -------------------------------------------------------------------------- */
-
-export function listEligibilities(unitId: Uuid): Promise<RecommendationEligibilityVersion[]> {
-  return client().request<RecommendationEligibilityVersion[]>("GET", `/api/v1/decision-units/${unitId}/recommendation-eligibilities`, readOnly());
+export function publishStrategyPlan(
+  planId: Uuid,
+  idempotencyKey?: string,
+): Promise<StrategyPlan> {
+  return apiClient().request<StrategyPlan>(
+    "POST",
+    `/api/v1/strategy-plans/${segment(planId)}/publish`,
+    writeOptions("publish_strategy_plan", planId, idempotencyKey),
+  );
 }
 
-export function getEligibility(eligibilityId: Uuid): Promise<RecommendationEligibilityVersion> {
-  return client().request<RecommendationEligibilityVersion>("GET", `/api/v1/recommendation-eligibilities/${eligibilityId}`, readOnly());
+export function invalidateStrategyPlan(
+  planId: Uuid,
+  idempotencyKey?: string,
+): Promise<StrategyPlan> {
+  return apiClient().request<StrategyPlan>(
+    "POST",
+    `/api/v1/strategy-plans/${segment(planId)}/invalidate`,
+    writeOptions("invalidate_strategy_plan", planId, idempotencyKey),
+  );
+}
+
+export function listEligibilities(unitId: Uuid): Promise<RecommendationEligibility[]> {
+  return listItems(
+    `/api/v1/decision-units/${segment(unitId)}/recommendation-eligibilities`,
+  );
+}
+
+export function getEligibility(eligibilityId: Uuid): Promise<RecommendationEligibility> {
+  return apiClient().request<RecommendationEligibility>(
+    "GET",
+    `/api/v1/recommendation-eligibilities/${segment(eligibilityId)}`,
+    readOnly(),
+  );
 }
 
 export function createRecommendationEligibility(
   unitId: Uuid,
-  body: { batch_id?: Uuid; run_id?: Uuid; create_snapshot?: boolean },
+  body: RecommendationEligibilityRequest,
   idempotencyKey?: string,
-): Promise<RecommendationEligibilityVersion> {
-  return client().request<RecommendationEligibilityVersion>("POST", `/api/v1/decision-units/${unitId}/recommendation-eligibilities`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("create_recommendation_eligibility", unitId) }),
-    body,
-  });
+): Promise<RecommendationEligibility> {
+  return apiClient().request<RecommendationEligibility>(
+    "POST",
+    `/api/v1/decision-units/${segment(unitId)}/recommendation-eligibilities`,
+    {
+      ...writeOptions("create_recommendation_eligibility", unitId, idempotencyKey),
+      body,
+    },
+  );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Simulation assessment snapshots (FR-09a)                                  */
-/* -------------------------------------------------------------------------- */
-
 export function listSnapshots(unitId: Uuid): Promise<SimulationAssessmentSnapshot[]> {
-  return client().request<SimulationAssessmentSnapshot[]>("GET", `/api/v1/decision-units/${unitId}/simulation-assessment-snapshots`, readOnly());
+  return listItems(
+    `/api/v1/decision-units/${segment(unitId)}/simulation-assessment-snapshots`,
+  );
 }
 
 export function getSnapshot(snapshotId: Uuid): Promise<SimulationAssessmentSnapshot> {
-  return client().request<SimulationAssessmentSnapshot>("GET", `/api/v1/simulation-assessment-snapshots/${snapshotId}`, readOnly());
+  return apiClient().request<SimulationAssessmentSnapshot>(
+    "GET",
+    `/api/v1/simulation-assessment-snapshots/${segment(snapshotId)}`,
+    readOnly(),
+  );
 }
 
 export function createSnapshot(
   unitId: Uuid,
-  body: { eligibility_version_id: Uuid },
+  body: SnapshotRequest,
   idempotencyKey?: string,
 ): Promise<SimulationAssessmentSnapshot> {
-  return client().request<SimulationAssessmentSnapshot>("POST", `/api/v1/decision-units/${unitId}/simulation-assessment-snapshots`, {
-    ...withIdempotency({ idempotencyKey: idempotencyKey ?? newIdempotencyKey("create_simulation_assessment_snapshot", unitId) }),
-    body,
-  });
+  return apiClient().request<SimulationAssessmentSnapshot>(
+    "POST",
+    `/api/v1/decision-units/${segment(unitId)}/simulation-assessment-snapshots`,
+    {
+      ...writeOptions("create_simulation_assessment_snapshot", unitId, idempotencyKey),
+      body,
+    },
+  );
 }
 
-export function downloadSnapshot(snapshotId: Uuid): Promise<unknown> {
-  return client().request<unknown>("GET", `/api/v1/simulation-assessment-snapshots/${snapshotId}/download`, readOnly());
+export function downloadSnapshot(snapshotId: Uuid): Promise<SnapshotDownloadResponse> {
+  return apiClient().request<SnapshotDownloadResponse>(
+    "GET",
+    `/api/v1/simulation-assessment-snapshots/${segment(snapshotId)}/download`,
+    readOnly(),
+  );
 }
-
-/* -------------------------------------------------------------------------- */
-/*  Convenience aggregates used by Server Components                          */
-/* -------------------------------------------------------------------------- */
 
 export interface BaselineBundle {
-  current: DecisionBaselineVersion | null;
-  superseded: DecisionBaselineVersion[];
-  searchSpaces: CandidateSearchSpaceVersion[];
-  scenarioSets: ScenarioSetVersion[];
-  readiness: BaselineReadiness;
+  readonly current: DecisionBaseline | null;
+  readonly superseded: DecisionBaseline[];
+  readonly searchSpaces: CandidateSearchSpace[];
+  readonly scenarioSets: ScenarioSet[];
+  readonly readiness: BaselineReadiness;
 }
 
 export async function loadBaselineBundle(unitId: Uuid): Promise<BaselineBundle> {
-  const [baselines, spaces, sets] = await Promise.all([listDecisionBaselines(unitId), listSearchSpaces(unitId), listScenarioSets(unitId)]);
-  const current = baselines.find((b) => b.validity_state === "CURRENT") ?? null;
-  const superseded = baselines.filter((b) => b.validity_state !== "CURRENT");
-  const readiness = deriveBaselineReadiness(current, superseded);
-  return { current, superseded, searchSpaces: spaces, scenarioSets: sets, readiness };
+  const [baselines, searchSpaces, scenarioSets] = await Promise.all([
+    listDecisionBaselines(unitId),
+    listSearchSpaces(unitId),
+    listScenarioSets(unitId),
+  ]);
+  const current = baselines.find((baseline) => baseline.state === "FROZEN") ?? null;
+  const superseded = baselines.filter((baseline) => baseline !== current);
+  return {
+    current,
+    superseded,
+    searchSpaces,
+    scenarioSets,
+    readiness: deriveBaselineReadiness(current),
+  };
 }
 
 export interface SimulationBundle {
-  batches: SimulationBatchVersion[];
-  latestBatch: SimulationBatchVersion | null;
-  latestBatchChildren: BatchChildren | null;
-  latestRun: OptimizationRunVersion | null;
-  plans: StrategyPlanVersion[];
-  stress: StressTestAssessment[];
-  merges: MergeAssessment[];
-  coverage: CoverageInterval | null;
+  readonly batches: SimulationBatch[];
+  readonly latestBatch: SimulationBatch | null;
+  readonly latestBatchChildren: BatchChildren | null;
+  readonly latestRun: OptimizationRun | null;
+  readonly plans: StrategyPlan[];
+  readonly stress: StressTestAssessment[];
+  readonly merges: MergeAssessment[];
 }
 
-export async function loadSimulationBundle(
-  unitId: Uuid,
-  eligibility?: RecommendationEligibilityVersion | null,
-): Promise<SimulationBundle> {
+export async function loadSimulationBundle(unitId: Uuid): Promise<SimulationBundle> {
   const batches = await listBatches(unitId);
-  const latestBatch = batches.find((b) => b.state === "SUCCEEDED") ?? batches[0] ?? null;
-  let latestBatchChildren: BatchChildren | null = null;
-  let latestRun: OptimizationRunVersion | null = null;
-  let plans: StrategyPlanVersion[] = [];
-  let stress: StressTestAssessment[] = [];
-  let merges: MergeAssessment[] = [];
-  if (latestBatch) {
-    latestBatchChildren = await listBatchChildren(latestBatch.id);
-    const runs = await listOptimizationRuns(latestBatch.id);
-    latestRun = runs.find((r) => r.state === "SUCCEEDED") ?? runs[0] ?? null;
-    if (latestRun) {
-      const [planList, stressList, mergeList] = await Promise.all([
-        listStrategyPlans(latestRun.id),
-        listStressAssessments(latestRun.id),
-        listMergeAssessments(latestRun.id),
-      ]);
-      plans = planList;
-      stress = stressList;
-      merges = mergeList;
-    }
+  const latestBatch =
+    batches.find((batch) => batch.state === "SUCCEEDED") ?? batches[0] ?? null;
+  if (!latestBatch) {
+    return {
+      batches,
+      latestBatch: null,
+      latestBatchChildren: null,
+      latestRun: null,
+      plans: [],
+      stress: [],
+      merges: [],
+    };
   }
-  let coverage: CoverageInterval | null = null;
-  if (latestRun) {
-    coverage = extractCoverage(latestBatch, latestRun);
+
+  const [latestBatchChildren, runs] = await Promise.all([
+    listBatchChildren(latestBatch.batch_id),
+    listOptimizationRuns(latestBatch.batch_id),
+  ]);
+  const latestRun =
+    runs.find((run) => run.state === "FINALIZED" || run.state === "SUCCEEDED") ??
+    runs[0] ??
+    null;
+  if (!latestRun) {
+    return {
+      batches,
+      latestBatch,
+      latestBatchChildren,
+      latestRun: null,
+      plans: [],
+      stress: [],
+      merges: [],
+    };
   }
+
+  const [plans, stress, merges] = await Promise.all([
+    listStrategyPlans(latestRun.run_id),
+    listStressAssessments(latestRun.run_id),
+    listMergeAssessments(latestRun.run_id),
+  ]);
   return {
     batches,
     latestBatch,
@@ -396,32 +461,5 @@ export async function loadSimulationBundle(
     plans,
     stress,
     merges,
-    coverage,
   };
 }
-
-/**
- * Extracts the `CoverageInterval` published by the backend alongside the
- * run. We never recompute the partial-identification numbers on the
- * client: they are weighted aggregates that depend on the frozen scenario
- * set and the canonical random seed. If the run did not yet publish a
- * coverage record we surface null so the page renders an UNDEFINED state
- * instead of inventing numbers.
- */
-function extractCoverage(
-  _batch: SimulationBatchVersion | null,
-  run: OptimizationRunVersion,
-): CoverageInterval | null {
-  const augmented = run as RunWithCoverage;
-  return augmented.coverage ?? null;
-}
-
-/**
- * Helper type used by `extractCoverage` to read an optional `coverage`
- * field off the run response. The backend may attach this field once the
- * run reaches SUCCEEDED; we keep the type additive so the generated client
- * remains source-compatible with versions that do not yet expose it.
- */
-export type RunWithCoverage = OptimizationRunVersion & {
-  coverage?: CoverageInterval | null;
-};

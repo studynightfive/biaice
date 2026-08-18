@@ -9,6 +9,7 @@ Revision ID: m6_simulation_0001
 Revises: None
 Create Date: 2026-08-15
 """
+
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects.postgresql import JSONB
@@ -42,11 +43,16 @@ def upgrade() -> None:
         sa.Column("created_by", sa.Uuid(), nullable=False),
         sa.PrimaryKeyConstraint("baseline_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_decision_baseline_scope_version",
         ),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "decision_unit_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "decision_unit_id",
+            "version_id",
             name="uq_decision_baseline_scope_unit_version",
         ),
     )
@@ -75,11 +81,16 @@ def upgrade() -> None:
         sa.Column("frozen_by", sa.Uuid(), nullable=True),
         sa.PrimaryKeyConstraint("search_space_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_candidate_search_space_scope_version",
         ),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "decision_unit_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "decision_unit_id",
+            "version_id",
             name="uq_candidate_search_space_scope_unit_version",
         ),
     )
@@ -103,11 +114,16 @@ def upgrade() -> None:
         sa.Column("frozen_by", sa.Uuid(), nullable=True),
         sa.PrimaryKeyConstraint("scenario_set_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_scenario_set_scope_version",
         ),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "decision_unit_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "decision_unit_id",
+            "version_id",
             name="uq_scenario_set_scope_unit_version",
         ),
     )
@@ -128,7 +144,10 @@ def upgrade() -> None:
         sa.Column("params", JSONB, nullable=False),
         sa.PrimaryKeyConstraint("member_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "scenario_set_version_id", "scenario_id",
+            "tenant_id",
+            "data_domain_id",
+            "scenario_set_version_id",
+            "scenario_id",
             name="uq_scenario_set_member_scope_version_scenario",
         ),
     )
@@ -155,11 +174,16 @@ def upgrade() -> None:
         sa.Column("failure_reason_code", sa.String(length=100), nullable=True),
         sa.PrimaryKeyConstraint("batch_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_simulation_batch_scope_version",
         ),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "decision_unit_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "decision_unit_id",
+            "version_id",
             name="uq_simulation_batch_scope_unit_version",
         ),
     )
@@ -180,7 +204,9 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("candidate_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_simulation_candidate_scope_version",
         ),
     )
@@ -200,7 +226,10 @@ def upgrade() -> None:
         sa.Column("detail", sa.Text(), nullable=True),
         sa.PrimaryKeyConstraint("validation_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "candidate_id", "assessed_at",
+            "tenant_id",
+            "data_domain_id",
+            "candidate_id",
+            "assessed_at",
             name="uq_static_candidate_validation_scope_candidate_assessed",
         ),
     )
@@ -223,7 +252,10 @@ def upgrade() -> None:
         sa.Column("detail", sa.Text(), nullable=True),
         sa.PrimaryKeyConstraint("outcome_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "candidate_id", "scenario_id",
+            "tenant_id",
+            "data_domain_id",
+            "candidate_id",
+            "scenario_id",
             name="uq_scenario_outcome_scope_candidate_scenario",
         ),
     )
@@ -245,7 +277,10 @@ def upgrade() -> None:
         sa.Column("assessed_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("assessment_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "candidate_id", "scenario_id",
+            "tenant_id",
+            "data_domain_id",
+            "candidate_id",
+            "scenario_id",
             name="uq_scenario_strategy_assessment_scope_candidate_scenario",
         ),
     )
@@ -271,7 +306,9 @@ def upgrade() -> None:
         sa.Column("invalidated_by", sa.Uuid(), nullable=True),
         sa.PrimaryKeyConstraint("run_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_optimization_run_scope_version",
         ),
     )
@@ -300,11 +337,16 @@ def upgrade() -> None:
         sa.Column("invalidated_by", sa.Uuid(), nullable=True),
         sa.PrimaryKeyConstraint("plan_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_strategy_plan_scope_version",
         ),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "run_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "run_id",
+            "version_id",
             name="uq_strategy_plan_scope_run_version",
         ),
     )
@@ -323,7 +365,10 @@ def upgrade() -> None:
         sa.Column("weight", sa.String(length=64), nullable=False),
         sa.PrimaryKeyConstraint("member_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "plan_version_id", "candidate_id",
+            "tenant_id",
+            "data_domain_id",
+            "plan_version_id",
+            "candidate_id",
             name="uq_strategy_plan_member_scope_version_candidate",
         ),
     )
@@ -343,7 +388,10 @@ def upgrade() -> None:
         sa.Column("assessed_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("assessment_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "run_id", "assessment_id",
+            "tenant_id",
+            "data_domain_id",
+            "run_id",
+            "assessment_id",
             name="uq_stress_test_assessment_scope_run",
         ),
     )
@@ -365,7 +413,11 @@ def upgrade() -> None:
         sa.Column("assessed_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("merge_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "run_id", "plan_id", "assessed_at",
+            "tenant_id",
+            "data_domain_id",
+            "run_id",
+            "plan_id",
+            "assessed_at",
             name="uq_merge_assessment_scope_run_plan",
         ),
     )
@@ -387,11 +439,16 @@ def upgrade() -> None:
         sa.Column("assessed_by", sa.Uuid(), nullable=False),
         sa.PrimaryKeyConstraint("eligibility_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_recommendation_eligibility_scope_version",
         ),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "decision_unit_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "decision_unit_id",
+            "version_id",
             name="uq_recommendation_eligibility_scope_unit_version",
         ),
     )
@@ -414,7 +471,9 @@ def upgrade() -> None:
         sa.Column("locked_by", sa.Uuid(), nullable=True),
         sa.PrimaryKeyConstraint("snapshot_id"),
         sa.UniqueConstraint(
-            "tenant_id", "data_domain_id", "version_id",
+            "tenant_id",
+            "data_domain_id",
+            "version_id",
             name="uq_simulation_assessment_snapshot_scope_version",
         ),
     )

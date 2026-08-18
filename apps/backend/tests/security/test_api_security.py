@@ -111,11 +111,12 @@ def test_contract_only_route_requires_auth_idempotency_then_returns_explicit_501
         authenticator=StaticAuthenticator(identity),
     )
     with TestClient(app) as client:
-        unauthenticated = client.post("/api/v1/projects", json={})
-        missing_idempotency = client.post("/api/v1/projects", headers=auth_headers, json={})
+        path = "/api/v1/audit-integrity-checks"
+        unauthenticated = client.post(path, json={})
+        missing_idempotency = client.post(path, headers=auth_headers, json={})
         contract_only = client.post(
-            "/api/v1/projects",
-            headers={**auth_headers, "Idempotency-Key": "create-project-0001"},
+            path,
+            headers={**auth_headers, "Idempotency-Key": "audit-integrity-check-0001"},
             json={"payload": {}},
         )
     assert unauthenticated.status_code == 401
@@ -147,9 +148,7 @@ def test_byok_guard_rejects_before_malformed_secret_body_is_parsed(identity, aut
 
 
 def test_byok_guard_authenticates_before_gate_without_reading_secret_body() -> None:
-    app = create_app(
-        settings=Settings(environment="test", deployment_profile="synthetic_http")
-    )
+    app = create_app(settings=Settings(environment="test", deployment_profile="synthetic_http"))
     with TestClient(app) as client:
         response = client.put(
             "/api/v1/ai-provider-configurations/00000000-0000-4000-8000-000000000099/credential",

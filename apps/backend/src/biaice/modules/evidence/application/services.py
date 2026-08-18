@@ -188,9 +188,10 @@ class EvidenceService:
         request_id: str,
     ) -> Requirement:
         _assert_unit(identity, decision_unit_id)
-        if source_document_id is not None and self._released_document(
-            identity=identity, document_id=source_document_id
-        ) is None:
+        if (
+            source_document_id is not None
+            and self._released_document(identity=identity, document_id=source_document_id) is None
+        ):
             raise m4_error(
                 "EVIDENCE_DOCUMENT_NOT_RELEASED",
                 detail="Requirement citations may only use member-3 released documents.",
@@ -215,7 +216,9 @@ class EvidenceService:
             lifecycle_state=LifecycleState.DRAFT,
             review_state=ReviewState.PENDING,
             validity_state=ValidityState.CURRENT,
-            etag=compute_etag({"requirement_id": str(requirement_id), "version_id": str(version_id)}),
+            etag=compute_etag(
+                {"requirement_id": str(requirement_id), "version_id": str(version_id)}
+            ),
             created_at=now,
             created_by=identity.subject_id,
         )
@@ -232,9 +235,13 @@ class EvidenceService:
         )
         return item
 
-    def list_requirements(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[Requirement, ...]:
+    def list_requirements(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[Requirement, ...]:
         _assert_unit(identity, decision_unit_id)
-        return self.repository.list_requirements(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_requirements(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get_requirement(self, *, identity: IdentityContext, requirement_id: UUID) -> Requirement:
         item = self.repository.get_requirement(scope=identity.scope, requirement_id=requirement_id)
@@ -262,7 +269,13 @@ class EvidenceService:
                 "title": title,
                 "statement": statement,
                 "mandatory": mandatory,
-                "etag": compute_etag({"requirement_id": str(item.requirement_id), "title": title, "statement": statement}),
+                "etag": compute_etag(
+                    {
+                        "requirement_id": str(item.requirement_id),
+                        "title": title,
+                        "statement": statement,
+                    }
+                ),
             }
         )
         self.repository.upsert_requirement(updated)
@@ -278,7 +291,9 @@ class EvidenceService:
         )
         return updated
 
-    def publish_requirement(self, *, identity: IdentityContext, requirement_id: UUID, request_id: str) -> Requirement:
+    def publish_requirement(
+        self, *, identity: IdentityContext, requirement_id: UUID, request_id: str
+    ) -> Requirement:
         item = self.get_requirement(identity=identity, requirement_id=requirement_id)
         if item.lifecycle_state is not LifecycleState.DRAFT:
             raise m4_error("PUBLISHED_VERSION_IMMUTABLE")
@@ -291,7 +306,9 @@ class EvidenceService:
                 "effective_from": now,
                 "published_at": now,
                 "published_by": identity.subject_id,
-                "etag": compute_etag({"requirement_id": str(item.requirement_id), "published": True}),
+                "etag": compute_etag(
+                    {"requirement_id": str(item.requirement_id), "published": True}
+                ),
             }
         )
         self.repository.upsert_requirement(published)
@@ -330,7 +347,9 @@ class EvidenceService:
                 "published_by": None,
                 "created_at": now,
                 "created_by": identity.subject_id,
-                "etag": compute_etag({"requirement_id": str(successor_id), "supersedes": str(item.requirement_id)}),
+                "etag": compute_etag(
+                    {"requirement_id": str(successor_id), "supersedes": str(item.requirement_id)}
+                ),
             }
         )
         stale = item.model_copy(
@@ -407,9 +426,13 @@ class EvidenceService:
         )
         return item
 
-    def list_evidence(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[CompanyEvidence, ...]:
+    def list_evidence(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[CompanyEvidence, ...]:
         _assert_unit(identity, decision_unit_id)
-        return self.repository.list_evidence(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_evidence(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get_evidence(self, *, identity: IdentityContext, evidence_id: UUID) -> CompanyEvidence:
         item = self.repository.get_evidence(scope=identity.scope, evidence_id=evidence_id)
@@ -591,7 +614,9 @@ class EvidenceService:
         )
         return item
 
-    def list_matches(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[EvidenceMatch, ...]:
+    def list_matches(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[EvidenceMatch, ...]:
         _assert_unit(identity, decision_unit_id)
         return self.repository.list_matches(scope=identity.scope, decision_unit_id=decision_unit_id)
 
@@ -615,7 +640,9 @@ class EvidenceService:
             raise BiaiceError("MAKER_CHECKER_REQUIRED")
         evidence = None
         if item.evidence_id is not None:
-            evidence = self.repository.get_evidence(scope=identity.scope, evidence_id=item.evidence_id)
+            evidence = self.repository.get_evidence(
+                scope=identity.scope, evidence_id=item.evidence_id
+            )
         now = self.clock.now()
         if state is MatchState.SATISFIED and (
             evidence is None or not _evidence_usable(evidence, now=now)
@@ -713,9 +740,13 @@ class EvidenceService:
         )
         return item
 
-    def list_profiles(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[CompanyResponseProfile, ...]:
+    def list_profiles(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[CompanyResponseProfile, ...]:
         _assert_unit(identity, decision_unit_id)
-        return self.repository.list_profiles(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_profiles(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get_profile(self, *, identity: IdentityContext, profile_id: UUID) -> CompanyResponseProfile:
         item = self.repository.get_profile(scope=identity.scope, profile_id=profile_id)
@@ -823,11 +854,17 @@ class EvidenceService:
         )
         return item
 
-    def list_conditions(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[ConditionRequirement, ...]:
+    def list_conditions(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[ConditionRequirement, ...]:
         _assert_unit(identity, decision_unit_id)
-        return self.repository.list_conditions(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_conditions(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
-    def get_condition(self, *, identity: IdentityContext, condition_id: UUID) -> ConditionRequirement:
+    def get_condition(
+        self, *, identity: IdentityContext, condition_id: UUID
+    ) -> ConditionRequirement:
         item = self.repository.get_condition(scope=identity.scope, condition_id=condition_id)
         if item is None:
             raise BiaiceError("RESOURCE_NOT_FOUND")
@@ -882,7 +919,9 @@ class EvidenceService:
         )
         return closed
 
-    def satisfy_condition(self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str) -> ConditionRequirement:
+    def satisfy_condition(
+        self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str
+    ) -> ConditionRequirement:
         return self._transition_condition(
             identity=identity,
             condition_id=condition_id,
@@ -892,7 +931,9 @@ class EvidenceService:
             action="evidence.condition.satisfy",
         )
 
-    def waive_condition(self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str) -> ConditionRequirement:
+    def waive_condition(
+        self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str
+    ) -> ConditionRequirement:
         return self._transition_condition(
             identity=identity,
             condition_id=condition_id,
@@ -902,7 +943,9 @@ class EvidenceService:
             action="evidence.condition.waive",
         )
 
-    def fail_condition(self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str) -> ConditionRequirement:
+    def fail_condition(
+        self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str
+    ) -> ConditionRequirement:
         return self._transition_condition(
             identity=identity,
             condition_id=condition_id,
@@ -912,7 +955,9 @@ class EvidenceService:
             action="evidence.condition.fail",
         )
 
-    def expire_condition(self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str) -> ConditionRequirement:
+    def expire_condition(
+        self, *, identity: IdentityContext, condition_id: UUID, reason: str, request_id: str
+    ) -> ConditionRequirement:
         return self._transition_condition(
             identity=identity,
             condition_id=condition_id,
@@ -930,9 +975,15 @@ class EvidenceService:
         requirements = self.repository.list_requirements(
             scope=identity.scope, decision_unit_id=decision_unit_id
         )
-        matches = self.repository.list_matches(scope=identity.scope, decision_unit_id=decision_unit_id)
-        profiles = self.repository.list_profiles(scope=identity.scope, decision_unit_id=decision_unit_id)
-        conditions = self.repository.list_conditions(scope=identity.scope, decision_unit_id=decision_unit_id)
+        matches = self.repository.list_matches(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
+        profiles = self.repository.list_profiles(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
+        conditions = self.repository.list_conditions(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
         match_by_requirement = {
             item.requirement_id: item
             for item in matches
@@ -943,9 +994,13 @@ class EvidenceService:
             for item in requirements
             if item.mandatory and formal_input_allowed(item, now=now).allowed
         ]
-        unmapped = [item for item in published_mandatory if item.requirement_id not in match_by_requirement]
+        unmapped = [
+            item for item in published_mandatory if item.requirement_id not in match_by_requirement
+        ]
         mapped_states = [
-            match_by_requirement[item.requirement_id].state for item in published_mandatory if item.requirement_id in match_by_requirement
+            match_by_requirement[item.requirement_id].state
+            for item in published_mandatory
+            if item.requirement_id in match_by_requirement
         ]
         if unmapped:
             evidence_coverage = MatchState.UNKNOWN
@@ -954,7 +1009,9 @@ class EvidenceService:
         elif any(state is MatchState.UNSATISFIED for state in mapped_states):
             evidence_coverage = MatchState.UNSATISFIED
         elif any(state in {MatchState.UNKNOWN, MatchState.PARTIAL} for state in mapped_states):
-            evidence_coverage = MatchState.PARTIAL if MatchState.PARTIAL in mapped_states else MatchState.UNKNOWN
+            evidence_coverage = (
+                MatchState.PARTIAL if MatchState.PARTIAL in mapped_states else MatchState.UNKNOWN
+            )
         else:
             evidence_coverage = MatchState.SATISFIED
 
@@ -962,7 +1019,8 @@ class EvidenceService:
             (
                 item
                 for item in reversed(profiles)
-                if formal_input_allowed(item, now=now).allowed and item.valid_from <= now < item.valid_to
+                if formal_input_allowed(item, now=now).allowed
+                and item.valid_from <= now < item.valid_to
             ),
             None,
         )
@@ -980,23 +1038,51 @@ class EvidenceService:
         rule_set = self.rule_availability_port.current_supported_rule_set(
             scope=identity.scope, decision_unit_id=decision_unit_id
         )
-        rules_available = None if rule_set is None else bool(rule_set.supported and rule_set.current)
+        rules_available = (
+            None if rule_set is None else bool(rule_set.supported and rule_set.current)
+        )
         open_blocking = [
-            item.condition_id
-            for item in conditions
-            if condition_is_blocking(item, now=now)
+            item.condition_id for item in conditions if condition_is_blocking(item, now=now)
         ]
         deadline_closure = not open_blocking
         checks = (
-            PrecheckCheck(code="rules_available", passed=rules_available, reason_code="RULES_PORT" if rules_available is None else "OK"),
-            PrecheckCheck(code="subject_qualification", passed=subject_qualification is MatchState.SATISFIED, reason_code=subject_qualification.value),
-            PrecheckCheck(code="substantive_response", passed=substantive is MatchState.SATISFIED, reason_code=substantive.value),
-            PrecheckCheck(code="evidence_coverage", passed=evidence_coverage is MatchState.SATISFIED, reason_code=evidence_coverage.value),
-            PrecheckCheck(code="deadline_closure", passed=deadline_closure, reason_code="OPEN_CONDITIONS" if not deadline_closure else "OK"),
+            PrecheckCheck(
+                code="rules_available",
+                passed=rules_available,
+                reason_code="RULES_PORT" if rules_available is None else "OK",
+            ),
+            PrecheckCheck(
+                code="subject_qualification",
+                passed=subject_qualification is MatchState.SATISFIED,
+                reason_code=subject_qualification.value,
+            ),
+            PrecheckCheck(
+                code="substantive_response",
+                passed=substantive is MatchState.SATISFIED,
+                reason_code=substantive.value,
+            ),
+            PrecheckCheck(
+                code="evidence_coverage",
+                passed=evidence_coverage is MatchState.SATISFIED,
+                reason_code=evidence_coverage.value,
+            ),
+            PrecheckCheck(
+                code="deadline_closure",
+                passed=deadline_closure,
+                reason_code="OPEN_CONDITIONS" if not deadline_closure else "OK",
+            ),
         )
-        if rules_available is None or evidence_coverage is MatchState.UNKNOWN or not published_mandatory:
+        if (
+            rules_available is None
+            or evidence_coverage is MatchState.UNKNOWN
+            or not published_mandatory
+        ):
             decision = PrecheckDecision.UNKNOWN
-        elif evidence_coverage is MatchState.UNSATISFIED or rules_available is False or not deadline_closure:
+        elif (
+            evidence_coverage is MatchState.UNSATISFIED
+            or rules_available is False
+            or not deadline_closure
+        ):
             decision = PrecheckDecision.BLOCKED
         elif evidence_coverage is MatchState.PARTIAL or substantive is not MatchState.SATISFIED:
             decision = PrecheckDecision.CONDITIONAL
@@ -1048,9 +1134,13 @@ class EvidenceService:
         )
         return item
 
-    def list_prechecks(self, *, identity: IdentityContext, decision_unit_id: UUID) -> tuple[PrecheckAssessment, ...]:
+    def list_prechecks(
+        self, *, identity: IdentityContext, decision_unit_id: UUID
+    ) -> tuple[PrecheckAssessment, ...]:
         _assert_unit(identity, decision_unit_id)
-        return self.repository.list_prechecks(scope=identity.scope, decision_unit_id=decision_unit_id)
+        return self.repository.list_prechecks(
+            scope=identity.scope, decision_unit_id=decision_unit_id
+        )
 
     def get_precheck(self, *, identity: IdentityContext, precheck_id: UUID) -> PrecheckAssessment:
         item = self.repository.get_precheck(scope=identity.scope, precheck_id=precheck_id)
@@ -1064,7 +1154,10 @@ class EvidenceService:
     def readiness_view(self, *, scope, decision_unit_id: UUID) -> EvidenceReadinessView:
         now = self.clock.now()
         prechecks = self.repository.list_prechecks(scope=scope, decision_unit_id=decision_unit_id)
-        current = next((item for item in reversed(prechecks) if item.validity_state is ValidityState.CURRENT), None)
+        current = next(
+            (item for item in reversed(prechecks) if item.validity_state is ValidityState.CURRENT),
+            None,
+        )
         profiles = self.repository.list_profiles(scope=scope, decision_unit_id=decision_unit_id)
         response_current = any(
             formal_input_allowed(item, now=now).allowed and item.valid_from <= now < item.valid_to
@@ -1077,7 +1170,9 @@ class EvidenceService:
             response_profile_current=response_current,
             subject_qualification=None if current is None else current.subject_qualification,
             unmapped_mandatory_count=0 if current is None else current.unmapped_mandatory_count,
-            open_blocking_condition_count=sum(1 for item in conditions if condition_is_blocking(item, now=now)),
+            open_blocking_condition_count=sum(
+                1 for item in conditions if condition_is_blocking(item, now=now)
+            ),
         )
 
 

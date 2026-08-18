@@ -7,7 +7,7 @@ from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, StrictBool
 
 from biaice.core.auth import IdentityContext
 from biaice.core.errors import PROBLEM_RESPONSES, BiaiceError
@@ -95,7 +95,7 @@ class CreateRequirementRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: str = Field(min_length=1, max_length=200)
     statement: str = Field(min_length=1, max_length=4000)
-    mandatory: bool = True
+    mandatory: StrictBool = True
     rule_clause_id: UUID | None = None
     source_document_id: UUID | None = None
     source_page: str | None = Field(default=None, max_length=40)
@@ -106,7 +106,7 @@ class UpdateRequirementRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: str = Field(min_length=1, max_length=200)
     statement: str = Field(min_length=1, max_length=4000)
-    mandatory: bool = True
+    mandatory: StrictBool = True
 
 
 class CreateEvidenceRequest(BaseModel):
@@ -174,7 +174,7 @@ def _extras(fr: str, permission: str) -> dict[str, Any]:
         "x-owner": "member-4",
         "x-fr": fr,
         "x-required-permission": permission,
-        "x-schema-status": "OWNER_FROZEN",
+        "x-schema-status": "FROZEN",
     }
 
 
@@ -190,7 +190,9 @@ def list_requirements(
     identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> RequirementListResponse:
-    return RequirementListResponse(items=service.list_requirements(identity=identity, decision_unit_id=unit_id))
+    return RequirementListResponse(
+        items=service.list_requirements(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(
@@ -316,7 +318,9 @@ def list_evidence(
     identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> EvidenceListResponse:
-    return EvidenceListResponse(items=service.list_evidence(identity=identity, decision_unit_id=unit_id))
+    return EvidenceListResponse(
+        items=service.list_evidence(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(
@@ -441,7 +445,9 @@ def list_evidence_matches(
     identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> MatchListResponse:
-    return MatchListResponse(items=service.list_matches(identity=identity, decision_unit_id=unit_id))
+    return MatchListResponse(
+        items=service.list_matches(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(
@@ -523,7 +529,9 @@ def list_response_profiles(
     identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> ProfileListResponse:
-    return ProfileListResponse(items=service.list_profiles(identity=identity, decision_unit_id=unit_id))
+    return ProfileListResponse(
+        items=service.list_profiles(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(
@@ -604,7 +612,9 @@ def list_precheck_assessments(
     identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> PrecheckListResponse:
-    return PrecheckListResponse(items=service.list_prechecks(identity=identity, decision_unit_id=unit_id))
+    return PrecheckListResponse(
+        items=service.list_prechecks(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(
@@ -654,7 +664,9 @@ def list_conditions(
     identity: IdentityContext = Depends(RoleGuard(FR03_READ)),
     service: EvidenceService = Depends(get_service),
 ) -> ConditionListResponse:
-    return ConditionListResponse(items=service.list_conditions(identity=identity, decision_unit_id=unit_id))
+    return ConditionListResponse(
+        items=service.list_conditions(identity=identity, decision_unit_id=unit_id)
+    )
 
 
 @router.post(

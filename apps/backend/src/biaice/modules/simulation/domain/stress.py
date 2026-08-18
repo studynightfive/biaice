@@ -7,6 +7,7 @@ probability set. The runner is pure; the application service is responsible
 for persisting the resulting assessments and for surfacing STRESS_AXIS_VIOLATED
 when a hard constraint fails.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -27,6 +28,7 @@ from biaice.modules.simulation.domain.models import (
 @dataclass(frozen=True, slots=True)
 class StressScenario:
     """One hard axis evaluation against one candidate."""
+
     axis: StressAxis
     feasible: bool
     stress_weight: Decimal

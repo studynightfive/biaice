@@ -77,4 +77,3 @@ def downgrade() -> None:
         table_name="risk_acceptance",
     )
     op.drop_table("risk_acceptance")
-

@@ -6,6 +6,7 @@ hash is part of the deterministic input so a frozen baseline can never be
 silently bypassed. `reviewed_pending` scenarios never enter the probability
 denominator; the service layer keeps them in a separate tuple on the batch.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -46,8 +47,9 @@ class RefereeOutput:
     reviewed_pending: bool
 
 
-def evaluate_scenario(input: RefereeInput, *, assessed_at, tenant_id, data_domain_id,
-                       project_id, decision_unit_id) -> RefereeOutput:
+def evaluate_scenario(
+    input: RefereeInput, *, assessed_at, tenant_id, data_domain_id, project_id, decision_unit_id
+) -> RefereeOutput:
     """Deterministically map (candidate, scenario) → (outcome, assessment)."""
     if input.review_validity != ReviewValidity.CURRENT:
         return RefereeOutput(

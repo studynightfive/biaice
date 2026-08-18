@@ -79,10 +79,7 @@ class DataLineageEdge(FrozenModel):
 
     @model_validator(mode="after")
     def forbid_self_edge(self) -> "DataLineageEdge":
-        if (
-            self.upstream_type == self.downstream_type
-            and self.upstream_id == self.downstream_id
-        ):
+        if self.upstream_type == self.downstream_type and self.upstream_id == self.downstream_id:
             raise ValueError("lineage self-edges are forbidden")
         return self
 
@@ -169,14 +166,8 @@ class LegalHoldRecord(FrozenModel):
     @model_validator(mode="after")
     def enforce_release_dual_control(self) -> "LegalHoldRecord":
         if self.state == LegalHoldState.RELEASED:
-            if (
-                not self.released_by
-                or not self.release_checked_by
-                or not self.released_at
-            ):
-                raise ValueError(
-                    "released holds require maker, independent checker and timestamp"
-                )
+            if not self.released_by or not self.release_checked_by or not self.released_at:
+                raise ValueError("released holds require maker, independent checker and timestamp")
             if self.released_by == self.release_checked_by:
                 raise ValueError("hold release maker and checker must differ")
         return self
@@ -275,22 +266,14 @@ class DeletionJob(FrozenModel):
     def completion_is_evidence_bound(self) -> "DeletionJob":
         if self.state == DeletionJobState.COMPLETED:
             if self.logical_access_blocked_at is None or self.legal_hold_count:
-                raise ValueError(
-                    "completed deletion requires blocked access and no active hold"
-                )
+                raise ValueError("completed deletion requires blocked access and no active hold")
             successful = {
-                receipt.replica_id
-                for receipt in self.receipts
-                if receipt.satisfies_completion
+                receipt.replica_id for receipt in self.receipts if receipt.satisfies_completion
             }
             if not self.required_replica_ids.issubset(successful):
-                raise ValueError(
-                    "completed deletion requires every required verified receipt"
-                )
+                raise ValueError("completed deletion requires every required verified receipt")
             if self.completed_at is None or self.tombstone_id is None:
-                raise ValueError(
-                    "completed deletion requires completion time and tombstone"
-                )
+                raise ValueError("completed deletion requires completion time and tombstone")
         return self
 
 

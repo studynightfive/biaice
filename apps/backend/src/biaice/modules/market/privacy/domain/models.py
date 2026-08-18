@@ -78,9 +78,7 @@ class MarketResourceCommand(FrozenModel):
 class MarketActionCommand(FrozenModel):
     reason_code: str | None = Field(default=None, min_length=1, max_length=120)
     comment: str | None = Field(default=None, max_length=1000)
-    target_state: str | None = Field(
-        default=None, pattern=r"^[A-Z][A-Z0-9_]{1,63}$"
-    )
+    target_state: str | None = Field(default=None, pattern=r"^[A-Z][A-Z0-9_]{1,63}$")
     effective_at: datetime | None = None
     correlation_id: UUID | None = None
 

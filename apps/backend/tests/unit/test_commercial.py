@@ -113,8 +113,8 @@ def test_unapproved_cost_is_exploration_only_and_blocks_publish() -> None:
             cost_baseline_id=cost.cost_baseline_id,
             request_id="c2",
         )
-    assert error.value.code == "DOCUMENT_NOT_RELEASABLE"
-    assert error.value.detail == "COST_NOT_APPROVED"
+    assert error.value.code == "COST_NOT_APPROVED"
+    assert error.value.detail == "Cost baseline is not approved"
 
 
 def test_cost_maker_cannot_approve() -> None:

@@ -5,10 +5,8 @@
  * Every other team member's code must reach the feature through one of
  * the three *Mount components exported below.
  *
- * The mounts are thin async server components that load the latest
- * backend state through `getBiaiceClient()` and pass the resulting props
- * to the page block. They never render fake data; failures bubble up to
- * the global error boundary as RFC 7807 problems.
+ * The mounts are thin entry points. Data is loaded in the browser through
+ * the same-origin BFF so HttpOnly OIDC cookies remain protected.
  */
 
 import BaselineScenariosBlock from "./baseline-scenarios";
@@ -16,33 +14,22 @@ import EligibilityBlock from "./eligibility";
 import SimulationBlock from "./simulation";
 
 /**
- * MFA state is propagated by member 1's session loader; the simulation
- * feature only consumes it to gate freeze / cancel / retry / publish
- * actions. We never re-validate MFA in this file.
- *
- * Every field is optional because member 1's `units/[unitId]/{baseline-scenarios,
- * simulation, eligibility}/page.tsx` files render the mounts without arguments
- * (the layout supplies project/unit identifiers through the React tree rather
- * than as direct call arguments). The Mount components accept the optional
- * shape and forward sensible defaults — `unitId` falls back to an empty
- * string that the backend will reject as a Problem, and `mfaVerified` defaults
- * to false so the gate copy renders correctly.
+ * Dynamic route parameters are required; silently substituting an empty unit
+ * identifier would turn every request into an invalid API call.
  */
 export interface MountProps {
-  projectId?: string;
-  unitId?: string;
-  mfaVerified?: boolean;
+  readonly unitId: string;
 }
 
-export async function BaselineScenariosMount({ unitId = "", mfaVerified = false }: MountProps = {}) {
-  return <BaselineScenariosBlock unitId={unitId} mfaVerified={mfaVerified} />;
+export function BaselineScenariosMount({ unitId }: MountProps) {
+  return <BaselineScenariosBlock unitId={unitId} />;
 }
 
-export async function SimulationMount({ unitId = "", mfaVerified = false }: MountProps = {}) {
-  return <SimulationBlock unitId={unitId} mfaVerified={mfaVerified} />;
+export function SimulationMount({ unitId }: MountProps) {
+  return <SimulationBlock unitId={unitId} />;
 }
 
-export async function EligibilityMount({ unitId = "", mfaVerified = false }: MountProps = {}) {
-  return <EligibilityBlock unitId={unitId} mfaVerified={mfaVerified} />;
+export function EligibilityMount({ unitId }: MountProps) {
+  return <EligibilityBlock unitId={unitId} />;
 }
 

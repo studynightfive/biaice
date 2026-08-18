@@ -16,8 +16,7 @@ DIGEST_PATTERN = re.compile(r"@sha256:([0-9a-f]{64})$")
 def main() -> int:
     lock = json.loads(LOCK_PATH.read_text(encoding="utf-8"))
     locked = {
-        f"{item['reference']}@{item['index_digest']}": item
-        for item in lock["images"]
+        f"{item['reference']}@{item['index_digest']}": item for item in lock["images"]
     }
     references = set(IMAGE_PATTERN.findall((ROOT / "compose.yaml").read_text("utf-8")))
     for dockerfile in sorted((ROOT / "infra").rglob("*Dockerfile")):
@@ -35,7 +34,9 @@ def main() -> int:
         if DIGEST_PATTERN.search(reference) is None:
             failures.append(f"image is not pinned by sha256: {reference}")
         elif reference not in locked:
-            failures.append(f"image is absent from infra/versions.lock.json: {reference}")
+            failures.append(
+                f"image is absent from infra/versions.lock.json: {reference}"
+            )
     unused = set(locked) - external
     if unused:
         failures.append(f"version lock contains unused images: {sorted(unused)}")

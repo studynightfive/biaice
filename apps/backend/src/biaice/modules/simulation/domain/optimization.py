@@ -9,6 +9,7 @@ the threshold the function returns an empty plan and the service layer marks
 the run INDETERMINATE. Stress axes are completely absent here; they live in
 `stress.run_stress_tests`.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -29,6 +30,7 @@ from biaice.modules.simulation.domain.models import (
 @dataclass(frozen=True, slots=True)
 class CandidateBlueprint:
     """Materialised search-space position produced by the optimization generator."""
+
     label: str
     parameters: dict[str, Any]
     expected_cost: Decimal
@@ -112,9 +114,7 @@ def rank_candidates(
         else:
             raise BiaiceError(
                 "INVALID_IDEMPOTENCY_KEY",
-                detail=(
-                    f"未知的优化目标 / Unknown optimization objective: {objective_kind}."
-                ),
+                detail=(f"未知的优化目标 / Unknown optimization objective: {objective_kind}."),
             )
         pairs.append((score, candidate))
     pairs.sort(key=lambda item: (-item[0], str(item[1].candidate_id)))

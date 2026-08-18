@@ -33,17 +33,13 @@ class ReleasedDocumentRef(FrozenModel):
 class DocumentReadPort(Protocol):
     """Consumes member 3's `app.state.document_read_port` without importing documents."""
 
-    def get_released_document(
-        self, *, scope: TenantScope, document_id: UUID
-    ) -> object | None: ...
+    def get_released_document(self, *, scope: TenantScope, document_id: UUID) -> object | None: ...
 
 
 class UnavailableDocumentReadPort:
     """Fail-closed adapter used until member 3 wires `document_read_port`."""
 
-    def get_released_document(
-        self, *, scope: TenantScope, document_id: UUID
-    ) -> None:
+    def get_released_document(self, *, scope: TenantScope, document_id: UUID) -> None:
         del scope, document_id
         return None
 
@@ -63,9 +59,7 @@ class RuleAvailabilityPort(Protocol):
 
 
 class UnavailableRuleAvailabilityPort:
-    def current_supported_rule_set(
-        self, *, scope: TenantScope, decision_unit_id: UUID
-    ) -> None:
+    def current_supported_rule_set(self, *, scope: TenantScope, decision_unit_id: UUID) -> None:
         del scope, decision_unit_id
         return None
 

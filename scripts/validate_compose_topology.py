@@ -44,7 +44,9 @@ def compose_config(*profiles: str) -> dict[str, Any]:
     for profile in profiles:
         command.extend(["--profile", profile])
     command.extend(["config", "--format", "json"])
-    result = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True)
+    result = subprocess.run(
+        command, cwd=ROOT, check=True, capture_output=True, text=True
+    )
     return json.loads(result.stdout)
 
 
@@ -58,7 +60,9 @@ def main() -> int:
     failures: list[str] = []
     try:
         base = compose_config()
-        complete = compose_config("provider-egress", "maintenance-egress", "observability")
+        complete = compose_config(
+            "provider-egress", "maintenance-egress", "observability"
+        )
     except (OSError, subprocess.CalledProcessError, json.JSONDecodeError) as exc:
         print(f"Unable to render Compose config: {exc}", file=sys.stderr)
         return 1
@@ -85,7 +89,9 @@ def main() -> int:
     if base_networks.get("host-ingress", {}).get("internal", False):
         failures.append("host-ingress network must be host-routable")
     ingress_users = {
-        name for name, service in all_services.items() if "host-ingress" in networks_for(service)
+        name
+        for name, service in all_services.items()
+        if "host-ingress" in networks_for(service)
     }
     if ingress_users != {"gateway"}:
         failures.append(
@@ -94,7 +100,9 @@ def main() -> int:
         )
 
     provider_users = {
-        name for name, service in all_services.items() if "provider-egress" in networks_for(service)
+        name
+        for name, service in all_services.items()
+        if "provider-egress" in networks_for(service)
     }
     if provider_users != {"provider-egress-gateway"}:
         failures.append(
@@ -103,7 +111,9 @@ def main() -> int:
         )
 
     maintenance_users = {
-        name for name, service in all_services.items() if "maintenance-egress" in networks_for(service)
+        name
+        for name, service in all_services.items()
+        if "maintenance-egress" in networks_for(service)
     }
     if maintenance_users != {"clamav-signature-update"}:
         failures.append(
@@ -115,16 +125,30 @@ def main() -> int:
         environment = base_services.get(name, {}).get("environment", {})
         if str(environment.get("REAL_DATA_MODE", "")).lower() != "false":
             failures.append(f"{name} must default REAL_DATA_MODE=false")
-        if str(environment.get("BIAICE_REAL_DATA_MODE_REQUESTED", "")).lower() != "false":
-            failures.append(f"{name} must default BIAICE_REAL_DATA_MODE_REQUESTED=false")
+        if (
+            str(environment.get("BIAICE_REAL_DATA_MODE_REQUESTED", "")).lower()
+            != "false"
+        ):
+            failures.append(
+                f"{name} must default BIAICE_REAL_DATA_MODE_REQUESTED=false"
+            )
         if str(environment.get("PROVIDER_EGRESS_ENABLED", "")).lower() != "false":
             failures.append(f"{name} must default PROVIDER_EGRESS_ENABLED=false")
-        if str(environment.get("BYOK_SECRET_GATE", "")).upper() not in {"FAIL", "FALSE"}:
+        if str(environment.get("BYOK_SECRET_GATE", "")).upper() not in {
+            "FAIL",
+            "FALSE",
+        }:
             failures.append(f"{name} must default BYOK_SECRET_GATE=FAIL")
         if str(environment.get("BIAICE_BYOK_ENABLED", "")).lower() != "false":
             failures.append(f"{name} must default BIAICE_BYOK_ENABLED=false")
 
-    for name in ("web", "api", "worker-ingest", "worker-simulation", "worker-governance"):
+    for name in (
+        "web",
+        "api",
+        "worker-ingest",
+        "worker-simulation",
+        "worker-governance",
+    ):
         if "provider-egress" in networks_for(all_services.get(name, {})):
             failures.append(f"{name} must not join provider-egress")
 

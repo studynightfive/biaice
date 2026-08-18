@@ -27,9 +27,7 @@ class ReplicaDeletionAdapter(Protocol):
     @property
     def supported_kinds(self) -> frozenset[ReplicaKind]: ...
 
-    def delete(
-        self, *, scope: TenantScope, command: DeletionReplicaCommand
-    ) -> DeletionReceipt: ...
+    def delete(self, *, scope: TenantScope, command: DeletionReplicaCommand) -> DeletionReceipt: ...
 
 
 class DeletionReceiptVerifier(Protocol):
@@ -69,9 +67,7 @@ class GovernanceRepository(Protocol):
         self, *, scope: TenantScope, target: ScopedObjectRef
     ) -> Sequence[LegalHoldRecord]: ...
 
-    def append_receipt(
-        self, *, scope: TenantScope, receipt: DeletionReceipt
-    ) -> None: ...
+    def append_receipt(self, *, scope: TenantScope, receipt: DeletionReceipt) -> None: ...
 
     def complete_deletion_atomically(
         self,

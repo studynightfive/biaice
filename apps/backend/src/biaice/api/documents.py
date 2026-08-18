@@ -241,9 +241,7 @@ def create_project_document_upload_session(
     body: CreateUploadSessionRequest,
     request: Request,
     project_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.DOCUMENTS_CREATE)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.DOCUMENTS_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: DocumentIntakeService = Depends(get_intake_service),
 ) -> UploadSessionResponse:
@@ -273,9 +271,7 @@ def create_unit_document_upload_session(
     body: CreateUploadSessionRequest,
     request: Request,
     unit_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.DOCUMENTS_CREATE)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.DOCUMENTS_CREATE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: DocumentIntakeService = Depends(get_intake_service),
 ) -> UploadSessionResponse:
@@ -318,9 +314,7 @@ def get_document_upload_session(
         "requestBody": {
             "required": True,
             "content": {
-                "application/octet-stream": {
-                    "schema": {"type": "string", "format": "binary"}
-                }
+                "application/octet-stream": {"schema": {"type": "string", "format": "binary"}}
             },
         }
     },
@@ -356,9 +350,7 @@ async def put_document_upload_chunk(
 def complete_document_upload_session(
     request: Request,
     session_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.DOCUMENTS_COMPLETE)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.DOCUMENTS_COMPLETE)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: DocumentIntakeService = Depends(get_intake_service),
 ) -> CompleteUploadResponse:
@@ -469,9 +461,7 @@ def review_document(
 def release_from_quarantine_document(
     request: Request,
     document_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.DOCUMENTS_RELEASE, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.DOCUMENTS_RELEASE, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: DocumentIntakeService = Depends(get_intake_service),
 ) -> SourceDocument:
@@ -492,9 +482,7 @@ def release_from_quarantine_document(
 def quarantine_document(
     request: Request,
     document_id: UUID,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.DOCUMENTS_QUARANTINE, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.DOCUMENTS_QUARANTINE, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     service: DocumentIntakeService = Depends(get_intake_service),
 ) -> SourceDocument:
@@ -514,9 +502,7 @@ def quarantine_document(
         200: {
             "description": "Document body",
             "content": {
-                "application/octet-stream": {
-                    "schema": {"type": "string", "format": "binary"}
-                }
+                "application/octet-stream": {"schema": {"type": "string", "format": "binary"}}
             },
         },
     },
@@ -601,9 +587,7 @@ def get_parse_job(
     identity: IdentityContext = Depends(PermissionGuard(Permission.DOCUMENTS_READ)),
     service: DocumentIntakeService = Depends(get_intake_service),
 ) -> ParseJobResponse:
-    return _parse_job_response(
-        service.get_parse_job(identity=identity, job_id=parse_job_id)
-    )
+    return _parse_job_response(service.get_parse_job(identity=identity, job_id=parse_job_id))
 
 
 @router.post(

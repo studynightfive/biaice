@@ -222,6 +222,14 @@ add(
     "member-2",
     "List append-only lifecycle events",
 )
+add(
+    "GET",
+    "/api/v1/decision-units/{unit_id}/rule-resolutions",
+    "list_rule_resolutions",
+    "FR-01",
+    "member-2",
+    "List deterministic inherited rule resolutions",
+)
 
 # FR-02 — member 3: secure upload, documents, parsing and replicas.
 add(
@@ -1536,12 +1544,13 @@ add(
 )
 
 
-# Member 5 has replaced every FR-05/FR-12/FR-13 contract stub with a strict,
-# tested handler. Keep the source catalog aligned with that implemented state;
-# the explicit Provider entries above remain useful documentation at the call site.
+# Members 2, 4, and 5 have replaced all of their contract stubs with strict,
+# tested handlers. Keep the source catalog aligned with that implemented state;
+# explicit schema-status entries above remain useful documentation at call sites.
+_FULLY_FROZEN_OWNERS = {"member-2", "member-4", "member-5"}
 OPERATION_CATALOG: tuple[OperationSpec, ...] = tuple(
     replace(operation, schema_status="FROZEN")
-    if operation.owner == "member-5"
+    if operation.owner in _FULLY_FROZEN_OWNERS
     else operation
     for operation in _operations
 )
@@ -1550,9 +1559,7 @@ OPERATION_CATALOG: tuple[OperationSpec, ...] = tuple(
 def validate_operation_catalog() -> None:
     operation_ids = [item.operation_id for item in OPERATION_CATALOG]
     if len(operation_ids) != len(set(operation_ids)):
-        duplicates = sorted(
-            {item for item in operation_ids if operation_ids.count(item) > 1}
-        )
+        duplicates = sorted({item for item in operation_ids if operation_ids.count(item) > 1})
         raise RuntimeError(f"duplicate operationIds: {duplicates}")
     route_keys = [(item.method, item.path) for item in OPERATION_CATALOG]
     if len(route_keys) != len(set(route_keys)):
@@ -1569,9 +1576,7 @@ def validate_operation_catalog() -> None:
     covered_frs = {item.fr for item in OPERATION_CATALOG}
     missing = required_frs - covered_frs
     if missing:
-        raise RuntimeError(
-            f"P0 operation groups missing from catalog: {sorted(missing)}"
-        )
+        raise RuntimeError(f"P0 operation groups missing from catalog: {sorted(missing)}")
 
 
 validate_operation_catalog()

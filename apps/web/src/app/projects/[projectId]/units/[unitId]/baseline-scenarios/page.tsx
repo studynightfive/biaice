@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "决策基线与场景",
 };
 
-export default function BaselineScenariosPage() {
-  return <BaselineScenariosMount />;
+type BaselineScenariosPageProps = {
+  readonly params: Promise<{ projectId: string; unitId: string }>;
+};
+
+export default async function BaselineScenariosPage({ params }: BaselineScenariosPageProps) {
+  const { unitId } = await params;
+  return <BaselineScenariosMount unitId={unitId} />;
 }

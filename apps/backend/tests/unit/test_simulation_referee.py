@@ -1,4 +1,5 @@
 """Unit tests for the deterministic scenario referee."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -99,9 +99,7 @@ def _parse_xlsx(data: bytes) -> ParseOutcome:
             if "xl/sharedStrings.xml" in names:
                 shared_root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
                 for item in shared_root:
-                    shared.append(
-                        "".join(node.text or "" for node in item.iter(f"{SHEET_NS}t"))
-                    )
+                    shared.append("".join(node.text or "" for node in item.iter(f"{SHEET_NS}t")))
             lines: list[str] = []
             for name in names:
                 if not name.startswith("xl/worksheets/sheet") or not name.endswith(".xml"):

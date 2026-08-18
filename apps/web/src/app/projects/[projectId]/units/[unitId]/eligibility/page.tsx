@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "推荐资格",
 };
 
-export default function EligibilityPage() {
-  return <EligibilityMount />;
+type EligibilityPageProps = {
+  readonly params: Promise<{ projectId: string; unitId: string }>;
+};
+
+export default async function EligibilityPage({ params }: EligibilityPageProps) {
+  const { unitId } = await params;
+  return <EligibilityMount unitId={unitId} />;
 }

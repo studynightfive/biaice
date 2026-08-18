@@ -8,6 +8,7 @@ Coverage and Monte-Carlo intervals follow the canonical N_eff = sum(p_i *
 (1 - p_i)) for Bernoulli samples; q_award_normalize projects the q-award
 weights so they sum to 1 across multi-award scenarios.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -46,9 +47,7 @@ def p_minus(outcomes: Sequence[tuple[Decimal, Decimal]]) -> Decimal:
     if not outcomes:
         raise BiaiceError(
             "DENOMINATOR_BELOW_THRESHOLD",
-            detail=(
-                "p_minus 需要至少一个评估结果 / p_minus needs at least one evaluated outcome."
-            ),
+            detail=("p_minus 需要至少一个评估结果 / p_minus needs at least one evaluated outcome."),
         )
     total = Decimal("0")
     for weight, payoff in outcomes:
@@ -66,9 +65,7 @@ def p_plus(outcomes: Sequence[tuple[Decimal, Decimal]]) -> Decimal:
     if not outcomes:
         raise BiaiceError(
             "DENOMINATOR_BELOW_THRESHOLD",
-            detail=(
-                "p_plus 需要至少一个评估结果 / p_plus needs at least one evaluated outcome."
-            ),
+            detail=("p_plus 需要至少一个评估结果 / p_plus needs at least one evaluated outcome."),
         )
     upper = Decimal("0")
     for weight, payoff in outcomes:
@@ -86,9 +83,7 @@ def coverage(
     if total_scenarios <= 0:
         raise BiaiceError(
             "COVERAGE_BELOW_THRESHOLD",
-            detail=(
-                "场景集合为空 / Scenario set is empty; coverage is undefined."
-            ),
+            detail=("场景集合为空 / Scenario set is empty; coverage is undefined."),
         )
     if denominator_scenarios <= 0:
         report = CoverageReport(
@@ -154,9 +149,7 @@ def q_award_normalize(weights: Mapping[UUID, Decimal]) -> dict[UUID, Decimal]:
     if total <= 0:
         raise BiaiceError(
             "SCENARIO_SET_INVALID",
-            detail=(
-                "q_award 权重总和必须为正数 / q_award weights must sum to a positive value."
-            ),
+            detail=("q_award 权重总和必须为正数 / q_award weights must sum to a positive value."),
         )
     return {key: value / total for key, value in weights.items()}
 

@@ -83,9 +83,7 @@ def assess_stage_gate(
     gate_name: GateName,
     body: GateAssessmentRequest,
     request: Request,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.GATE_ASSESS, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.GATE_ASSESS, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
     audit: AuditWriter = Depends(get_audit_writer),
 ) -> GateAssessment:
@@ -107,9 +105,7 @@ def assess_stage_gate(
 def request_stage_gate_waiver(
     gate_name: GateName,
     body: GateWaiverRequest,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.GATE_WAIVER_REQUEST, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.GATE_WAIVER_REQUEST, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
 ) -> None:
     del gate_name, body, identity, idempotency_key
@@ -124,9 +120,7 @@ def request_stage_gate_waiver(
 def decide_stage_gate_waiver(
     gate_name: GateName,
     body: GateWaiverRequest,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.GATE_WAIVER_DECIDE, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.GATE_WAIVER_DECIDE, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
 ) -> None:
     del gate_name, body, identity, idempotency_key
@@ -140,9 +134,7 @@ def decide_stage_gate_waiver(
 )
 def expire_stage_gate_waiver(
     gate_name: GateName,
-    identity: IdentityContext = Depends(
-        PermissionGuard(Permission.GATE_WAIVER_DECIDE, mfa=True)
-    ),
+    identity: IdentityContext = Depends(PermissionGuard(Permission.GATE_WAIVER_DECIDE, mfa=True)),
     idempotency_key: str = Depends(require_idempotency_key),
 ) -> None:
     del gate_name, identity, idempotency_key
@@ -158,9 +150,7 @@ def list_manual_overrides(
     identity: IdentityContext = Depends(PermissionGuard(Permission.GATE_READ)),
 ) -> None:
     del identity
-    raise BiaiceError(
-        "NOT_IMPLEMENTED", detail="Manual override storage is contract-only in M0."
-    )
+    raise BiaiceError("NOT_IMPLEMENTED", detail="Manual override storage is contract-only in M0.")
 
 
 @router.post(

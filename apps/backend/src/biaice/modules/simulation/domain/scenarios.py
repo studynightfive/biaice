@@ -7,6 +7,7 @@ from distinct `candidate_search_space` versions; sharing one space across
 phases makes coverage indistinguishable from bias and is rejected with
 SCENARIO_SET_INVALID.
 """
+
 from __future__ import annotations
 
 from collections import Counter
@@ -55,9 +56,7 @@ def freeze_scenarios(
     if not members_tuple:
         raise BiaiceError(
             "SCENARIO_SET_INVALID",
-            detail=(
-                "场景集至少需要一个成员 / Scenario set must contain at least one member."
-            ),
+            detail=("场景集至少需要一个成员 / Scenario set must contain at least one member."),
         )
 
     kinds = Counter(member.scenario_kind for member in members_tuple)
@@ -78,14 +77,14 @@ def freeze_scenarios(
             ),
         )
 
-    weights = [int(member.weight.value.replace(".", "").lstrip("-") or "0") for member in members_tuple]
+    weights = [
+        int(member.weight.value.replace(".", "").lstrip("-") or "0") for member in members_tuple
+    ]
     total = sum(weights)
     if total <= 0:
         raise BiaiceError(
             "SCENARIO_SET_INVALID",
-            detail=(
-                "场景权重总和必须为正数 / Sum of scenario weights must be positive."
-            ),
+            detail=("场景权重总和必须为正数 / Sum of scenario weights must be positive."),
         )
     # Normalize to string-friendly DecimalStr via a 4-digit precision.
     weight_total = sum(__decimal(member.weight.value) for member in members_tuple)
@@ -170,4 +169,5 @@ def validate_search_eval_independence(scenario_set: ScenarioSet) -> None:
 
 def __decimal(value: str):
     from decimal import Decimal
+
     return Decimal(value)

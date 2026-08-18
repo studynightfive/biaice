@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Mapping
 from uuid import UUID, uuid4
 
 from biaice.core.audit import AuditWriter, require_audit
-from biaice.core.auth import IdentityContext
+from biaice.core.auth import IdentityContext, TenantScope
 from biaice.core.clock import Clock, SystemClock
 from biaice.core.errors import BiaiceError
 from biaice.core.http import CursorCodec, assert_etag, compute_etag
@@ -85,7 +86,9 @@ def _version(
     )
 
 
-def require_unit(repository: Fr01Repository, identity: IdentityContext, unit_id: UUID) -> DecisionUnit:
+def require_unit(
+    repository: Fr01Repository, identity: IdentityContext, unit_id: UUID
+) -> DecisionUnit:
     identity.scope.assert_allows(
         tenant_id=identity.scope.tenant_id,
         data_domain_id=identity.scope.data_domain_id,
@@ -93,7 +96,9 @@ def require_unit(repository: Fr01Repository, identity: IdentityContext, unit_id:
     )
     item = repository.get_unit(scope=identity.scope, unit_id=unit_id)
     if item is None:
-        raise BiaiceError("RESOURCE_NOT_FOUND", detail=f"DecisionUnit {unit_id} not found in scope.")
+        raise BiaiceError(
+            "RESOURCE_NOT_FOUND", detail=f"DecisionUnit {unit_id} not found in scope."
+        )
     return item
 
 
@@ -151,9 +156,13 @@ class ProjectService:
             "purchaser_name": purchaser_name,
             "timezone": timezone,
             "budget": None if budget is None else budget.model_dump(mode="json"),
-            "price_ceiling": None if price_ceiling is None else price_ceiling.model_dump(mode="json"),
+            "price_ceiling": None
+            if price_ceiling is None
+            else price_ceiling.model_dump(mode="json"),
             "deadline_at": None if deadline_at is None else deadline_at.isoformat(),
-            "cross_unit_group_id": None if cross_unit_group_id is None else str(cross_unit_group_id),
+            "cross_unit_group_id": None
+            if cross_unit_group_id is None
+            else str(cross_unit_group_id),
             "notes": notes,
         }
         item = ProcurementProject(
@@ -270,7 +279,9 @@ class ProjectService:
         )
         return updated
 
-    def archive(self, *, identity: IdentityContext, project_id: UUID, request_id: str) -> ProcurementProject:
+    def archive(
+        self, *, identity: IdentityContext, project_id: UUID, request_id: str
+    ) -> ProcurementProject:
         require_audit(self.audit_writer)
         current = require_project(self.repository, identity, project_id)
         now = self.clock.now()
@@ -634,9 +645,52 @@ class ProjectsServices:
         )
 
 
-def configure_fr01(
-    app, *, repository: Fr01Repository | None = None
-) -> ProjectsServices:
+@dataclass(frozen=True, slots=True)
+class RuleAvailabilityView:
+    """Minimal public projection consumed by evidence precheck."""
+
+    rule_set_id: UUID
+    supported: bool
+    current: bool
+
+
+class RuleAvailabilityService:
+    """Expose only the latest effective, published and current rule set."""
+
+    def __init__(self, *, repository: Fr01Repository, clock: Clock) -> None:
+        self.repository = repository
+        self.clock = clock
+
+    def current_supported_rule_set(
+        self, *, scope: TenantScope, decision_unit_id: UUID
+    ) -> RuleAvailabilityView | None:
+        now = self.clock.now()
+        candidates = [
+            item
+            for item in self.repository.list_rule_sets(scope=scope, unit_id=decision_unit_id)
+            if item.lifecycle_state is ResourceLifecycle.PUBLISHED
+            and item.validity_state is ResourceValidity.CURRENT
+            and (item.effective_from is None or item.effective_from <= now)
+            and (item.effective_until is None or now < item.effective_until)
+        ]
+        if not candidates:
+            return None
+        latest = max(
+            candidates,
+            key=lambda item: (
+                item.version.created_at,
+                item.version.version_number,
+                str(item.rule_set_id),
+            ),
+        )
+        return RuleAvailabilityView(
+            rule_set_id=latest.rule_set_id,
+            supported=True,
+            current=True,
+        )
+
+
+def configure_fr01(app, *, repository: Fr01Repository | None = None) -> ProjectsServices:
     """Attach member-2 project/rule services to the FastAPI app state."""
     from biaice.modules.projects.application.document_events import DocumentEventConsumer
     from biaice.modules.projects.infrastructure.sql_repository import SqlAlchemyFr01Repository
@@ -667,5 +721,6 @@ def configure_fr01(
     app.state.fr01_repository = repository
     app.state.projects_services = projects
     app.state.rules_services = rules
+    app.state.rule_availability_port = RuleAvailabilityService(repository=repository, clock=clock)
     app.state.fr01_document_events = DocumentEventConsumer(repository)
     return projects

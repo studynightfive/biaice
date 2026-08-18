@@ -86,8 +86,7 @@ def _app(
             cursor_hmac_key="fr12-test-cursor-key-0000000000000000",
         ),
         authenticator=authenticator,
-        audit_writer=audit_writer
-        or HashChainAuditWriter(InMemoryAppendOnlyAuditSink()),
+        audit_writer=audit_writer or HashChainAuditWriter(InMemoryAppendOnlyAuditSink()),
     )
 
 
@@ -161,9 +160,10 @@ def test_openapi_exposes_all_fr12_operations_as_real_synthetic_handlers() -> Non
     assert operations["get_incident_policie"][0] == (
         "/api/v1/incident-policies/{incident_policie_id}"
     )
-    assert "/api/v1/cross_border_assessments/{cross_border_assessment_id}/mark-not-required" not in schema[
-        "paths"
-    ]
+    assert (
+        "/api/v1/cross_border_assessments/{cross_border_assessment_id}/mark-not-required"
+        not in schema["paths"]
+    )
 
 
 def test_all_collection_create_list_and_get_routes_work(api) -> None:
@@ -172,9 +172,7 @@ def test_all_collection_create_list_and_get_routes_work(api) -> None:
         created = _create(client, resource)
         listed = client.get(f"/api/v1/{resource}")
         assert listed.status_code == 200, listed.text
-        assert created["resource_id"] in {
-            item["resource_id"] for item in listed.json()["items"]
-        }
+        assert created["resource_id"] in {item["resource_id"] for item in listed.json()["items"]}
         fetched = client.get(f"/api/v1/{resource}/{created['resource_id']}")
         assert fetched.status_code == 200, fetched.text
         assert fetched.json() == created
@@ -218,9 +216,7 @@ def test_scope_secret_permission_and_audit_boundaries_fail_closed(api) -> None:
         headers={"Idempotency-Key": _idem("secret")},
         json={"apiKey": "never-store-this"},
     )
-    authenticator.identity = maker.model_copy(
-        update={"roles": frozenset({Role.BID_MANAGER})}
-    )
+    authenticator.identity = maker.model_copy(update={"roles": frozenset({Role.BID_MANAGER})})
     denied = client.get("/api/v1/legal-basis-evidence")
     assert missing_key.status_code == 400
     assert missing_key.json()["code"] == "IDEMPOTENCY_KEY_REQUIRED"
@@ -251,9 +247,7 @@ def test_cross_tenant_record_is_hidden(api) -> None:
     client, authenticator, _, _ = api
     created = _create(client, "legal-basis-evidence")
     authenticator.identity = _identity(tenant_id=TENANT_B)
-    response = client.get(
-        f"/api/v1/legal-basis-evidence/{created['resource_id']}"
-    )
+    response = client.get(f"/api/v1/legal-basis-evidence/{created['resource_id']}")
     assert response.status_code == 404
     assert response.json()["code"] == "RESOURCE_NOT_FOUND"
 
@@ -290,9 +284,7 @@ def test_all_action_routes_enforce_lifecycle_and_return_state(api) -> None:
         created("cross-border-assessments"),
         "approve",
     )
-    assert checked_action(
-        "cross-border-assessments", cross, "expire"
-    )["state"] == "EXPIRED"
+    assert checked_action("cross-border-assessments", cross, "expire")["state"] == "EXPIRED"
     cross_not_required = checked_action(
         "cross-border-assessments",
         created("cross-border-assessments"),
@@ -300,35 +292,26 @@ def test_all_action_routes_enforce_lifecycle_and_return_state(api) -> None:
         body={"reason_code": "VERIFIED_NO_CROSS_BORDER"},
     )
     assert cross_not_required["state"] == "NOT_REQUIRED"
-    assert checked_action(
-        "cross-border-assessments", cross_not_required, "revoke"
-    )["state"] == "REVOKED"
+    assert (
+        checked_action("cross-border-assessments", cross_not_required, "revoke")["state"]
+        == "REVOKED"
+    )
 
-    provider = checked_action(
-        "provider-policies", created("provider-policies"), "approve"
-    )
-    assert checked_action("provider-policies", provider, "expire")["state"] == (
-        "EXPIRED"
-    )
+    provider = checked_action("provider-policies", created("provider-policies"), "approve")
+    assert checked_action("provider-policies", provider, "expire")["state"] == ("EXPIRED")
     provider_not_required = checked_action(
         "provider-policies",
         created("provider-policies"),
         "mark-not-required",
         body={"reason_code": "VERIFIED_PROVIDER_NOT_USED"},
     )
-    assert checked_action(
-        "provider-policies", provider_not_required, "revoke"
-    )["state"] == "REVOKED"
+    assert (
+        checked_action("provider-policies", provider_not_required, "revoke")["state"] == "REVOKED"
+    )
 
-    dsr_policy = checked_action(
-        "dsr-policies", created("dsr-policies"), "publish"
-    )
-    assert checked_action("dsr-policies", dsr_policy, "archive")["state"] == (
-        "ARCHIVED"
-    )
-    assert checked_action("load-profiles", created("load-profiles"), "freeze")[
-        "state"
-    ] == "FROZEN"
+    dsr_policy = checked_action("dsr-policies", created("dsr-policies"), "publish")
+    assert checked_action("dsr-policies", dsr_policy, "archive")["state"] == ("ARCHIVED")
+    assert checked_action("load-profiles", created("load-profiles"), "freeze")["state"] == "FROZEN"
 
     request = checked_action(
         "data-subject-requests",
@@ -347,13 +330,12 @@ def test_all_action_routes_enforce_lifecycle_and_return_state(api) -> None:
         "transition",
         body={"target_state": "READY_TO_COMPLETE"},
     )
-    assert checked_action("data-subject-requests", request, "complete")[
-        "state"
-    ] == "COMPLETED"
+    assert checked_action("data-subject-requests", request, "complete")["state"] == "COMPLETED"
 
-    assert checked_action(
-        "incident-policies", created("incident-policies"), "approve"
-    )["state"] == "APPROVED"
+    assert (
+        checked_action("incident-policies", created("incident-policies"), "approve")["state"]
+        == "APPROVED"
+    )
     incident = created("incidents")
     for target in ("TRIAGED", "CONTAINED", "REMEDIATING", "RESOLVED"):
         incident = checked_action(
@@ -406,38 +388,28 @@ def test_maker_checker_mfa_and_invalid_transition_are_rejected(api) -> None:
 
 def test_signed_cursor_is_filter_bound_and_tamper_evident(api) -> None:
     client, _, _, _ = api
-    created_ids = {
-        _create(client, "legal-basis-evidence")["resource_id"] for _ in range(3)
-    }
+    created_ids = {_create(client, "legal-basis-evidence")["resource_id"] for _ in range(3)}
     first = client.get("/api/v1/legal-basis-evidence?limit=2")
     assert first.status_code == 200
     first_body = first.json()
     assert first_body["has_more"] is True
     assert first_body["next_cursor"]
 
-    serialized_null = client.get(
-        "/api/v1/legal-basis-evidence", params={"state": "null"}
-    )
+    serialized_null = client.get("/api/v1/legal-basis-evidence", params={"state": "null"})
     assert serialized_null.status_code == 200
-    assert {item["resource_id"] for item in serialized_null.json()["items"]} == (
-        created_ids
-    )
+    assert {item["resource_id"] for item in serialized_null.json()["items"]} == (created_ids)
 
     second = client.get(
         "/api/v1/legal-basis-evidence",
         params={"limit": 2, "cursor": first_body["next_cursor"]},
     )
     assert second.status_code == 200
-    returned_ids = {
-        item["resource_id"] for item in first_body["items"] + second.json()["items"]
-    }
+    returned_ids = {item["resource_id"] for item in first_body["items"] + second.json()["items"]}
     assert returned_ids == created_ids
 
     cursor = first_body["next_cursor"]
     tampered = f"{cursor[:-1]}{'A' if cursor[-1] != 'A' else 'B'}"
-    bad_signature = client.get(
-        "/api/v1/legal-basis-evidence", params={"cursor": tampered}
-    )
+    bad_signature = client.get("/api/v1/legal-basis-evidence", params={"cursor": tampered})
     changed_filter = client.get(
         "/api/v1/legal-basis-evidence",
         params={"cursor": cursor, "state": "CURRENT"},
