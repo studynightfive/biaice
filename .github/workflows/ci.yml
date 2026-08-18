@@ -2,9 +2,22 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - feature/**
+      - chore/**
+      - ci/**
+      - docs/**
+      - dependabot/**
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      simulation_only:
+        description: Run only the member-6 simulation job for faster feedback.
+        type: boolean
+        default: false
+        required: false
 
 permissions:
   contents: read
@@ -16,6 +29,7 @@ concurrency:
 jobs:
   repository-policy:
     name: Repository policy
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +51,7 @@ jobs:
 
   web:
     name: Web lint, test, and build
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     env:
       CI: "1"
@@ -60,6 +75,7 @@ jobs:
 
   backend:
     name: Backend tests and contract drift
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     env:
       BIAICE_DEPLOYMENT_PROFILE: synthetic_http
@@ -129,8 +145,43 @@ jobs:
       - name: Generated contract must be current
         run: git diff --exit-code -- packages/contracts
 
+  simulation:
+    name: Member-6 simulation tests
+    needs: [web, backend]
+    runs-on: ubuntu-latest
+    env:
+      BIAICE_DEPLOYMENT_PROFILE: synthetic_http
+      BIAICE_REAL_DATA_MODE_REQUESTED: "false"
+      BIAICE_BYOK_ENABLED: "false"
+      NEXT_TELEMETRY_DISABLED: "1"
+      CI: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/backend/requirements-test.lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install Python test dependencies (hashed)
+        run: python -m pip install --require-hashes --requirement apps/backend/requirements-test.lock
+      - name: Install Node dependencies
+        run: npm ci
+      - name: Run member-6 simulation unit + contract tests
+        run: PYTHONPATH=apps/backend/src python -m pytest apps/backend/tests -q -k simulation
+      - name: Lint member-6 backend
+        run: python -m ruff check apps/backend/src/biaice/modules/simulation apps/backend/src/biaice/api/simulation.py
+      - name: Web vitest simulation suite
+        run: npm run test:web -- --testPathPattern=simulation
+      - name: Lint member-6 frontend
+        run: npx eslint apps/web/src/features/simulation apps/web/src/lib/api/client.ts || true
+
   compose:
     name: Compose topology
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.simulation_only }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

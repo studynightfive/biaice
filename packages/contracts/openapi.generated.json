@@ -272,6 +272,89 @@
         "title": "ArchiveCompetitorRequest",
         "type": "object"
       },
+      "AssessmentListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioStrategyAssessment"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AssessmentListResponse",
+        "type": "object"
+      },
+      "AwardMode": {
+        "enum": [
+          "SINGLE",
+          "MULTI",
+          "NONE"
+        ],
+        "title": "AwardMode",
+        "type": "string"
+      },
+      "BaselineListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionBaseline"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "BaselineListResponse",
+        "type": "object"
+      },
+      "BaselineState": {
+        "enum": [
+          "DRAFT",
+          "FROZEN",
+          "SUPERSEDED",
+          "INVALIDATED"
+        ],
+        "title": "BaselineState",
+        "type": "string"
+      },
+      "BatchListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SimulationBatch"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "BatchListResponse",
+        "type": "object"
+      },
+      "BatchState": {
+        "enum": [
+          "PENDING",
+          "RUNNING",
+          "SUCCEEDED",
+          "INDETERMINATE",
+          "FAILED_RETRYABLE",
+          "FAILED_TERMINAL",
+          "CANCELLED"
+        ],
+        "title": "BatchState",
+        "type": "string"
+      },
       "BuildCompetitorProfileRequest": {
         "additionalProperties": false,
         "properties": {
@@ -531,6 +614,176 @@
         ],
         "title": "CalibrationPurpose",
         "type": "string"
+      },
+      "CandidateBlueprintRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_cost": {
+            "pattern": "^-?\\d+(\\.\\d+)?$",
+            "title": "Expected Cost",
+            "type": "string"
+          },
+          "expected_margin": {
+            "pattern": "^-?\\d+(\\.\\d+)?$",
+            "title": "Expected Margin",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          }
+        },
+        "required": [
+          "label",
+          "expected_cost",
+          "expected_margin"
+        ],
+        "title": "CandidateBlueprintRequest",
+        "type": "object"
+      },
+      "CandidateListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SimulationCandidate"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "CandidateListResponse",
+        "type": "object"
+      },
+      "CandidateSearchSpace": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_version_id": {
+            "format": "uuid",
+            "title": "Baseline Version Id",
+            "type": "string"
+          },
+          "candidate_count_lower_bound": {
+            "minimum": 1.0,
+            "title": "Candidate Count Lower Bound",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          },
+          "dimension_axes": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Dimension Axes",
+            "type": "array"
+          },
+          "frozen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frozen At"
+          },
+          "frozen_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frozen By"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "search_space_id": {
+            "format": "uuid",
+            "title": "Search Space Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SearchSpaceState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "search_space_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "baseline_version_id",
+          "description",
+          "state",
+          "dimension_axes",
+          "candidate_count_lower_bound",
+          "created_at",
+          "created_by",
+          "frozen_at",
+          "frozen_by"
+        ],
+        "title": "CandidateSearchSpace",
+        "type": "object"
       },
       "CommercialPolicy": {
         "additionalProperties": false,
@@ -1551,6 +1804,43 @@
         "title": "CostListResponse",
         "type": "object"
       },
+      "CreateBatchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "award_mode": {
+            "$ref": "#/components/schemas/AwardMode"
+          },
+          "baseline_id": {
+            "format": "uuid",
+            "title": "Baseline Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "policy_threshold": {
+            "pattern": "^-?\\d+(\\.\\d+)?$",
+            "title": "Policy Threshold",
+            "type": "string"
+          },
+          "scenario_set_id": {
+            "format": "uuid",
+            "title": "Scenario Set Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision_unit_id",
+          "baseline_id",
+          "scenario_set_id",
+          "award_mode",
+          "policy_threshold"
+        ],
+        "title": "CreateBatchRequest",
+        "type": "object"
+      },
       "CreateCompetitorRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1754,6 +2044,53 @@
         "title": "CreateMarketPriorRequest",
         "type": "object"
       },
+      "CreateOptimizationRunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "award_mode": {
+            "$ref": "#/components/schemas/AwardMode"
+          },
+          "blueprints": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateBlueprintRequest"
+            },
+            "minItems": 1,
+            "title": "Blueprints",
+            "type": "array"
+          },
+          "objective_kind": {
+            "$ref": "#/components/schemas/ObjectiveKind"
+          },
+          "policy_threshold": {
+            "pattern": "^-?\\d+(\\.\\d+)?$",
+            "title": "Policy Threshold",
+            "type": "string"
+          },
+          "stress_axes": {
+            "items": {
+              "$ref": "#/components/schemas/StressAxis"
+            },
+            "title": "Stress Axes",
+            "type": "array"
+          },
+          "stress_scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/StressScenarioRequest"
+            },
+            "title": "Stress Scenarios",
+            "type": "array"
+          }
+        },
+        "required": [
+          "objective_kind",
+          "award_mode",
+          "policy_threshold",
+          "blueprints",
+          "stress_axes"
+        ],
+        "title": "CreateOptimizationRunRequest",
+        "type": "object"
+      },
       "CreateParseJobRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1894,6 +2231,104 @@
           "valid_until"
         ],
         "title": "CreateRiskAcceptanceRequest",
+        "type": "object"
+      },
+      "CreateScenarioSetRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_id": {
+            "format": "uuid",
+            "title": "Baseline Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "evaluation_space_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluation Space Id"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioSetMemberRequest"
+            },
+            "minItems": 1,
+            "title": "Members",
+            "type": "array"
+          },
+          "search_space_id": {
+            "format": "uuid",
+            "title": "Search Space Id",
+            "type": "string"
+          },
+          "stress_axes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Stress Axes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "decision_unit_id",
+          "baseline_id",
+          "search_space_id",
+          "members"
+        ],
+        "title": "CreateScenarioSetRequest",
+        "type": "object"
+      },
+      "CreateSearchSpaceRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_id": {
+            "format": "uuid",
+            "title": "Baseline Id",
+            "type": "string"
+          },
+          "candidate_count_lower_bound": {
+            "minimum": 1.0,
+            "title": "Candidate Count Lower Bound",
+            "type": "integer"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          },
+          "dimension_axes": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Dimension Axes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "decision_unit_id",
+          "baseline_id",
+          "description",
+          "dimension_axes",
+          "candidate_count_lower_bound"
+        ],
+        "title": "CreateSearchSpaceRequest",
         "type": "object"
       },
       "CreateSubjectDeduplicationRunRequest": {
@@ -2252,6 +2687,168 @@
           "content_hash"
         ],
         "title": "DatasetSnapshotVersion",
+        "type": "object"
+      },
+      "DecimalStr": {
+        "additionalProperties": false,
+        "description": "Decimal-as-string envelope with strict pattern validation.",
+        "properties": {
+          "value": {
+            "pattern": "^-?\\d+(\\.\\d+)?$",
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "DecimalStr",
+        "type": "object"
+      },
+      "DecisionBaseline": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_id": {
+            "format": "uuid",
+            "title": "Baseline Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "frozen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frozen At"
+          },
+          "frozen_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frozen By"
+          },
+          "invalidated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidated At"
+          },
+          "invalidated_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidated By"
+          },
+          "manifest": {
+            "$ref": "#/components/schemas/InputManifest"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "state": {
+            "$ref": "#/components/schemas/BaselineState"
+          },
+          "superseded_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded At"
+          },
+          "superseded_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "baseline_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "manifest",
+          "state",
+          "frozen_at",
+          "frozen_by",
+          "created_at",
+          "created_by"
+        ],
+        "title": "DecisionBaseline",
         "type": "object"
       },
       "DeploymentState": {
@@ -2652,6 +3249,32 @@
           "BREACH"
         ],
         "title": "DriftStatus",
+        "type": "string"
+      },
+      "EligibilityListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RecommendationEligibility"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "EligibilityListResponse",
+        "type": "object"
+      },
+      "EligibilityState": {
+        "enum": [
+          "ELIGIBLE",
+          "INELIGIBLE",
+          "INDETERMINATE"
+        ],
+        "title": "EligibilityState",
         "type": "string"
       },
       "EvaluationMetricDefinition": {
@@ -3163,6 +3786,30 @@
         "title": "FieldProblem",
         "type": "object"
       },
+      "FreezeBaselineRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "manifest_items": {
+            "items": {
+              "$ref": "#/components/schemas/ManifestItemRequest"
+            },
+            "minItems": 1,
+            "title": "Manifest Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "decision_unit_id",
+          "manifest_items"
+        ],
+        "title": "FreezeBaselineRequest",
+        "type": "object"
+      },
       "GateAssessment": {
         "additionalProperties": false,
         "properties": {
@@ -3476,6 +4123,36 @@
         "title": "InheritDocumentLinkRequest",
         "type": "object"
       },
+      "InputManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ManifestItem"
+            },
+            "minItems": 1,
+            "title": "Items",
+            "type": "array"
+          },
+          "manifest_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Manifest Hash",
+            "type": "string"
+          },
+          "manifest_id": {
+            "format": "uuid",
+            "title": "Manifest Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "manifest_id",
+          "manifest_hash",
+          "items"
+        ],
+        "title": "InputManifest",
+        "type": "object"
+      },
       "JobState": {
         "enum": [
           "PENDING",
@@ -3591,6 +4268,106 @@
         ],
         "title": "LifecycleState",
         "type": "string"
+      },
+      "ManifestItem": {
+        "additionalProperties": false,
+        "properties": {
+          "dependency_type": {
+            "title": "Dependency Type",
+            "type": "string"
+          },
+          "item_id": {
+            "format": "uuid",
+            "title": "Item Id",
+            "type": "string"
+          },
+          "recorded_at": {
+            "format": "date-time",
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "upstream_content_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Upstream Content Hash",
+            "type": "string"
+          },
+          "upstream_id": {
+            "format": "uuid",
+            "title": "Upstream Id",
+            "type": "string"
+          },
+          "upstream_type": {
+            "title": "Upstream Type",
+            "type": "string"
+          },
+          "upstream_version_id": {
+            "format": "uuid",
+            "title": "Upstream Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "upstream_type",
+          "upstream_id",
+          "upstream_version_id",
+          "upstream_content_hash",
+          "dependency_type",
+          "recorded_at"
+        ],
+        "title": "ManifestItem",
+        "type": "object"
+      },
+      "ManifestItemRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dependency_type": {
+            "minLength": 1,
+            "title": "Dependency Type",
+            "type": "string"
+          },
+          "item_id": {
+            "format": "uuid",
+            "title": "Item Id",
+            "type": "string"
+          },
+          "recorded_at": {
+            "format": "date-time",
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "upstream_content_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Upstream Content Hash",
+            "type": "string"
+          },
+          "upstream_id": {
+            "format": "uuid",
+            "title": "Upstream Id",
+            "type": "string"
+          },
+          "upstream_type": {
+            "minLength": 1,
+            "title": "Upstream Type",
+            "type": "string"
+          },
+          "upstream_version_id": {
+            "format": "uuid",
+            "title": "Upstream Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "upstream_type",
+          "upstream_id",
+          "upstream_version_id",
+          "upstream_content_hash",
+          "dependency_type",
+          "recorded_at"
+        ],
+        "title": "ManifestItemRequest",
+        "type": "object"
       },
       "ManualOverrideRequest": {
         "additionalProperties": false,
@@ -4292,6 +5069,117 @@
           "authenticated_at"
         ],
         "title": "MeResponse",
+        "type": "object"
+      },
+      "MergeAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "accepted": {
+            "title": "Accepted",
+            "type": "boolean"
+          },
+          "assessed_at": {
+            "format": "date-time",
+            "title": "Assessed At",
+            "type": "string"
+          },
+          "blocked_reason_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocked Reason Code"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "linkage": {
+            "title": "Linkage",
+            "type": "string"
+          },
+          "merge_id": {
+            "format": "uuid",
+            "title": "Merge Id",
+            "type": "string"
+          },
+          "plan_id": {
+            "format": "uuid",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "tau_b": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "tau_m": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "merge_id",
+          "run_id",
+          "plan_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "linkage",
+          "tau_b",
+          "tau_m",
+          "accepted",
+          "blocked_reason_code",
+          "assessed_at"
+        ],
+        "title": "MergeAssessment",
+        "type": "object"
+      },
+      "MergeAssessmentListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MergeAssessment"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "MergeAssessmentListResponse",
         "type": "object"
       },
       "MetricDirection": {
@@ -5455,6 +6343,193 @@
         "title": "MonitoringSnapshotListResponse",
         "type": "object"
       },
+      "ObjectiveKind": {
+        "enum": [
+          "COST_MIN",
+          "MARGIN_MAX",
+          "COVERAGE_MAX",
+          "RISK_MIN"
+        ],
+        "title": "ObjectiveKind",
+        "type": "string"
+      },
+      "OptimizationRun": {
+        "additionalProperties": false,
+        "properties": {
+          "award_mode": {
+            "$ref": "#/components/schemas/AwardMode"
+          },
+          "batch_id": {
+            "format": "uuid",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "finalized_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finalized At"
+          },
+          "invalidated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidated At"
+          },
+          "invalidated_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidated By"
+          },
+          "objective_kind": {
+            "$ref": "#/components/schemas/ObjectiveKind"
+          },
+          "policy_threshold": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "progress_percent": {
+            "default": 0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Progress Percent",
+            "type": "integer"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "requested_by": {
+            "format": "uuid",
+            "title": "Requested By",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/OptimizationState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "batch_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "state",
+          "award_mode",
+          "objective_kind",
+          "policy_threshold",
+          "requested_by",
+          "created_at",
+          "finalized_at",
+          "invalidated_at"
+        ],
+        "title": "OptimizationRun",
+        "type": "object"
+      },
+      "OptimizationRunListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OptimizationRun"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "OptimizationRunListResponse",
+        "type": "object"
+      },
+      "OptimizationState": {
+        "enum": [
+          "DRAFT",
+          "RUNNING",
+          "SUCCEEDED",
+          "FAILED",
+          "INVALIDATED",
+          "FINALIZED"
+        ],
+        "title": "OptimizationState",
+        "type": "string"
+      },
+      "OutcomeListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioOutcome"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "OutcomeListResponse",
+        "type": "object"
+      },
       "OverrideDocumentLinkRequest": {
         "additionalProperties": false,
         "properties": {
@@ -5616,6 +6691,15 @@
         ],
         "title": "ParseJobResponse",
         "type": "object"
+      },
+      "PlanState": {
+        "enum": [
+          "DRAFT",
+          "PUBLISHED",
+          "INVALIDATED"
+        ],
+        "title": "PlanState",
+        "type": "string"
       },
       "PolicyListResponse": {
         "additionalProperties": false,
@@ -6914,6 +7998,157 @@
         "title": "ReadinessListResponse",
         "type": "object"
       },
+      "RecommendationEligibility": {
+        "additionalProperties": false,
+        "properties": {
+          "assessed_at": {
+            "format": "date-time",
+            "title": "Assessed At",
+            "type": "string"
+          },
+          "assessed_by": {
+            "format": "uuid",
+            "title": "Assessed By",
+            "type": "string"
+          },
+          "baseline_version_id": {
+            "format": "uuid",
+            "title": "Baseline Version Id",
+            "type": "string"
+          },
+          "blocked_reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Blocked Reason Codes",
+            "type": "array"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "eligibility_id": {
+            "format": "uuid",
+            "title": "Eligibility Id",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "snapshot_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Version Id"
+          },
+          "state": {
+            "$ref": "#/components/schemas/EligibilityState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "upstream_validity": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ReviewValidity"
+            },
+            "title": "Upstream Validity",
+            "type": "object"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "eligibility_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "state",
+          "baseline_version_id",
+          "assessed_at",
+          "assessed_by"
+        ],
+        "title": "RecommendationEligibility",
+        "type": "object"
+      },
+      "RecommendationEligibilityRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_id": {
+            "format": "uuid",
+            "title": "Baseline Id",
+            "type": "string"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          },
+          "precheck": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          },
+          "readiness": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          },
+          "risk_acceptance": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          },
+          "scenario_assessment": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Id"
+          },
+          "static_validation": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          }
+        },
+        "required": [
+          "baseline_id",
+          "precheck",
+          "readiness",
+          "static_validation",
+          "scenario_assessment",
+          "condition",
+          "risk_acceptance"
+        ],
+        "title": "RecommendationEligibilityRequest",
+        "type": "object"
+      },
       "ReplicaKind": {
         "enum": [
           "DATABASE",
@@ -7085,6 +8320,16 @@
           "QUARANTINED"
         ],
         "title": "ReviewState",
+        "type": "string"
+      },
+      "ReviewValidity": {
+        "enum": [
+          "CURRENT",
+          "UNKNOWN",
+          "EXPIRED",
+          "INVALIDATED"
+        ],
+        "title": "ReviewValidity",
         "type": "string"
       },
       "RevokeRiskAcceptanceRequest": {
@@ -7496,6 +8741,441 @@
         "title": "ScanResult",
         "type": "string"
       },
+      "ScenarioKind": {
+        "description": "Search-space and evaluation scenarios must be mutually exclusive sets.",
+        "enum": [
+          "SEARCH",
+          "EVALUATION",
+          "STRESS"
+        ],
+        "title": "ScenarioKind",
+        "type": "string"
+      },
+      "ScenarioOutcome": {
+        "additionalProperties": false,
+        "properties": {
+          "batch_id": {
+            "format": "uuid",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "candidate_id": {
+            "format": "uuid",
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "evaluated_at": {
+            "format": "date-time",
+            "title": "Evaluated At",
+            "type": "string"
+          },
+          "expected_payoff": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "feasible": {
+            "title": "Feasible",
+            "type": "boolean"
+          },
+          "outcome_id": {
+            "format": "uuid",
+            "title": "Outcome Id",
+            "type": "string"
+          },
+          "p_win": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "review_validity": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          },
+          "scenario_id": {
+            "format": "uuid",
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome_id",
+          "candidate_id",
+          "scenario_id",
+          "batch_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "feasible",
+          "expected_payoff",
+          "p_win",
+          "evaluated_at",
+          "review_validity"
+        ],
+        "title": "ScenarioOutcome",
+        "type": "object"
+      },
+      "ScenarioSet": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_version_id": {
+            "format": "uuid",
+            "title": "Baseline Version Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "evaluation_space_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluation Space Version Id"
+          },
+          "frozen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frozen At"
+          },
+          "frozen_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frozen By"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioSetMember"
+            },
+            "minItems": 1,
+            "title": "Members",
+            "type": "array"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "scenario_set_id": {
+            "format": "uuid",
+            "title": "Scenario Set Id",
+            "type": "string"
+          },
+          "search_space_version_id": {
+            "format": "uuid",
+            "title": "Search Space Version Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/ScenarioSetState"
+          },
+          "stress_axes": {
+            "items": {
+              "$ref": "#/components/schemas/StressAxis"
+            },
+            "title": "Stress Axes",
+            "type": "array"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_set_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "baseline_version_id",
+          "search_space_version_id",
+          "evaluation_space_version_id",
+          "stress_axes",
+          "state",
+          "members",
+          "created_at",
+          "created_by",
+          "frozen_at",
+          "frozen_by"
+        ],
+        "title": "ScenarioSet",
+        "type": "object"
+      },
+      "ScenarioSetListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioSet"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ScenarioSetListResponse",
+        "type": "object"
+      },
+      "ScenarioSetMember": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "scenario_id": {
+            "format": "uuid",
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_kind": {
+            "$ref": "#/components/schemas/ScenarioKind"
+          },
+          "weight": {
+            "$ref": "#/components/schemas/DecimalStr"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "scenario_kind",
+          "weight",
+          "label"
+        ],
+        "title": "ScenarioSetMember",
+        "type": "object"
+      },
+      "ScenarioSetMemberRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "scenario_id": {
+            "format": "uuid",
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_kind": {
+            "title": "Scenario Kind",
+            "type": "string"
+          },
+          "weight": {
+            "pattern": "^-?\\d+(\\.\\d+)?$",
+            "title": "Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "scenario_kind",
+          "weight",
+          "label"
+        ],
+        "title": "ScenarioSetMemberRequest",
+        "type": "object"
+      },
+      "ScenarioSetState": {
+        "enum": [
+          "DRAFT",
+          "FROZEN",
+          "SUPERSEDED",
+          "INVALIDATED"
+        ],
+        "title": "ScenarioSetState",
+        "type": "string"
+      },
+      "ScenarioStrategyAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "assessed_at": {
+            "format": "date-time",
+            "title": "Assessed At",
+            "type": "string"
+          },
+          "assessment_id": {
+            "format": "uuid",
+            "title": "Assessment Id",
+            "type": "string"
+          },
+          "batch_id": {
+            "format": "uuid",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "candidate_id": {
+            "format": "uuid",
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "reason_code": {
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Reason Code",
+            "type": "string"
+          },
+          "recommended": {
+            "title": "Recommended",
+            "type": "boolean"
+          },
+          "review_validity": {
+            "$ref": "#/components/schemas/ReviewValidity"
+          },
+          "scenario_id": {
+            "format": "uuid",
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assessment_id",
+          "candidate_id",
+          "scenario_id",
+          "batch_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "review_validity",
+          "summary",
+          "recommended",
+          "assessed_at",
+          "reason_code"
+        ],
+        "title": "ScenarioStrategyAssessment",
+        "type": "object"
+      },
       "ScopedObjectRef": {
         "additionalProperties": false,
         "properties": {
@@ -7563,6 +9243,410 @@
         ],
         "title": "ScopedObjectRef",
         "type": "object"
+      },
+      "SearchSpaceListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateSearchSpace"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "SearchSpaceListResponse",
+        "type": "object"
+      },
+      "SearchSpaceState": {
+        "enum": [
+          "DRAFT",
+          "FROZEN",
+          "SUPERSEDED",
+          "INVALIDATED"
+        ],
+        "title": "SearchSpaceState",
+        "type": "string"
+      },
+      "SimulationAssessmentSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "locked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locked At"
+          },
+          "locked_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locked By"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "payload_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Payload Hash",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SnapshotState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          },
+          "watermark": {
+            "title": "Watermark",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "state",
+          "watermark",
+          "payload_hash",
+          "payload",
+          "created_at",
+          "created_by"
+        ],
+        "title": "SimulationAssessmentSnapshot",
+        "type": "object"
+      },
+      "SimulationBatch": {
+        "additionalProperties": false,
+        "properties": {
+          "award_mode": {
+            "$ref": "#/components/schemas/AwardMode"
+          },
+          "baseline_version_id": {
+            "format": "uuid",
+            "title": "Baseline Version Id",
+            "type": "string"
+          },
+          "batch_id": {
+            "format": "uuid",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "candidate_count": {
+            "minimum": 0.0,
+            "title": "Candidate Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "failure_reason_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Reason Code"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "last_updated_at": {
+            "format": "date-time",
+            "title": "Last Updated At",
+            "type": "string"
+          },
+          "policy_threshold": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "progress_percent": {
+            "default": 0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Progress Percent",
+            "type": "integer"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "requested_by": {
+            "format": "uuid",
+            "title": "Requested By",
+            "type": "string"
+          },
+          "scenario_set_version_id": {
+            "format": "uuid",
+            "title": "Scenario Set Version Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/BatchState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "batch_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "baseline_version_id",
+          "scenario_set_version_id",
+          "award_mode",
+          "state",
+          "policy_threshold",
+          "candidate_count",
+          "requested_by",
+          "created_at",
+          "last_updated_at"
+        ],
+        "title": "SimulationBatch",
+        "type": "object"
+      },
+      "SimulationCandidate": {
+        "additionalProperties": false,
+        "properties": {
+          "batch_id": {
+            "format": "uuid",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "candidate_id": {
+            "format": "uuid",
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "expected_cost": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "expected_margin": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "title": "Parameters",
+            "type": "object"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "batch_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "label",
+          "parameters",
+          "expected_cost",
+          "expected_margin",
+          "created_at"
+        ],
+        "title": "SimulationCandidate",
+        "type": "object"
+      },
+      "SnapshotDownloadResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/SimulationAssessmentSnapshot"
+          }
+        },
+        "required": [
+          "snapshot"
+        ],
+        "title": "SnapshotDownloadResponse",
+        "type": "object"
+      },
+      "SnapshotListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SimulationAssessmentSnapshot"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "SnapshotListResponse",
+        "type": "object"
+      },
+      "SnapshotRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ],
+        "title": "SnapshotRequest",
+        "type": "object"
+      },
+      "SnapshotState": {
+        "enum": [
+          "DRAFT",
+          "LOCKED"
+        ],
+        "title": "SnapshotState",
+        "type": "string"
       },
       "SourceDocument": {
         "additionalProperties": false,
@@ -7804,6 +9888,313 @@
         "title": "SourceReviewState",
         "type": "string"
       },
+      "StaticCandidateValidation": {
+        "additionalProperties": false,
+        "properties": {
+          "assessed_at": {
+            "format": "date-time",
+            "title": "Assessed At",
+            "type": "string"
+          },
+          "batch_id": {
+            "format": "uuid",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "candidate_id": {
+            "format": "uuid",
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "rule_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rule Codes",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StaticValidationStatus"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "validation_id": {
+            "format": "uuid",
+            "title": "Validation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "validation_id",
+          "candidate_id",
+          "batch_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "status",
+          "assessed_at"
+        ],
+        "title": "StaticCandidateValidation",
+        "type": "object"
+      },
+      "StaticValidationListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StaticCandidateValidation"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "StaticValidationListResponse",
+        "type": "object"
+      },
+      "StaticValidationStatus": {
+        "enum": [
+          "PASS",
+          "FAIL",
+          "INDETERMINATE"
+        ],
+        "title": "StaticValidationStatus",
+        "type": "string"
+      },
+      "StrategyPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "award_mode": {
+            "$ref": "#/components/schemas/AwardMode"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "invalidated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidated At"
+          },
+          "invalidated_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidated By"
+          },
+          "linked_run_version_id": {
+            "format": "uuid",
+            "title": "Linked Run Version Id",
+            "type": "string"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/StrategyPlanMember"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Members",
+            "type": "array"
+          },
+          "objective_kind": {
+            "$ref": "#/components/schemas/ObjectiveKind"
+          },
+          "p_minus": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "p_plus": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "plan_id": {
+            "format": "uuid",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PlanState"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_id",
+          "run_id",
+          "version_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "state",
+          "award_mode",
+          "objective_kind",
+          "members",
+          "p_minus",
+          "p_plus",
+          "coverage",
+          "created_at",
+          "published_at",
+          "invalidated_at",
+          "linked_run_version_id"
+        ],
+        "title": "StrategyPlan",
+        "type": "object"
+      },
+      "StrategyPlanListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StrategyPlan"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "StrategyPlanListResponse",
+        "type": "object"
+      },
+      "StrategyPlanMember": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "format": "uuid",
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "linkage": {
+            "default": "complete",
+            "title": "Linkage",
+            "type": "string"
+          },
+          "weight": {
+            "$ref": "#/components/schemas/DecimalStr"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "weight"
+        ],
+        "title": "StrategyPlanMember",
+        "type": "object"
+      },
       "StrategyReadinessAssessment": {
         "additionalProperties": false,
         "properties": {
@@ -7886,6 +10277,141 @@
           "exploration_watermark"
         ],
         "title": "StrategyReadinessAssessment",
+        "type": "object"
+      },
+      "StressAssessmentListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StressTestAssessment"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "StressAssessmentListResponse",
+        "type": "object"
+      },
+      "StressAxis": {
+        "enum": [
+          "PRICE_BAND",
+          "TIMING",
+          "COMPLIANCE",
+          "PROVIDER_OUTAGE",
+          "UNIT_FAILURE"
+        ],
+        "title": "StressAxis",
+        "type": "string"
+      },
+      "StressScenarioRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "axis": {
+            "$ref": "#/components/schemas/StressAxis"
+          },
+          "detail": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Detail",
+            "type": "string"
+          },
+          "feasible": {
+            "title": "Feasible",
+            "type": "boolean"
+          },
+          "stress_weight": {
+            "pattern": "^-?\\d+(\\.\\d+)?$",
+            "title": "Stress Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "axis",
+          "feasible",
+          "stress_weight",
+          "detail"
+        ],
+        "title": "StressScenarioRequest",
+        "type": "object"
+      },
+      "StressTestAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "assessed_at": {
+            "format": "date-time",
+            "title": "Assessed At",
+            "type": "string"
+          },
+          "assessment_id": {
+            "format": "uuid",
+            "title": "Assessment Id",
+            "type": "string"
+          },
+          "axis": {
+            "$ref": "#/components/schemas/StressAxis"
+          },
+          "data_domain_id": {
+            "format": "uuid",
+            "title": "Data Domain Id",
+            "type": "string"
+          },
+          "decision_unit_id": {
+            "format": "uuid",
+            "title": "Decision Unit Id",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "stress_weight": {
+            "$ref": "#/components/schemas/DecimalStr"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assessment_id",
+          "run_id",
+          "tenant_id",
+          "data_domain_id",
+          "project_id",
+          "decision_unit_id",
+          "axis",
+          "passed",
+          "detail",
+          "assessed_at",
+          "stress_weight"
+        ],
+        "title": "StressTestAssessment",
         "type": "object"
       },
       "SubjectDeduplicationRun": {
@@ -14211,7 +16737,6 @@
     },
     "/api/v1/candidate-search-spaces/{candidate_search_space_id}": {
       "get": {
-        "description": "Get candidate search space",
         "operationId": "get_candidate_search_space",
         "parameters": [
           {
@@ -14230,7 +16755,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CandidateSearchSpace"
                 }
               }
             },
@@ -14344,7 +16869,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -14362,18 +16887,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get candidate search space",
+        "summary": "Get Candidate Search Space",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/commercial-policies/{commercial_policie_id}": {
@@ -22744,7 +25266,6 @@
     },
     "/api/v1/decision-baselines/{decision_baseline_id}": {
       "get": {
-        "description": "Get decision baseline",
         "operationId": "get_decision_baseline",
         "parameters": [
           {
@@ -22763,7 +25284,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/DecisionBaseline"
                 }
               }
             },
@@ -22877,7 +25398,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -22895,18 +25416,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get decision baseline",
+        "summary": "Get Decision Baseline",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-reports/{report_id}": {
@@ -24342,7 +26860,6 @@
     },
     "/api/v1/decision-units/{unit_id}/candidate-search-spaces": {
       "get": {
-        "description": "List candidate search spaces",
         "operationId": "list_candidate_search_spaces",
         "parameters": [
           {
@@ -24361,7 +26878,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SearchSpaceListResponse"
                 }
               }
             },
@@ -24475,7 +26992,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -24493,21 +27010,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List candidate search spaces",
+        "summary": "List Candidate Search Spaces",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:read",
+        "x-schema-status": "FROZEN"
       },
       "post": {
-        "description": "Create candidate search space",
         "operationId": "create_candidate_search_space",
         "parameters": [
           {
@@ -24541,25 +27054,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateSearchSpaceRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CandidateSearchSpace"
                 }
               }
             },
@@ -24673,7 +27179,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -24691,18 +27197,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create candidate search space",
+        "summary": "Create Candidate Search Space",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:freeze+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/commercial-policies": {
@@ -26532,7 +29035,6 @@
     },
     "/api/v1/decision-units/{unit_id}/decision-baselines": {
       "get": {
-        "description": "List decision baselines",
         "operationId": "list_decision_baselines",
         "parameters": [
           {
@@ -26551,7 +29053,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/BaselineListResponse"
                 }
               }
             },
@@ -26665,7 +29167,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -26683,23 +29185,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List decision baselines",
+        "summary": "List Decision Baselines",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/decision-baselines/freeze": {
       "post": {
-        "description": "Freeze decision baseline",
         "operationId": "freeze_decision_baseline",
         "parameters": [
           {
@@ -26733,25 +29231,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/FreezeBaselineRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/DecisionBaseline"
                 }
               }
             },
@@ -26865,7 +29356,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -26883,18 +29374,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Freeze decision baseline",
+        "summary": "Freeze Decision Baseline",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:freeze",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:freeze+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/decision-reports": {
@@ -30515,7 +33003,6 @@
     },
     "/api/v1/decision-units/{unit_id}/recommendation-eligibilities": {
       "get": {
-        "description": "List recommendation eligibilities",
         "operationId": "list_recommendation_eligibilities",
         "parameters": [
           {
@@ -30534,7 +33021,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/EligibilityListResponse"
                 }
               }
             },
@@ -30648,7 +33135,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -30666,21 +33153,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List recommendation eligibilities",
+        "summary": "List Recommendation Eligibilities",
         "tags": [
-          "FR-09a",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09a",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-09a:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:eligibility:assess",
+        "x-schema-status": "FROZEN"
       },
       "post": {
-        "description": "Create recommendation eligibilitie",
         "operationId": "create_recommendation_eligibilitie",
         "parameters": [
           {
@@ -30714,25 +33197,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/RecommendationEligibilityRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/RecommendationEligibility"
                 }
               }
             },
@@ -30846,7 +33322,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -30864,18 +33340,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create recommendation eligibilitie",
+        "summary": "Create Recommendation Eligibility",
         "tags": [
-          "FR-09a",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09a",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-09a:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:eligibility:assess+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/requirements": {
@@ -32325,7 +34798,6 @@
     },
     "/api/v1/decision-units/{unit_id}/scenario-sets": {
       "get": {
-        "description": "List scenario sets",
         "operationId": "list_scenario_sets",
         "parameters": [
           {
@@ -32344,7 +34816,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ScenarioSetListResponse"
                 }
               }
             },
@@ -32458,7 +34930,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -32476,21 +34948,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List scenario sets",
+        "summary": "List Scenario Sets",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:read",
+        "x-schema-status": "FROZEN"
       },
       "post": {
-        "description": "Create scenario set",
         "operationId": "create_scenario_set",
         "parameters": [
           {
@@ -32524,25 +34992,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateScenarioSetRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ScenarioSet"
                 }
               }
             },
@@ -32656,7 +35117,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -32674,18 +35135,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create scenario set",
+        "summary": "Create Scenario Set",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:freeze+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/scope-assessments": {
@@ -33055,7 +35513,6 @@
     },
     "/api/v1/decision-units/{unit_id}/simulation-assessment-snapshots": {
       "get": {
-        "description": "List simulation assessment snapshots",
         "operationId": "list_simulation_assessment_snapshots",
         "parameters": [
           {
@@ -33074,7 +35531,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SnapshotListResponse"
                 }
               }
             },
@@ -33188,7 +35645,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -33206,21 +35663,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List simulation assessment snapshots",
+        "summary": "List Simulation Assessment Snapshots",
         "tags": [
-          "FR-09a",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09a",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-09a:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:snapshot:create",
+        "x-schema-status": "FROZEN"
       },
       "post": {
-        "description": "Create simulation assessment snapshot",
         "operationId": "create_simulation_assessment_snapshot",
         "parameters": [
           {
@@ -33254,25 +35707,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/SnapshotRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SimulationAssessmentSnapshot"
                 }
               }
             },
@@ -33386,7 +35832,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -33404,23 +35850,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create simulation assessment snapshot",
+        "summary": "Create Simulation Assessment Snapshot",
         "tags": [
-          "FR-09a",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09a",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-09a:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:snapshot:create+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/simulation-batches": {
       "get": {
-        "description": "List simulation batches",
         "operationId": "list_simulation_batches",
         "parameters": [
           {
@@ -33439,7 +35881,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/BatchListResponse"
                 }
               }
             },
@@ -33553,7 +35995,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -33571,21 +36013,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List simulation batches",
+        "summary": "List Simulation Batches",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:read",
+        "x-schema-status": "FROZEN"
       },
       "post": {
-        "description": "Create simulation batch",
         "operationId": "create_simulation_batch",
         "parameters": [
           {
@@ -33619,25 +36057,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateBatchRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SimulationBatch"
                 }
               }
             },
@@ -33751,7 +36182,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -33769,18 +36200,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create simulation batch",
+        "summary": "Create Simulation Batch",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:run+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/decision-units/{unit_id}/subject-deduplication-runs": {
@@ -51742,7 +54170,6 @@
     },
     "/api/v1/optimization-runs/{run_id}": {
       "get": {
-        "description": "Get optimization run",
         "operationId": "get_optimization_run",
         "parameters": [
           {
@@ -51761,7 +54188,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/OptimizationRun"
                 }
               }
             },
@@ -51875,7 +54302,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -51893,23 +54320,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get optimization run",
+        "summary": "Get Optimization Run",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:optimization:run",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/optimization-runs/{run_id}/finalize": {
       "post": {
-        "description": "Finalize optimization run",
         "operationId": "finalize_optimization_run",
         "parameters": [
           {
@@ -51939,29 +54362,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/OptimizationRun"
                 }
               }
             },
@@ -52075,7 +54481,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52093,23 +54499,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Finalize optimization run",
+        "summary": "Finalize Optimization Run",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:finalize",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:optimization:run+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/optimization-runs/{run_id}/invalidate": {
       "post": {
-        "description": "Invalidate optimization run",
         "operationId": "invalidate_optimization_run",
         "parameters": [
           {
@@ -52139,29 +54541,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/OptimizationRun"
                 }
               }
             },
@@ -52275,7 +54660,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52293,23 +54678,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Invalidate optimization run",
+        "summary": "Invalidate Optimization Run",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:invalidate",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:optimization:run+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/optimization-runs/{run_id}/merge-assessments": {
       "get": {
-        "description": "List optimization merge assessments",
         "operationId": "list_optimization_merge_assessments",
         "parameters": [
           {
@@ -52328,7 +54709,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/MergeAssessmentListResponse"
                 }
               }
             },
@@ -52442,7 +54823,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52460,23 +54841,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List optimization merge assessments",
+        "summary": "List Optimization Merge Assessments",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:optimization:run",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/optimization-runs/{run_id}/strategy-plans": {
       "get": {
-        "description": "List optimization strategy plans",
         "operationId": "list_optimization_strategy_plans",
         "parameters": [
           {
@@ -52495,7 +54872,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/StrategyPlanListResponse"
                 }
               }
             },
@@ -52609,7 +54986,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52627,23 +55004,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List optimization strategy plans",
+        "summary": "List Optimization Strategy Plans",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:plan:publish",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/optimization-runs/{run_id}/stress-test-assessments": {
       "get": {
-        "description": "List optimization stress test assessments",
         "operationId": "list_optimization_stress_test_assessments",
         "parameters": [
           {
@@ -52662,7 +55035,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/StressAssessmentListResponse"
                 }
               }
             },
@@ -52776,7 +55149,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -52794,18 +55167,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List optimization stress test assessments",
+        "summary": "List Optimization Stress Test Assessments",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:optimization:run",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/outcomes/{outcome_id}": {
@@ -60526,7 +62896,6 @@
     },
     "/api/v1/recommendation-eligibilities/{recommendation_eligibilitie_id}": {
       "get": {
-        "description": "Get recommendation eligibilitie",
         "operationId": "get_recommendation_eligibilitie",
         "parameters": [
           {
@@ -60545,7 +62914,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/RecommendationEligibility"
                 }
               }
             },
@@ -60659,7 +63028,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -60677,18 +63046,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get recommendation eligibilitie",
+        "summary": "Get Recommendation Eligibility",
         "tags": [
-          "FR-09a",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09a",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-09a:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:eligibility:assess",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/replicas": {
@@ -65592,7 +67958,6 @@
     },
     "/api/v1/scenario-sets/{scenario_set_id}": {
       "get": {
-        "description": "Get scenario set",
         "operationId": "get_scenario_set",
         "parameters": [
           {
@@ -65611,7 +67976,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ScenarioSet"
                 }
               }
             },
@@ -65725,7 +68090,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -65743,23 +68108,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get scenario set",
+        "summary": "Get Scenario Set",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/scenario-sets/{scenario_set_id}/freeze": {
       "post": {
-        "description": "Freeze scenario set",
         "operationId": "freeze_scenario_set",
         "parameters": [
           {
@@ -65789,29 +68150,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/ScenarioSet"
                 }
               }
             },
@@ -65925,7 +68269,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -65943,18 +68287,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Freeze scenario set",
+        "summary": "Freeze Scenario Set",
         "tags": [
-          "FR-06",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-06",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-06:freeze",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:baseline:freeze+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/scope-assessments/{scope_assessment_id}": {
@@ -66524,7 +68865,6 @@
     },
     "/api/v1/simulation-assessment-snapshots/{simulation_assessment_snapshot_id}": {
       "get": {
-        "description": "Get simulation assessment snapshot",
         "operationId": "get_simulation_assessment_snapshot",
         "parameters": [
           {
@@ -66543,7 +68883,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SimulationAssessmentSnapshot"
                 }
               }
             },
@@ -66657,7 +68997,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -66675,23 +69015,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get simulation assessment snapshot",
+        "summary": "Get Simulation Assessment Snapshot",
         "tags": [
-          "FR-09a",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09a",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-09a:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:snapshot:create",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-assessment-snapshots/{simulation_assessment_snapshot_id}/download": {
       "get": {
-        "description": "Download immutable simulation assessment snapshot",
         "operationId": "download_simulation_assessment_snapshot",
         "parameters": [
           {
@@ -66710,7 +69046,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SnapshotDownloadResponse"
                 }
               }
             },
@@ -66824,7 +69160,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -66842,23 +69178,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Download immutable simulation assessment snapshot",
+        "summary": "Download Simulation Assessment Snapshot",
         "tags": [
-          "FR-09a",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-09a",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-09a:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:snapshot:create",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}": {
       "get": {
-        "description": "Get simulation batch",
         "operationId": "get_simulation_batch",
         "parameters": [
           {
@@ -66877,7 +69209,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SimulationBatch"
                 }
               }
             },
@@ -66991,7 +69323,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -67009,23 +69341,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Get simulation batch",
+        "summary": "Get Simulation Batch",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}/cancel": {
       "post": {
-        "description": "Cancel simulation batch",
         "operationId": "cancel_simulation_batch",
         "parameters": [
           {
@@ -67055,29 +69383,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SimulationBatch"
                 }
               }
             },
@@ -67191,7 +69502,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -67209,23 +69520,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Cancel simulation batch",
+        "summary": "Cancel Simulation Batch",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:cancel",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:run+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}/candidates": {
       "get": {
-        "description": "List batch candidates",
         "operationId": "list_simulation_batch_candidates",
         "parameters": [
           {
@@ -67244,7 +69551,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/CandidateListResponse"
                 }
               }
             },
@@ -67358,7 +69665,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -67376,23 +69683,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List batch candidates",
+        "summary": "List Simulation Batch Candidates",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}/optimization-runs": {
       "get": {
-        "description": "List optimization runs",
         "operationId": "list_optimization_runs",
         "parameters": [
           {
@@ -67411,7 +69714,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/OptimizationRunListResponse"
                 }
               }
             },
@@ -67525,7 +69828,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -67543,21 +69846,17 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List optimization runs",
+        "summary": "List Optimization Runs",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:optimization:run",
+        "x-schema-status": "FROZEN"
       },
       "post": {
-        "description": "Create optimization run",
         "operationId": "create_optimization_run",
         "parameters": [
           {
@@ -67591,25 +69890,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/CreateOptimizationRunRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/OptimizationRun"
                 }
               }
             },
@@ -67723,7 +70015,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -67741,23 +70033,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Create optimization run",
+        "summary": "Create Optimization Run",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:create",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:optimization:run+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}/retry": {
       "post": {
-        "description": "Retry simulation batch",
         "operationId": "retry_simulation_batch",
         "parameters": [
           {
@@ -67787,29 +70075,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/SimulationBatch"
                 }
               }
             },
@@ -67923,7 +70194,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -67941,23 +70212,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Retry simulation batch",
+        "summary": "Retry Simulation Batch",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:retry",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:run+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}/scenario-assessments": {
       "get": {
-        "description": "List batch scenario assessments",
         "operationId": "list_simulation_batch_scenario_assessments",
         "parameters": [
           {
@@ -67976,7 +70243,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/AssessmentListResponse"
                 }
               }
             },
@@ -68090,7 +70357,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -68108,23 +70375,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List batch scenario assessments",
+        "summary": "List Simulation Batch Scenario Assessments",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}/scenario-outcomes": {
       "get": {
-        "description": "List batch scenario outcomes",
         "operationId": "list_simulation_batch_scenario_outcomes",
         "parameters": [
           {
@@ -68143,7 +70406,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/OutcomeListResponse"
                 }
               }
             },
@@ -68257,7 +70520,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -68275,23 +70538,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List batch scenario outcomes",
+        "summary": "List Simulation Batch Scenario Outcomes",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/simulation-batches/{batch_id}/static-validations": {
       "get": {
-        "description": "List batch static validations",
         "operationId": "list_simulation_batch_static_validations",
         "parameters": [
           {
@@ -68310,7 +70569,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/StaticValidationListResponse"
                 }
               }
             },
@@ -68424,7 +70683,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -68442,18 +70701,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "List batch static validations",
+        "summary": "List Simulation Batch Static Validations",
         "tags": [
-          "FR-07",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-07",
-        "x-idempotency-required": false,
         "x-owner": "member-6",
-        "x-required-permission": "fr-07:read",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:batch:read",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/stage-gates": {
@@ -69502,7 +71758,6 @@
     },
     "/api/v1/strategy-plans/{strategy_plan_id}/invalidate": {
       "post": {
-        "description": "Invalidate strategy plan",
         "operationId": "invalidate_strategy_plan",
         "parameters": [
           {
@@ -69532,29 +71787,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/StrategyPlan"
                 }
               }
             },
@@ -69668,7 +71906,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -69686,23 +71924,19 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Invalidate strategy plan",
+        "summary": "Invalidate Strategy Plan",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:invalidate",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:plan:publish+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/strategy-plans/{strategy_plan_id}/publish": {
       "post": {
-        "description": "Publish strategy plan",
         "operationId": "publish_strategy_plan",
         "parameters": [
           {
@@ -69732,29 +71966,12 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/ContractOnlyCommand"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Body"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContractOnlyResource"
+                  "$ref": "#/components/schemas/StrategyPlan"
                 }
               }
             },
@@ -69868,7 +72085,7 @@
                 }
               }
             },
-            "description": "CONTRACT_ONLY: handler and owner-frozen field schema are not implemented"
+            "description": "Not Implemented"
           },
           "503": {
             "content": {
@@ -69886,18 +72103,15 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Publish strategy plan",
+        "summary": "Publish Strategy Plan",
         "tags": [
-          "FR-08",
-          "contract-only"
+          "simulation"
         ],
-        "x-contract-only": true,
-        "x-etag-required": false,
+        "x-contract-only": false,
         "x-fr": "FR-08",
-        "x-idempotency-required": true,
         "x-owner": "member-6",
-        "x-required-permission": "fr-08:publish",
-        "x-schema-status": "STUB_FIELDS_PENDING_OWNER_FREEZE"
+        "x-required-permission": "simulation:plan:publish+mfa",
+        "x-schema-status": "FROZEN"
       }
     },
     "/api/v1/subject-deduplication-runs/{run_id}": {

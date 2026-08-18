@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_BASE_SERVICES = {
     "gateway",
@@ -51,7 +50,8 @@ def compose_config(*profiles: str) -> dict[str, Any]:
 
 def networks_for(service: dict[str, Any]) -> set[str]:
     networks = service.get("networks", {})
-    return set(networks if isinstance(networks, dict) else networks)
+    networks_dict = networks if isinstance(networks, dict) else {}
+    return set(networks_dict)
 
 
 def main() -> int:

@@ -50,6 +50,48 @@ FR05_IMPLEMENTED_OPERATION_IDS = frozenset(
 FR12_IMPLEMENTED_OPERATION_IDS = frozenset(
     operation.operation_id for operation in OPERATION_CATALOG if operation.fr == "FR-12"
 )
+MEMBER6_IMPLEMENTED_OPERATION_IDS = (
+    frozenset(
+        {
+        "list_decision_baselines",
+        "freeze_decision_baseline",
+        "get_decision_baseline",
+        "list_candidate_search_spaces",
+        "create_candidate_search_space",
+        "get_candidate_search_space",
+        "list_scenario_sets",
+        "create_scenario_set",
+        "get_scenario_set",
+        "freeze_scenario_set",
+        "create_simulation_batch",
+        "list_simulation_batches",
+        "get_simulation_batch",
+        "cancel_simulation_batch",
+        "retry_simulation_batch",
+        "list_simulation_batch_candidates",
+        "list_simulation_batch_static_validations",
+        "list_simulation_batch_scenario_outcomes",
+        "list_simulation_batch_scenario_assessments",
+        "create_optimization_run",
+        "list_optimization_runs",
+        "get_optimization_run",
+        "finalize_optimization_run",
+        "invalidate_optimization_run",
+        "list_optimization_stress_test_assessments",
+        "list_optimization_strategy_plans",
+        "list_optimization_merge_assessments",
+        "publish_strategy_plan",
+        "invalidate_strategy_plan",
+        "create_recommendation_eligibilitie",
+        "list_recommendation_eligibilities",
+        "get_recommendation_eligibilitie",
+        "create_simulation_assessment_snapshot",
+        "list_simulation_assessment_snapshots",
+        "get_simulation_assessment_snapshot",
+        "download_simulation_assessment_snapshot",
+        }
+    )
+)
 IMPLEMENTED_CATALOG_OPERATION_IDS = (
     MEMBER7_IMPLEMENTED_OPERATION_IDS
     | MEMBER3_IMPLEMENTED_OPERATION_IDS
@@ -57,6 +99,7 @@ IMPLEMENTED_CATALOG_OPERATION_IDS = (
     | FR12_IMPLEMENTED_OPERATION_IDS
     | MODEL_LIFECYCLE_OPERATION_IDS
     | PROVIDER_MANAGEMENT_OPERATION_IDS
+    | MEMBER6_IMPLEMENTED_OPERATION_IDS
 )
 MEMBER5_IMPLEMENTED_OPERATION_IDS = (
     FR05_IMPLEMENTED_OPERATION_IDS

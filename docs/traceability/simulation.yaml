@@ -1,0 +1,256 @@
+# M0 member-6 (FR-06/07/08/09a simulation) traceability matrix
+# Maps each FR/use-case to handler/operationId/event/test for the member-6 delivery.
+# Format mirrors docs/traceability/m0-platform.md so the Stage Gate reviewer can join them.
+traceability:
+  owner: member-6
+  status: IMPLEMENTED
+  contract_only: false
+  handler_module: biaice.api.simulation
+  service_module: biaice.modules.simulation.application.services
+  domain_module: biaice.modules.simulation.domain
+  worker_module: biaice.workers.simulation
+  migration_revision: m6_simulation_0001
+  watermark: SHADOW_PILOT_LOCKED
+  items:
+    - fr: FR-06
+      use_case: Freeze decision baseline from upstream manifest
+      operation_id: freeze_decision_baseline
+      path: /api/v1/decision-units/{unit_id}/decision-baselines/freeze
+      method: POST
+      permission: simulation:baseline:freeze+mfa
+      idempotency: true
+      service: BaselineService.freeze
+      domain_helpers:
+        - manifest.build_manifest
+        - manifest.assert_manifest_complete
+      event: simulation.decision_baseline_frozen.v1
+      tests:
+        - apps/backend/tests/unit/test_simulation_models.py::test_decision_baseline_is_frozen_and_carries_required_projection
+        - apps/backend/tests/contract/test_simulation_api.py::test_freeze_decision_baseline_requires_idempotency
+    - fr: FR-06
+      use_case: List decision baselines for a decision unit
+      operation_id: list_decision_baselines
+      path: /api/v1/decision-units/{unit_id}/decision-baselines
+      method: GET
+      permission: simulation:baseline:read
+      service: BaselineService.list
+      tests:
+        - apps/backend/tests/contract/test_simulation_api.py::test_list_decision_baselines_returns_empty
+    - fr: FR-06
+      use_case: Fetch a frozen decision baseline
+      operation_id: get_decision_baseline
+      path: /api/v1/decision-baselines/{decision_baseline_id}
+      method: GET
+      permission: simulation:baseline:read
+      service: BaselineService.get
+    - fr: FR-06
+      use_case: Create candidate search space
+      operation_id: create_candidate_search_space
+      path: /api/v1/decision-units/{unit_id}/candidate-search-spaces
+      method: POST
+      permission: simulation:baseline:freeze+mfa
+      idempotency: true
+      service: SearchSpaceService.create
+    - fr: FR-06
+      use_case: List / fetch candidate search spaces
+      operation_id: list_candidate_search_spaces
+      path: /api/v1/decision-units/{unit_id}/candidate-search-spaces
+      method: GET
+      permission: simulation:baseline:read
+      service: SearchSpaceService.list
+    - fr: FR-06
+      use_case: Freeze scenario set after SEARCH/EVALUATION split
+      operation_id: freeze_scenario_set
+      path: /api/v1/scenario-sets/{scenario_set_id}/freeze
+      method: POST
+      permission: simulation:baseline:freeze+mfa
+      idempotency: true
+      service: ScenarioSetService.freeze
+      domain_helpers:
+        - scenarios.validate_search_eval_independence
+      event: simulation.scenario_sets_frozen.v1
+    - fr: FR-07
+      use_case: Create simulation batch
+      operation_id: create_simulation_batch
+      path: /api/v1/decision-units/{unit_id}/simulation-batches
+      method: POST
+      permission: simulation:batch:run+mfa
+      idempotency: true
+      service: SimulationBatchService.create
+      event: simulation.simulation_started.v1
+    - fr: FR-07
+      use_case: List / fetch simulation batches
+      operation_id: list_simulation_batches
+      path: /api/v1/decision-units/{unit_id}/simulation-batches
+      method: GET
+      permission: simulation:batch:read
+      service: SimulationBatchService.list
+    - fr: FR-07
+      use_case: Cancel simulation batch
+      operation_id: cancel_simulation_batch
+      path: /api/v1/simulation-batches/{batch_id}/cancel
+      method: POST
+      permission: simulation:batch:run+mfa
+      idempotency: true
+      service: SimulationBatchService.cancel
+    - fr: FR-07
+      use_case: Retry simulation batch
+      operation_id: retry_simulation_batch
+      path: /api/v1/simulation-batches/{batch_id}/retry
+      method: POST
+      permission: simulation:batch:run+mfa
+      idempotency: true
+      service: SimulationBatchService.retry
+    - fr: FR-07
+      use_case: List batch candidates / static validations / scenario outcomes / scenario assessments
+      operation_ids:
+        - list_simulation_batch_candidates
+        - list_simulation_batch_static_validations
+        - list_simulation_batch_scenario_outcomes
+        - list_simulation_batch_scenario_assessments
+      path_prefix: /api/v1/simulation-batches/{batch_id}/
+      method: GET
+      permission: simulation:batch:read
+    - fr: FR-08
+      use_case: Create optimization run with stress axes + candidates
+      operation_id: create_optimization_run
+      path: /api/v1/simulation-batches/{batch_id}/optimization-runs
+      method: POST
+      permission: simulation:optimization:run+mfa
+      idempotency: true
+      service: OptimizationService.create_run
+      domain_helpers:
+        - optimization.generate_candidates
+        - optimization.rank_candidates
+        - optimization.select_objective_candidates
+        - stress.run_stress_tests
+    - fr: FR-08
+      use_case: List / fetch optimization runs
+      operation_id: list_optimization_runs
+      path: /api/v1/simulation-batches/{batch_id}/optimization-runs
+      method: GET
+      permission: simulation:batch:read
+    - fr: FR-08
+      use_case: Finalize optimization run (publish plans)
+      operation_id: finalize_optimization_run
+      path: /api/v1/optimization-runs/{run_id}/finalize
+      method: POST
+      permission: simulation:plan:publish+mfa
+      idempotency: true
+      service: OptimizationService.finalize
+      event: simulation.strategy_plans_finalized.v1
+    - fr: FR-08
+      use_case: Invalidate optimization run
+      operation_id: invalidate_optimization_run
+      path: /api/v1/optimization-runs/{run_id}/invalidate
+      method: POST
+      permission: simulation:plan:publish+mfa
+      idempotency: true
+      service: OptimizationService.invalidate
+    - fr: FR-08
+      use_case: List stress test assessments
+      operation_id: list_optimization_stress_test_assessments
+      path: /api/v1/optimization-runs/{run_id}/stress-test-assessments
+      method: GET
+      permission: simulation:batch:read
+    - fr: FR-08
+      use_case: List strategy plans
+      operation_id: list_optimization_strategy_plans
+      path: /api/v1/optimization-runs/{run_id}/strategy-plans
+      method: GET
+      permission: simulation:batch:read
+    - fr: FR-08
+      use_case: List merge assessments
+      operation_id: list_optimization_merge_assessments
+      path: /api/v1/optimization-runs/{run_id}/merge-assessments
+      method: GET
+      permission: simulation:batch:read
+    - fr: FR-08
+      use_case: Publish strategy plan
+      operation_id: publish_strategy_plan
+      path: /api/v1/strategy-plans/{strategy_plan_id}/publish
+      method: POST
+      permission: simulation:plan:publish+mfa
+      idempotency: true
+      etag: true
+      service: OptimizationService.publish_plan
+    - fr: FR-08
+      use_case: Invalidate strategy plan
+      operation_id: invalidate_strategy_plan
+      path: /api/v1/strategy-plans/{strategy_plan_id}/invalidate
+      method: POST
+      permission: simulation:plan:publish+mfa
+      idempotency: true
+      service: OptimizationService.invalidate_plan
+    - fr: FR-09a
+      use_case: Assess recommendation eligibility (fail-closed)
+      operation_id: create_recommendation_eligibility
+      path: /api/v1/decision-units/{unit_id}/recommendation-eligibilities
+      method: POST
+      permission: simulation:eligibility:assess+mfa
+      idempotency: true
+      service: EligibilityService.assess
+      domain_helpers:
+        - eligibility.assess_eligibility
+        - eligibility.assert_eligibility_for_recommendation
+      event: simulation.eligibility_assessed.v1
+      tests:
+        - apps/backend/tests/unit/test_simulation_eligibility.py
+        - apps/backend/tests/contract/test_simulation_api.py::test_recommendation_eligibility_blocks_unknown
+    - fr: FR-09a
+      use_case: List / fetch recommendation eligibilities
+      operation_id: list_recommendation_eligibilities
+      path: /api/v1/decision-units/{unit_id}/recommendation-eligibilities
+      method: GET
+      permission: simulation:audit:read
+    - fr: FR-09a
+      use_case: Create SHADOW_PILOT_LOCKED assessment snapshot
+      operation_id: create_simulation_assessment_snapshot
+      path: /api/v1/decision-units/{unit_id}/simulation-assessment-snapshots
+      method: POST
+      permission: simulation:snapshot:create+mfa
+      idempotency: true
+      service: SnapshotService.create
+      domain_helpers:
+        - snapshot.create_snapshot
+        - snapshot.assert_shadow_watermark
+      event: simulation.simulation_snapshot_created.v1
+      tests:
+        - apps/backend/tests/unit/test_simulation_snapshot.py
+        - apps/backend/tests/contract/test_simulation_api.py::test_snapshot_enforces_shadow_watermark
+    - fr: FR-09a
+      use_case: Download snapshot (immutable)
+      operation_id: download_simulation_assessment_snapshot
+      path: /api/v1/simulation-assessment-snapshots/{simulation_assessment_snapshot_id}/download
+      method: GET
+      permission: simulation:audit:read
+      service: SnapshotService.download
+  tables:
+    - decision_baseline
+    - candidate_search_space
+    - scenario_set
+    - scenario_set_member
+    - simulation_batch
+    - simulation_candidate
+    - static_candidate_validation
+    - scenario_outcome
+    - scenario_strategy_assessment
+    - optimization_run
+    - strategy_plan
+    - strategy_plan_member
+    - stress_test_assessment
+    - merge_assessment
+    - recommendation_eligibility
+    - simulation_assessment_snapshot
+  workers:
+    - biaice.simulation.run_batch
+    - biaice.simulation.run_optimization
+    - biaice.simulation.assess_eligibility
+    - biaice.simulation.create_snapshot
+  invariants:
+    - decimal_str_only: All monetary fields use string DecimalStr (no binary float).
+    - frozen_models: All domain models are Pydantic frozen=True + extra="forbid".
+    - search_eval_split: scenario sets must contain SEARCH + EVALUATION; STRESS never enters probability denominator.
+    - shadow_pilot_locked: every snapshot carries SHADOW_PILOT_LOCKED watermark.
+    - eligibility_fail_closed: ELIGIBLE only when all upstream inputs are CURRENT.
+    - first_match_wins: simulation.router registered before contract_stubs.router.

@@ -10,9 +10,7 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, Path
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from biaice.api.model_lifecycle import MODEL_LIFECYCLE_OPERATION_IDS
 from biaice.api.operation_catalog import OPERATION_CATALOG, OperationSpec
-from biaice.api.provider_management import PROVIDER_MANAGEMENT_OPERATION_IDS
 from biaice.core.auth import IdentityContext, get_identity
 from biaice.core.errors import PROBLEM_RESPONSES, BiaiceError, ProblemDetails
 from biaice.core.http import require_if_match
@@ -20,7 +18,9 @@ from biaice.core.idempotency import require_idempotency_key
 
 router = APIRouter()
 PATH_PARAMETER = re.compile(r"{([A-Za-z_][A-Za-z0-9_]*)}")
-SCOPE_KEYS = frozenset({"tenant_id", "data_domain_id", "project_scope", "decision_unit_scope"})
+SCOPE_KEYS = frozenset(
+    {"tenant_id", "data_domain_id", "project_scope", "decision_unit_scope"}
+)
 
 
 def _reject_client_scope(value: Any, path: str = "payload") -> None:
@@ -122,7 +122,9 @@ def _make_endpoint(spec: OperationSpec):
                 default=Depends(require_if_match),
             )
         )
-    endpoint.__signature__ = inspect.Signature(parameters, return_annotation=ContractOnlyResource)
+    endpoint.__signature__ = inspect.Signature(
+        parameters, return_annotation=ContractOnlyResource
+    )
     return endpoint
 
 
@@ -138,6 +140,49 @@ MEMBER7_IMPLEMENTED_OPERATIONS = frozenset(
         "revoke_risk_acceptance",
     }
 )
+MEMBER6_IMPLEMENTED_OPERATIONS = frozenset(
+    {
+        "list_decision_baselines",
+        "freeze_decision_baseline",
+        "get_decision_baseline",
+        "list_candidate_search_spaces",
+        "create_candidate_search_space",
+        "get_candidate_search_space",
+        "list_scenario_sets",
+        "create_scenario_set",
+        "get_scenario_set",
+        "freeze_scenario_set",
+        "create_simulation_batch",
+        "list_simulation_batches",
+        "get_simulation_batch",
+        "cancel_simulation_batch",
+        "retry_simulation_batch",
+        "list_simulation_batch_candidates",
+        "list_simulation_batch_static_validations",
+        "list_simulation_batch_scenario_outcomes",
+        "list_simulation_batch_scenario_assessments",
+        "create_optimization_run",
+        "list_optimization_runs",
+        "get_optimization_run",
+        "finalize_optimization_run",
+        "invalidate_optimization_run",
+        "list_optimization_stress_test_assessments",
+        "list_optimization_strategy_plans",
+        "list_optimization_merge_assessments",
+        "publish_strategy_plan",
+        "invalidate_strategy_plan",
+        "create_recommendation_eligibility",
+        "list_recommendation_eligibilities",
+        "get_recommendation_eligibility",
+        "create_simulation_assessment_snapshot",
+        "list_simulation_assessment_snapshots",
+        "get_simulation_assessment_snapshot",
+        "download_simulation_assessment_snapshot",
+        "create_recommendation_eligibilitie",
+        "get_recommendation_eligibilitie",
+            }
+)
+
 MEMBER3_IMPLEMENTED_OPERATIONS = frozenset(
     {
         "create_project_document_upload_session",
@@ -169,16 +214,17 @@ MEMBER3_IMPLEMENTED_OPERATIONS = frozenset(
 )
 
 for operation in OPERATION_CATALOG:
-    if operation.operation_id in MODEL_LIFECYCLE_OPERATION_IDS:
-        continue
-    if operation.operation_id in PROVIDER_MANAGEMENT_OPERATION_IDS:
-        continue
-    if operation.fr in {"FR-05", "FR-12"}:
+    if operation.fr in {"FR-05", "FR-12", "FR-13"}:
         continue
     if (
-        operation.owner == "member-7" and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATIONS
+        operation.owner == "member-7"
+        and operation.operation_id in MEMBER7_IMPLEMENTED_OPERATIONS
     ) or (
-        operation.owner == "member-3" and operation.operation_id in MEMBER3_IMPLEMENTED_OPERATIONS
+        operation.owner == "member-3"
+        and operation.operation_id in MEMBER3_IMPLEMENTED_OPERATIONS
+    ) or (
+        operation.owner == "member-6"
+        and operation.operation_id in MEMBER6_IMPLEMENTED_OPERATIONS
     ):
         continue
     responses = dict(PROBLEM_RESPONSES)

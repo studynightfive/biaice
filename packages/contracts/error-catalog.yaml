@@ -23,11 +23,35 @@
     "status": 401,
     "title": "Authentication required"
   },
+  "BASELINE_INCOMPLETE": {
+    "recoverable": false,
+    "remediation": "Complete the missing upstream references and retry.",
+    "status": 409,
+    "title": "Decision baseline is incomplete"
+  },
+  "BATCH_INFRASTRUCTURE_FAILURE": {
+    "recoverable": true,
+    "remediation": "Retry the batch; permanent failure isolates the batch.",
+    "status": 503,
+    "title": "Simulation batch infrastructure failure"
+  },
   "BYOK_SECRET_GATE_REQUIRED": {
     "recoverable": true,
     "remediation": "Pass BYOK_SECRET_GATE before submitting a credential.",
     "status": 503,
     "title": "BYOK secret gate required"
+  },
+  "CANDIDATE_ERROR_NOT_RECOVERABLE": {
+    "recoverable": false,
+    "remediation": "Mark the batch as INDETERMINATE; do not delete scenarios to inflate metrics.",
+    "status": 422,
+    "title": "Candidate-level error blocks the batch"
+  },
+  "COVERAGE_BELOW_THRESHOLD": {
+    "recoverable": false,
+    "remediation": "Increase n_scenarios or relax infra exclusions, then rerun.",
+    "status": 422,
+    "title": "Coverage is below the policy threshold"
   },
   "CURSOR_SCOPE_MISMATCH": {
     "recoverable": false,
@@ -58,6 +82,12 @@
     "remediation": "Obtain a verified receipt from the registered adapter.",
     "status": 409,
     "title": "Deletion receipt invalid"
+  },
+  "DENOMINATOR_BELOW_THRESHOLD": {
+    "recoverable": false,
+    "remediation": "Result is UNDEFINED; do not submit for review.",
+    "status": 422,
+    "title": "Coverage denominator is below the policy threshold"
   },
   "DOCUMENT_ALREADY_RELEASED": {
     "recoverable": false,
@@ -119,6 +149,12 @@
     "status": 503,
     "title": "Provider egress authorization unavailable"
   },
+  "ELIGIBILITY_INPUT_UNKNOWN": {
+    "recoverable": false,
+    "remediation": "Resolve all upstream inputs to CURRENT before requesting a recommendation.",
+    "status": 409,
+    "title": "Eligibility input is UNKNOWN, EXPIRED or INVALIDATED"
+  },
   "ETAG_MISMATCH": {
     "recoverable": true,
     "remediation": "Refresh the draft before retrying.",
@@ -166,6 +202,12 @@
     "remediation": "Refresh the draft and send its current ETag.",
     "status": 428,
     "title": "If-Match required"
+  },
+  "INFRASTRUCTURE_RETRYABLE": {
+    "recoverable": true,
+    "remediation": "Retry with backoff; if persistent, isolate the batch.",
+    "status": 503,
+    "title": "Transient infrastructure failure"
   },
   "INTERNAL_ERROR": {
     "recoverable": true,
@@ -238,6 +280,12 @@
     "remediation": "Ask a tenant administrator for the required role.",
     "status": 403,
     "title": "Permission denied"
+  },
+  "PLAN_MERGE_BLOCKED": {
+    "recoverable": false,
+    "remediation": "Use complete-linkage; do not chain adjacent candidates across tau_b or tau_m.",
+    "status": 422,
+    "title": "Plan merge was blocked by linkage rules"
   },
   "PROVIDER_BUDGET_EXCEEDED": {
     "recoverable": true,
@@ -389,6 +437,12 @@
     "status": 422,
     "title": "Risk acceptance period is invalid"
   },
+  "SCENARIO_SET_INVALID": {
+    "recoverable": false,
+    "remediation": "Probability and stress scenarios must be mutually exclusive and weights must be finite.",
+    "status": 409,
+    "title": "Scenario set is invalid"
+  },
   "SCOPE_OVERRIDE_FORBIDDEN": {
     "recoverable": false,
     "remediation": "Remove tenant/data-domain scope fields and headers.",
@@ -400,6 +454,24 @@
     "remediation": "Keep credential operations blocked until the approved write-only store recovers.",
     "status": 503,
     "title": "Secret store unavailable"
+  },
+  "SNAPSHOT_PAYLOAD_HASH_MISMATCH": {
+    "recoverable": false,
+    "remediation": "Recompute the snapshot payload and retry.",
+    "status": 409,
+    "title": "Snapshot payload hash does not match committed version"
+  },
+  "STALE_BASELINE": {
+    "recoverable": false,
+    "remediation": "Freeze a new baseline version and retry.",
+    "status": 409,
+    "title": "Decision baseline is no longer current"
+  },
+  "STRESS_AXIS_VIOLATED": {
+    "recoverable": false,
+    "remediation": "Do not enter the probability denominator with stress weights.",
+    "status": 422,
+    "title": "Hard stress-axis constraint violated"
   },
   "TENANT_SCOPE_VIOLATION": {
     "recoverable": false,

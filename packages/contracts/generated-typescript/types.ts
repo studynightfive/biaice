@@ -50,6 +50,24 @@ export interface ArchiveCompetitorRequest {
   readonly reason: string;
 }
 
+export interface AssessmentListResponse {
+  readonly items: ReadonlyArray<ScenarioStrategyAssessment>;
+}
+
+export type AwardMode = "SINGLE" | "MULTI" | "NONE";
+
+export interface BaselineListResponse {
+  readonly items: ReadonlyArray<DecisionBaseline>;
+}
+
+export type BaselineState = "DRAFT" | "FROZEN" | "SUPERSEDED" | "INVALIDATED";
+
+export interface BatchListResponse {
+  readonly items: ReadonlyArray<SimulationBatch>;
+}
+
+export type BatchState = "PENDING" | "RUNNING" | "SUCCEEDED" | "INDETERMINATE" | "FAILED_RETRYABLE" | "FAILED_TERMINAL" | "CANCELLED";
+
 export interface BuildCompetitorProfileRequest {
   readonly source_ids: ReadonlyArray<string>;
   readonly participation_assumptions?: Record<string, number>;
@@ -96,6 +114,35 @@ export interface CalibrationArtifactVersion {
 }
 
 export type CalibrationPurpose = "REVIEW_OUTCOME_MODEL" | "FIRST_CANDIDATE";
+
+export interface CandidateBlueprintRequest {
+  readonly label: string;
+  readonly parameters?: Record<string, unknown>;
+  readonly expected_cost: string;
+  readonly expected_margin: string;
+}
+
+export interface CandidateListResponse {
+  readonly items: ReadonlyArray<SimulationCandidate>;
+}
+
+export interface CandidateSearchSpace {
+  readonly search_space_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly baseline_version_id: string;
+  readonly description: string;
+  readonly state: SearchSpaceState;
+  readonly dimension_axes: ReadonlyArray<string>;
+  readonly candidate_count_lower_bound: number;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly frozen_at: string | null;
+  readonly frozen_by: string | null;
+}
 
 export interface CommercialPolicy {
   readonly policy_id: string;
@@ -259,6 +306,14 @@ export interface CostListResponse {
   readonly items: ReadonlyArray<CostBaseline>;
 }
 
+export interface CreateBatchRequest {
+  readonly decision_unit_id: string;
+  readonly baseline_id: string;
+  readonly scenario_set_id: string;
+  readonly award_mode: AwardMode;
+  readonly policy_threshold: string;
+}
+
 export interface CreateCompetitorRequest {
   readonly legal_name: string;
   readonly canonical_subject_key: string;
@@ -297,6 +352,15 @@ export interface CreateMarketPriorRequest {
   readonly distribution: Record<string, number>;
 }
 
+export interface CreateOptimizationRunRequest {
+  readonly objective_kind: ObjectiveKind;
+  readonly award_mode: AwardMode;
+  readonly policy_threshold: string;
+  readonly blueprints: ReadonlyArray<CandidateBlueprintRequest>;
+  readonly stress_axes: ReadonlyArray<StressAxis>;
+  readonly stress_scenarios?: ReadonlyArray<StressScenarioRequest>;
+}
+
 export interface CreateParseJobRequest {
   readonly document_id: string;
 }
@@ -321,6 +385,23 @@ export interface CreateRiskAcceptanceRequest {
   readonly independent_approver_id: string;
   readonly valid_from: string;
   readonly valid_until: string;
+}
+
+export interface CreateScenarioSetRequest {
+  readonly decision_unit_id: string;
+  readonly baseline_id: string;
+  readonly search_space_id: string;
+  readonly evaluation_space_id?: string | null;
+  readonly members: ReadonlyArray<ScenarioSetMemberRequest>;
+  readonly stress_axes?: ReadonlyArray<string>;
+}
+
+export interface CreateSearchSpaceRequest {
+  readonly decision_unit_id: string;
+  readonly baseline_id: string;
+  readonly description: string;
+  readonly dimension_axes: ReadonlyArray<string>;
+  readonly candidate_count_lower_bound: number;
 }
 
 export interface CreateSubjectDeduplicationRunRequest {
@@ -380,6 +461,29 @@ export interface DatasetSnapshotVersion {
   readonly content_hash: string;
   readonly observed_from?: string | null;
   readonly observed_until?: string | null;
+}
+
+export interface DecimalStr {
+  readonly value: string;
+}
+
+export interface DecisionBaseline {
+  readonly baseline_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly manifest: InputManifest;
+  readonly state: BaselineState;
+  readonly frozen_at: string | null;
+  readonly frozen_by: string | null;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly superseded_at?: string | null;
+  readonly superseded_by?: string | null;
+  readonly invalidated_at?: string | null;
+  readonly invalidated_by?: string | null;
 }
 
 export type DeploymentState = "DRAFT" | "ACTIVE" | "SUPERSEDED" | "ROLLED_BACK";
@@ -446,6 +550,12 @@ export type DocumentMimeCategory = "PDF" | "DOCX" | "XLSX" | "IMAGE" | "ARCHIVE"
 export type DocumentStatus = "QUARANTINED" | "SCAN_PASSED" | "SCAN_FAILED" | "UNDER_REVIEW" | "RELEASED" | "ARCHIVED" | "DELETED";
 
 export type DriftStatus = "NO_DRIFT" | "WATCH" | "BREACH";
+
+export interface EligibilityListResponse {
+  readonly items: ReadonlyArray<RecommendationEligibility>;
+}
+
+export type EligibilityState = "ELIGIBLE" | "INELIGIBLE" | "INDETERMINATE";
 
 export interface EvaluationMetricDefinition {
   readonly code: string;
@@ -534,6 +644,11 @@ export interface FieldProblem {
   readonly error_type?: string | null;
 }
 
+export interface FreezeBaselineRequest {
+  readonly decision_unit_id: string;
+  readonly manifest_items: ReadonlyArray<ManifestItemRequest>;
+}
+
 export interface GateAssessment {
   readonly assessment_id: string;
   readonly gate_name: GateName;
@@ -597,6 +712,12 @@ export interface InheritDocumentLinkRequest {
   readonly reason?: string | null;
 }
 
+export interface InputManifest {
+  readonly manifest_id: string;
+  readonly manifest_hash: string;
+  readonly items: ReadonlyArray<ManifestItem>;
+}
+
 export type JobState = "PENDING" | "QUEUED" | "RUNNING" | "CANCELLATION_REQUESTED" | "CANCELLED" | "SUCCEEDED" | "FAILED_RETRYABLE" | "FAILED_TERMINAL";
 
 export interface JobView {
@@ -616,6 +737,26 @@ export interface JobView {
 }
 
 export type LifecycleState = "DRAFT" | "PUBLISHED" | "ARCHIVED" | "DELETED";
+
+export interface ManifestItem {
+  readonly item_id: string;
+  readonly upstream_type: string;
+  readonly upstream_id: string;
+  readonly upstream_version_id: string;
+  readonly upstream_content_hash: string;
+  readonly dependency_type: string;
+  readonly recorded_at: string;
+}
+
+export interface ManifestItemRequest {
+  readonly item_id: string;
+  readonly upstream_type: string;
+  readonly upstream_id: string;
+  readonly upstream_version_id: string;
+  readonly upstream_content_hash: string;
+  readonly dependency_type: string;
+  readonly recorded_at: string;
+}
 
 export interface ManualOverrideRequest {
   readonly target_type: string;
@@ -710,6 +851,26 @@ export interface MeResponse {
   readonly permissions: ReadonlyArray<string>;
   readonly mfa_verified: boolean;
   readonly authenticated_at: string;
+}
+
+export interface MergeAssessment {
+  readonly merge_id: string;
+  readonly run_id: string;
+  readonly plan_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly linkage: string;
+  readonly tau_b: DecimalStr;
+  readonly tau_m: DecimalStr;
+  readonly accepted: boolean;
+  readonly blocked_reason_code: string | null;
+  readonly assessed_at: string;
+}
+
+export interface MergeAssessmentListResponse {
+  readonly items: ReadonlyArray<MergeAssessment>;
 }
 
 export type MetricDirection = "MINIMIZE" | "MAXIMIZE" | "TARGET";
@@ -909,6 +1070,38 @@ export interface MonitoringSnapshotListResponse {
   readonly items: ReadonlyArray<ModelMonitoringSnapshot>;
 }
 
+export type ObjectiveKind = "COST_MIN" | "MARGIN_MAX" | "COVERAGE_MAX" | "RISK_MIN";
+
+export interface OptimizationRun {
+  readonly run_id: string;
+  readonly batch_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly state: OptimizationState;
+  readonly award_mode: AwardMode;
+  readonly objective_kind: ObjectiveKind;
+  readonly policy_threshold: DecimalStr;
+  readonly progress_percent?: number;
+  readonly requested_by: string;
+  readonly created_at: string;
+  readonly finalized_at: string | null;
+  readonly invalidated_at: string | null;
+  readonly invalidated_by?: string | null;
+}
+
+export interface OptimizationRunListResponse {
+  readonly items: ReadonlyArray<OptimizationRun>;
+}
+
+export type OptimizationState = "DRAFT" | "RUNNING" | "SUCCEEDED" | "FAILED" | "INVALIDATED" | "FINALIZED";
+
+export interface OutcomeListResponse {
+  readonly items: ReadonlyArray<ScenarioOutcome>;
+}
+
 export interface OverrideDocumentLinkRequest {
   readonly document_id: string;
   readonly decision_unit_id: string;
@@ -932,6 +1125,8 @@ export interface ParseJobResponse {
   readonly started_at: string | null;
   readonly completed_at: string | null;
 }
+
+export type PlanState = "DRAFT" | "PUBLISHED" | "INVALIDATED";
 
 export interface PolicyListResponse {
   readonly items: ReadonlyArray<CommercialPolicy>;
@@ -1157,6 +1352,33 @@ export interface ReadinessListResponse {
   readonly items: ReadonlyArray<StrategyReadinessAssessment>;
 }
 
+export interface RecommendationEligibility {
+  readonly eligibility_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly state: EligibilityState;
+  readonly blocked_reason_codes?: ReadonlyArray<string>;
+  readonly upstream_validity?: Record<string, ReviewValidity>;
+  readonly baseline_version_id: string;
+  readonly snapshot_version_id?: string | null;
+  readonly assessed_at: string;
+  readonly assessed_by: string;
+}
+
+export interface RecommendationEligibilityRequest {
+  readonly baseline_id: string;
+  readonly snapshot_id?: string | null;
+  readonly precheck: ReviewValidity;
+  readonly readiness: ReviewValidity;
+  readonly static_validation: ReviewValidity;
+  readonly scenario_assessment: ReviewValidity;
+  readonly condition: ReviewValidity;
+  readonly risk_acceptance: ReviewValidity;
+}
+
 export type ReplicaKind = "DATABASE" | "OBJECT_STORAGE" | "SEARCH_INDEX" | "VECTOR_INDEX" | "CACHE" | "TEMPORARY_FILE" | "PROVIDER_EXTERNAL" | "BACKUP" | "AUDIT_DERIVED";
 
 export interface ReplicaListResponse {
@@ -1189,6 +1411,8 @@ export interface ReviewCompetitorSourceRequest {
 }
 
 export type ReviewState = "PENDING" | "APPROVED" | "NOT_REQUIRED" | "REJECTED" | "QUARANTINED";
+
+export type ReviewValidity = "CURRENT" | "UNKNOWN" | "EXPIRED" | "INVALIDATED";
 
 export interface RevokeRiskAcceptanceRequest {
   readonly revocation_reason: string;
@@ -1259,6 +1483,82 @@ export interface RollbackEventListResponse {
 
 export type ScanResult = "CLEAN" | "INFECTED" | "ERROR";
 
+export type ScenarioKind = "SEARCH" | "EVALUATION" | "STRESS";
+
+export interface ScenarioOutcome {
+  readonly outcome_id: string;
+  readonly candidate_id: string;
+  readonly scenario_id: string;
+  readonly batch_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly feasible: boolean;
+  readonly expected_payoff: DecimalStr;
+  readonly p_win: DecimalStr;
+  readonly evaluated_at: string;
+  readonly review_validity: ReviewValidity;
+  readonly detail?: string | null;
+}
+
+export interface ScenarioSet {
+  readonly scenario_set_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly baseline_version_id: string;
+  readonly search_space_version_id: string;
+  readonly evaluation_space_version_id: string | null;
+  readonly stress_axes: ReadonlyArray<StressAxis>;
+  readonly state: ScenarioSetState;
+  readonly members: ReadonlyArray<ScenarioSetMember>;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly frozen_at: string | null;
+  readonly frozen_by: string | null;
+}
+
+export interface ScenarioSetListResponse {
+  readonly items: ReadonlyArray<ScenarioSet>;
+}
+
+export interface ScenarioSetMember {
+  readonly scenario_id: string;
+  readonly scenario_kind: ScenarioKind;
+  readonly weight: DecimalStr;
+  readonly label: string;
+  readonly params?: Record<string, unknown>;
+}
+
+export interface ScenarioSetMemberRequest {
+  readonly scenario_id: string;
+  readonly scenario_kind: string;
+  readonly weight: string;
+  readonly label: string;
+  readonly params?: Record<string, unknown>;
+}
+
+export type ScenarioSetState = "DRAFT" | "FROZEN" | "SUPERSEDED" | "INVALIDATED";
+
+export interface ScenarioStrategyAssessment {
+  readonly assessment_id: string;
+  readonly candidate_id: string;
+  readonly scenario_id: string;
+  readonly batch_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly review_validity: ReviewValidity;
+  readonly summary: string;
+  readonly recommended: boolean;
+  readonly assessed_at: string;
+  readonly reason_code: string;
+}
+
 export interface ScopedObjectRef {
   readonly tenant_id: string;
   readonly data_domain_id: string;
@@ -1268,6 +1568,79 @@ export interface ScopedObjectRef {
   readonly object_id: string;
   readonly version_id?: string | null;
 }
+
+export interface SearchSpaceListResponse {
+  readonly items: ReadonlyArray<CandidateSearchSpace>;
+}
+
+export type SearchSpaceState = "DRAFT" | "FROZEN" | "SUPERSEDED" | "INVALIDATED";
+
+export interface SimulationAssessmentSnapshot {
+  readonly snapshot_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly state: SnapshotState;
+  readonly watermark: string;
+  readonly payload_hash: string;
+  readonly payload: Record<string, unknown>;
+  readonly created_at: string;
+  readonly created_by: string;
+  readonly locked_at?: string | null;
+  readonly locked_by?: string | null;
+}
+
+export interface SimulationBatch {
+  readonly batch_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly baseline_version_id: string;
+  readonly scenario_set_version_id: string;
+  readonly award_mode: AwardMode;
+  readonly state: BatchState;
+  readonly policy_threshold: DecimalStr;
+  readonly candidate_count: number;
+  readonly progress_percent?: number;
+  readonly requested_by: string;
+  readonly created_at: string;
+  readonly last_updated_at: string;
+  readonly job_id?: string | null;
+  readonly failure_reason_code?: string | null;
+}
+
+export interface SimulationCandidate {
+  readonly candidate_id: string;
+  readonly batch_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly label: string;
+  readonly parameters: Record<string, unknown>;
+  readonly expected_cost: DecimalStr;
+  readonly expected_margin: DecimalStr;
+  readonly created_at: string;
+}
+
+export interface SnapshotDownloadResponse {
+  readonly snapshot: SimulationAssessmentSnapshot;
+}
+
+export interface SnapshotListResponse {
+  readonly items: ReadonlyArray<SimulationAssessmentSnapshot>;
+}
+
+export interface SnapshotRequest {
+  readonly payload: Record<string, unknown>;
+}
+
+export type SnapshotState = "DRAFT" | "LOCKED";
 
 export interface SourceDocument {
   readonly document_id: string;
@@ -1302,6 +1675,59 @@ export interface SourceDocument {
 
 export type SourceReviewState = "DRAFT" | "REVIEWED" | "QUARANTINED" | "EXPIRED";
 
+export interface StaticCandidateValidation {
+  readonly validation_id: string;
+  readonly candidate_id: string;
+  readonly batch_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly status: StaticValidationStatus;
+  readonly rule_codes?: ReadonlyArray<string>;
+  readonly assessed_at: string;
+  readonly detail?: string | null;
+}
+
+export interface StaticValidationListResponse {
+  readonly items: ReadonlyArray<StaticCandidateValidation>;
+}
+
+export type StaticValidationStatus = "PASS" | "FAIL" | "INDETERMINATE";
+
+export interface StrategyPlan {
+  readonly plan_id: string;
+  readonly run_id: string;
+  readonly version_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly state: PlanState;
+  readonly award_mode: AwardMode;
+  readonly objective_kind: ObjectiveKind;
+  readonly members: ReadonlyArray<StrategyPlanMember>;
+  readonly p_minus: DecimalStr;
+  readonly p_plus: DecimalStr;
+  readonly coverage: DecimalStr;
+  readonly created_at: string;
+  readonly published_at: string | null;
+  readonly invalidated_at: string | null;
+  readonly invalidated_by?: string | null;
+  readonly published_by?: string | null;
+  readonly linked_run_version_id: string;
+}
+
+export interface StrategyPlanListResponse {
+  readonly items: ReadonlyArray<StrategyPlan>;
+}
+
+export interface StrategyPlanMember {
+  readonly candidate_id: string;
+  readonly linkage?: string;
+  readonly weight: DecimalStr;
+}
+
 export interface StrategyReadinessAssessment {
   readonly readiness_id: string;
   readonly version_id: string;
@@ -1315,6 +1741,33 @@ export interface StrategyReadinessAssessment {
   readonly created_at: string;
   readonly created_by: string;
   readonly exploration_watermark: boolean;
+}
+
+export interface StressAssessmentListResponse {
+  readonly items: ReadonlyArray<StressTestAssessment>;
+}
+
+export type StressAxis = "PRICE_BAND" | "TIMING" | "COMPLIANCE" | "PROVIDER_OUTAGE" | "UNIT_FAILURE";
+
+export interface StressScenarioRequest {
+  readonly axis: StressAxis;
+  readonly feasible: boolean;
+  readonly stress_weight: string;
+  readonly detail: string;
+}
+
+export interface StressTestAssessment {
+  readonly assessment_id: string;
+  readonly run_id: string;
+  readonly tenant_id: string;
+  readonly data_domain_id: string;
+  readonly project_id: string | null;
+  readonly decision_unit_id: string;
+  readonly axis: StressAxis;
+  readonly passed: boolean;
+  readonly detail: string;
+  readonly assessed_at: string;
+  readonly stress_weight: DecimalStr;
 }
 
 export interface SubjectDeduplicationRun {
