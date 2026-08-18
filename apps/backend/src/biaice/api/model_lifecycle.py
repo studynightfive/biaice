@@ -6,6 +6,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
+from pydantic import BaseModel, ConfigDict, Field
 
 from biaice.core.auth import IdentityContext, get_identity
 from biaice.core.errors import PROBLEM_RESPONSES, BiaiceError
@@ -43,6 +44,14 @@ router = APIRouter(prefix="/api/v1", tags=["FR-13", "model-lifecycle"])
 IDEMPOTENT_OPERATION = {"x-idempotency-required": True}
 PageLimit = Annotated[int, Query(ge=1, le=200)]
 PageCursor = Annotated[str | None, Query(min_length=1, max_length=4096)]
+
+
+class StrictPageQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    limit: int = Field(default=100, ge=1, le=200)
+    cursor: str | None = Field(default=None, min_length=1, max_length=4096)
+
 
 MODEL_LIFECYCLE_OPERATION_IDS = frozenset(
     {
@@ -129,12 +138,11 @@ def get_service(request: Request) -> ModelLifecycleService:
     responses=PROBLEM_RESPONSES,
 )
 def list_datasets(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> DatasetListResponse:
-    page = service.list_datasets(identity=identity, limit=limit, cursor=cursor)
+    page = service.list_datasets(identity=identity, limit=query.limit, cursor=query.cursor)
     return DatasetListResponse(
         items=page.items,
         next_cursor=page.next_cursor,
@@ -207,12 +215,11 @@ def publish_dataset(
     responses=PROBLEM_RESPONSES,
 )
 def list_feature_schemas(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> FeatureSchemaListResponse:
-    page = service.list_feature_schemas(identity=identity, limit=limit, cursor=cursor)
+    page = service.list_feature_schemas(identity=identity, limit=query.limit, cursor=query.cursor)
     return FeatureSchemaListResponse(
         items=page.items,
         next_cursor=page.next_cursor,
@@ -288,12 +295,11 @@ def publish_feature_schema(
     responses=PROBLEM_RESPONSES,
 )
 def list_model_artifacts(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> ModelArtifactListResponse:
-    page = service.list_model_artifacts(identity=identity, limit=limit, cursor=cursor)
+    page = service.list_model_artifacts(identity=identity, limit=query.limit, cursor=query.cursor)
     return ModelArtifactListResponse(
         items=page.items,
         next_cursor=page.next_cursor,
@@ -369,15 +375,14 @@ def publish_model_artifact(
     responses=PROBLEM_RESPONSES,
 )
 def list_evaluation_protocols(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> EvaluationProtocolListResponse:
     page = service.list_evaluation_protocols(
         identity=identity,
-        limit=limit,
-        cursor=cursor,
+        limit=query.limit,
+        cursor=query.cursor,
     )
     return EvaluationProtocolListResponse(
         items=page.items,
@@ -454,15 +459,14 @@ def publish_evaluation_protocol(
     responses=PROBLEM_RESPONSES,
 )
 def list_calibration_artifacts(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> CalibrationArtifactListResponse:
     page = service.list_calibration_artifacts(
         identity=identity,
-        limit=limit,
-        cursor=cursor,
+        limit=query.limit,
+        cursor=query.cursor,
     )
     return CalibrationArtifactListResponse(
         items=page.items,
@@ -517,15 +521,14 @@ def get_calibration_artifact(
     responses=PROBLEM_RESPONSES,
 )
 def list_monitoring_snapshots(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> MonitoringSnapshotListResponse:
     page = service.list_monitoring_snapshots(
         identity=identity,
-        limit=limit,
-        cursor=cursor,
+        limit=query.limit,
+        cursor=query.cursor,
     )
     return MonitoringSnapshotListResponse(
         items=page.items,
@@ -580,12 +583,11 @@ def get_monitoring_snapshot(
     responses=PROBLEM_RESPONSES,
 )
 def list_model_incidents(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> ModelIncidentListResponse:
-    page = service.list_model_incidents(identity=identity, limit=limit, cursor=cursor)
+    page = service.list_model_incidents(identity=identity, limit=query.limit, cursor=query.cursor)
     return ModelIncidentListResponse(
         items=page.items,
         next_cursor=page.next_cursor,
@@ -639,12 +641,11 @@ def get_model_incident(
     responses=PROBLEM_RESPONSES,
 )
 def list_rollback_events(
-    limit: PageLimit = 100,
-    cursor: PageCursor = None,
+    query: Annotated[StrictPageQuery, Query()],
     identity: IdentityContext = Depends(get_identity),
     service: ModelLifecycleService = Depends(get_service),
 ) -> RollbackEventListResponse:
-    page = service.list_rollback_events(identity=identity, limit=limit, cursor=cursor)
+    page = service.list_rollback_events(identity=identity, limit=query.limit, cursor=query.cursor)
     return RollbackEventListResponse(
         items=page.items,
         next_cursor=page.next_cursor,
